@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
 import { Button, TextInput, Stack } from "@react-native-material/core";
+import { useFonts } from "expo-font";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
@@ -19,6 +20,17 @@ export default function ConnectionScreen({ navigation }) {
     password: "",
   });
 
+  // load font family Quicksand useFont expo-font
+  // ------------------------------------------------------------
+  const [loaded] = useFonts({
+    Quicksand: require("../assets/fonts/Quicksand-Medium.ttf"),
+  });
+
+  if (!loaded) {
+    return null;
+  }
+
+  console.log("test", loaded);
   // Check email and sign in or sign up
   //-----------------------------------------------------------------------
   const doAction = () => {
@@ -107,7 +119,7 @@ export default function ConnectionScreen({ navigation }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text>Ariane</Text>
+      <Text style={styles.title}>Ariane</Text>
       <View style={styles.inputChoices}>
         <Button
           onPress={() => {
@@ -117,6 +129,7 @@ export default function ConnectionScreen({ navigation }) {
           uppercase={false}
           variant={doSubscribe ? "text" : "contained"}
           style={styles.button}
+          titleStyle={{ fontFamily: "Quicksand" }}
         />
 
         <Button
@@ -126,6 +139,7 @@ export default function ConnectionScreen({ navigation }) {
           uppercase={false}
           title={"S'inscrire"}
           variant={doSubscribe ? "contained" : "text"}
+          titleStyle={{ fontFamily: "Quicksand" }}
         />
       </View>
       <TextInput
@@ -134,6 +148,7 @@ export default function ConnectionScreen({ navigation }) {
         onChangeText={(value) => setUserInfo({ ...userInfo, lastName: value })}
         value={userInfo.lastName}
         style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+        labelStyle={{ fontFamily: "Quicksand" }}
       />
       <TextInput
         label="Prénom"
@@ -141,6 +156,7 @@ export default function ConnectionScreen({ navigation }) {
         onChangeText={(value) => setUserInfo({ ...userInfo, firstName: value })}
         value={userInfo.firstName}
         style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+        titleStyle={{ fontFamily: "Quicksand" }}
       />
       <TextInput
         label="Adresse mail"
@@ -149,6 +165,7 @@ export default function ConnectionScreen({ navigation }) {
         onChangeText={(value) => onEmailChanged(value)}
         value={userInfo.email}
         style={styles.input}
+        titleStyle={{ fontFamily: "Quicksand" }}
         color={isEmailValid ? "#6101EE" : "#FF0000"}
       />
 
@@ -163,18 +180,25 @@ export default function ConnectionScreen({ navigation }) {
         onChangeText={(value) => setUserInfo({ ...userInfo, password: value })}
         value={userInfo.password}
         style={styles.input}
+        titleStyle={{ fontFamily: "Quicksand" }}
       />
       <Button
         onPress={doAction}
         style={{ display: "flex" }}
         title={doSubscribe ? "S'inscrire" : "Se connecter"}
         uppercase={false}
+        titleStyle={{ fontFamily: "Quicksand" }}
       ></Button>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontFamily: "Quicksand",
+    fontSize: 40,
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -184,11 +208,13 @@ const styles = StyleSheet.create({
   input: {
     width: 200,
     height: 40,
+    fontFamily: "Quicksand",
   },
   inputChoices: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     width: "100%",
+    fontFamily: "Quicksand",
   },
   alert: {
     color: "#FF0000",
