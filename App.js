@@ -40,14 +40,14 @@ const TabNavigator = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName = "";
 
-          if (route.name === "Game") {
-            iconName = "mdiGamepadVariant";
-          } else if (route.name === "Invite") {
-            iconName = "mdiPlusBox";
-          } else if (route.name === "UserParameters") {
-            iconName = "mdiAccountMultiple";
-          } else if (route.name === "HomePage") {
-            iconName = "mdiHome";
+          if (route.name === "Jeux") {
+            iconName = "videogame-asset";
+          } else if (route.name === "Inviter") {
+            iconName = "add-box";
+          } else if (route.name === "Utilisateurs") {
+            iconName = "people";
+          } else if (route.name === "Arbre") {
+            iconName = "home";
           }
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
@@ -57,10 +57,10 @@ const TabNavigator = () => {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Game" component={GameScreen} />
-      <Tab.Screen name="Invite" component={InviteScreen} />
-      <Tab.Screen name="UsersParameters" component={UsersParametersScreen} />
-      <Tab.Screen name="HomePage" component={HomePageScreen} />
+      <Tab.Screen name="Arbre" component={HomePageScreen} />
+      <Tab.Screen name="Jeux" component={GameScreen} />
+      <Tab.Screen name="Inviter" component={InviteScreen} />
+      <Tab.Screen name="Utilisateurs" component={UsersParametersScreen} />
     </Tab.Navigator>
   );
 };

@@ -1,74 +1,51 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
-
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
+import { Button, TextInput, Stack } from "@react-native-material/core";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 console.log("API to fetch : ", FETCH_API);
 export default function ConnectionScreen({ navigation }) {
   const dispatch = useDispatch();
-  const [isVisible, setIsVisible] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [userInfos, setUserInfos] = useState({
+  const [doSubscribe, setSubscribe] = useState(false); // Connect or Register
+  const [isEmailErrorVisible, setEmailErrorVisible] = useState(false); // Display email error message
+  const [isEmailValid, setEmailValid] = useState(false); // Display email with error style
+  const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
     email: "",
     password: "",
   });
 
-  //Ajout d'un user en BDD en vérifiant si les données sont ok
-  const signUp = () => {
-    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //regex pour vérifier si l'email est valide
-    if (re.test(userInfos.email) === false) {
-      setVisible(true);
-    } else {
-      fetch(FETCH_API + "/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          lastName: userInfos.lastName,
-          firstName: userInfos.firstName,
-          email: userInfos.email,
-          password: userInfos.password,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (!data.result) {
-            alert(data.error);
-            return;
-          }
-          console.log("SignUP OK");
-          dispatch(setAddUser(data));
-          navigation.navigate("TabNavigator");
-        })
-        .catch((error) => {
-          console.error("While connecting back-end on " + FETCH_API, error);
-        });
+  // Check email and sign in or sign up
+  //-----------------------------------------------------------------------
+  const doAction = () => {
+    setEmailErrorVisible(!isEmailValid);
+    console.log("setEmailErrorVisible ", !isEmailValid);
+
+    if (!isEmailValid) {
+      return;
     }
+
+    if (doSubscribe) signUp();
+    else signIn();
   };
 
-  //connection d'un user déjà existant
-  const signIn = () => {
-    fetch(FETCH_API + "/users/signin", {
+  // Ajout d'un user en BDD
+  //-----------------------------------------------------------------------
+  const signUp = () => {
+    fetch(FETCH_API + "/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: userInfos.email,
-        password: userInfos.password,
+        lastName: userInfo.lastName,
+        firstName: userInfo.firstName,
+        email: userInfo.email,
+        password: userInfo.password,
       }),
     })
       .then((response) => response.json())
@@ -78,7 +55,7 @@ export default function ConnectionScreen({ navigation }) {
           return;
         }
         console.log("SignUP OK");
-        dispatch(setAddUser(userInfos));
+        dispatch(setAddUser(data));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
@@ -86,71 +63,113 @@ export default function ConnectionScreen({ navigation }) {
       });
   };
 
+  // Connection d'un user déjà existant
+  //-----------------------------------------------------------------------
+  const signIn = () => {
+    fetch(FETCH_API + "/users/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: userInfo.email,
+        password: userInfo.password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.result) {
+          alert(data.error);
+          return;
+        }
+        console.log("SignUP OK");
+        dispatch(setAddUser(userInfo));
+        navigation.navigate("TabNavigator");
+      })
+      .catch((error) => {
+        console.error("While connecting back-end on " + FETCH_API, error);
+      });
+  };
+
+  // Check email
+  //-----------------------------------------------------------------------
+  const onEmailChanged = (value) => {
+    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //regex pour vérifier si l'email est valide
+    setUserInfo({ ...userInfo, email: value });
+
+    const isValid = re.test(value);
+    console.log("IS EMAIL VALID : ", isValid);
+    setEmailValid(isValid);
+  };
+
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
       <Text>Ariane</Text>
-      <TouchableOpacity
-        onPress={() => {
-          setIsVisible(false);
-        }}
-      >
-        <Text>Se connecter</Text>
-      </TouchableOpacity>
+      <View style={styles.inputChoices}>
+        <Button
+          onPress={() => {
+            setSubscribe(false);
+          }}
+          title="Se connecter"
+          uppercase={false}
+          variant={doSubscribe ? "text" : "contained"}
+          style={styles.button}
+        />
 
-      <TouchableOpacity
-        onPress={() => {
-          setIsVisible(true);
-        }}
-      >
-        <Text>S'inscrire</Text>
-      </TouchableOpacity>
+        <Button
+          onPress={() => {
+            setSubscribe(true);
+          }}
+          uppercase={false}
+          title={"S'inscrire"}
+          variant={doSubscribe ? "contained" : "text"}
+        />
+      </View>
+      <TextInput
+        label="Nom"
+        variant="outlined"
+        onChangeText={(value) => setUserInfo({ ...userInfo, lastName: value })}
+        value={userInfo.lastName}
+        style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+      />
+      <TextInput
+        label="Prénom"
+        variant="outlined"
+        onChangeText={(value) => setUserInfo({ ...userInfo, firstName: value })}
+        value={userInfo.firstName}
+        style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+      />
+      <TextInput
+        label="Adresse mail"
+        variant="outlined"
+        autoCapitalize="none"
+        onChangeText={(value) => onEmailChanged(value)}
+        value={userInfo.email}
+        style={styles.input}
+      />
+
+      {isEmailErrorVisible && (
+        <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
+      )}
 
       <TextInput
-        placeholder="Nom"
-        onChangeText={(value) =>
-          setUserInfos({ ...userInfos, lastName: value })
-        }
-        value={userInfos.lastName}
-        style={{ display: isVisible ? "flex" : "none" }}
-      />
-      <TextInput
-        placeholder="Prénom"
-        onChangeText={(value) =>
-          setUserInfos({ ...userInfos, firstName: value })
-        }
-        value={userInfos.firstName}
-        style={{ display: isVisible ? "flex" : "none" }}
-      />
-      <TextInput
-        placeholder="Adresse mail"
-        onChangeText={(value) => setUserInfos({ ...userInfos, email: value })}
-        value={userInfos.email}
-      />
-      <Text style={[styles.alert, { display: visible ? "flex" : "none" }]}>
-        L'adresse mail n'est pas valide
-      </Text>
-      <TextInput
-        placeholder="Mot de passe"
+        label="Mot de passe"
+        variant="outlined"
         secureTextEntry={true}
-        onChangeText={(value) =>
-          setUserInfos({ ...userInfos, password: value })
-        }
-        value={userInfos.password}
+        onChangeText={(value) => setUserInfo({ ...userInfo, password: value })}
+        value={userInfo.password}
+        style={styles.input}
       />
-      <TouchableOpacity
-        onPress={signUp}
-        style={{ display: !isVisible ? "none" : "flex" }}
-      >
-        <Text>S'inscrire</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={signIn}
-        style={{ display: isVisible ? "none" : "flex" }}
-      >
-        <Text>Se connecter </Text>
-      </TouchableOpacity>
-    </View>
+      <Button
+        onPress={doAction}
+        style={{ display: "flex" }}
+        title={doSubscribe ? "S'inscrire" : "Se connecter"}
+        uppercase={false}
+      ></Button>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -161,4 +180,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
   },
+  input: {
+    width: 200,
+    height: 40,
+  },
+  inputChoices: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
+  },
+  button: {},
 });
