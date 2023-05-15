@@ -52,9 +52,12 @@ const TabNavigator = () => {
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: "#e8be4b",
+        tabBarActiveTintColor: "#FFFFFF",
         tabBarInactiveTintColor: "#b2b2b2",
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: "#7C4DFF",
+        },
       })}
     >
       <Tab.Screen name="Arbre" component={HomePageScreen} />
