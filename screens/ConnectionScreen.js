@@ -149,6 +149,7 @@ export default function ConnectionScreen({ navigation }) {
         onChangeText={(value) => onEmailChanged(value)}
         value={userInfo.email}
         style={styles.input}
+        color={isEmailValid ? "#6101EE" : "#FF0000"}
       />
 
       {isEmailErrorVisible && (
@@ -189,5 +190,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     width: "100%",
   },
-  button: {},
+  alert: {
+    color: "#FF0000",
+  },
 });
