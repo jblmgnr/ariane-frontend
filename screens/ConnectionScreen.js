@@ -5,11 +5,15 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
+const { getFetchAPI } = require("../modules/util");
 
+const FETCH_API = getFetchAPI();
+console.log("API to fetch : ", FETCH_API);
 export default function ConnectionScreen({ navigation }) {
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(false);
@@ -27,7 +31,7 @@ export default function ConnectionScreen({ navigation }) {
     if (re.test(userInfos.email) === false) {
       setVisible(true);
     } else {
-      fetch("http://10.33.210.172:3000/users/signup", {
+      fetch(FETCH_API + "/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,23 +45,23 @@ export default function ConnectionScreen({ navigation }) {
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.result) {
-            console.log("Success:", data);
-            dispatch(setAddUser(data));
-            navigation.navigate("TabNavigator");
-          } else {
-            alert("L'utilisateur existe déjà");
+          if (!data.result) {
+            alert(data.error);
+            return;
           }
+          console.log("SignUP OK");
+          dispatch(setAddUser(data));
+          navigation.navigate("TabNavigator");
         })
         .catch((error) => {
-          console.error("back is not start", error);
+          console.error("While connecting back-end on " + FETCH_API, error);
         });
     }
   };
 
   //connection d'un user déjà existant
   const signIn = () => {
-    fetch("http://10.33.210.172:3000/users/signin", {
+    fetch(FETCH_API + "/users/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,11 +73,16 @@ export default function ConnectionScreen({ navigation }) {
     })
       .then((response) => response.json())
       .then((data) => {
+        if (!data.result) {
+          alert(data.error);
+          return;
+        }
+        console.log("SignUP OK");
         dispatch(setAddUser(userInfos));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("While connecting back-end on " + FETCH_API, error);
       });
   };
 
