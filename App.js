@@ -1,20 +1,20 @@
-import { StatusBar } from "expo-status-bar";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StyleSheet } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { PersistGate } from "redux-persist/integration/react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Provider } from "react-redux";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import user from "./reducers/user";
 import HomeScreen from "./screens/HomeScreen";
 import GameScreen from "./screens/GameScreen";
 import HomePageScreen from "./screens/HomePageScreen";
 import InviteScreen from "./screens/InviteScreen";
-import UserParametersScreen from "./screens/UserParametersScreen";
+import UsersParametersScreen from "./screens/UsersParametersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
 
 const reducers = combineReducers({ user });
@@ -32,7 +32,6 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 const Stack = createNativeStackNavigator();
-const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
@@ -61,7 +60,7 @@ const TabNavigator = () => {
     })}>
       <Tab.Screen name="Game" component={GameScreen} />
       <Tab.Screen name="Invite" component={InviteScreen} />
-      <Tab.Screen name="UserParameters" component={UserParametersScreen} />
+      <Tab.Screen name="UsersParameters" component={UsersParametersScreen} />
       <Tab.Screen name="HomePage" component={HomePageScreen} />
     </Tab.Navigator>
   );
