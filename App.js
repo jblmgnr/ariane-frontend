@@ -10,7 +10,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import user from "./reducers/user";
-import HomeScreen from "./screens/HomeScreen";
+import ConnectionScreen from "./screens/ConnectionScreen";
 import GameScreen from "./screens/GameScreen";
 import HomePageScreen from "./screens/HomePageScreen";
 import InviteScreen from "./screens/InviteScreen";
@@ -41,18 +41,16 @@ const TabNavigator = () => {
         let iconName = '';
 
         if (route.name === 'Game') {
-          iconName = 'camera';
-        } else if (route.name === 'Gallery') {
-          iconName = 'image';
+          iconName = 'mdiGamepadVariant';
         } else if (route.name === 'Invite') {
-          iconName = 'user-plus';
+          iconName = 'mdiPlusBox';
         } else if (route.name === 'UserParameters') {
-          iconName = 'user';
+          iconName = 'mdiAccountMultiple';
         } else if (route.name === 'HomePage') {
-          iconName = 'home';
+          iconName = 'mdiHome';
         }
 
-        return <FontAwesome name={iconName} size={size} color={color} />;
+        return <MaterialIcons name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: '#e8be4b',
       tabBarInactiveTintColor: '#b2b2b2',
@@ -74,7 +72,7 @@ export default function App() {
       <PersistGate persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Connection" component={ConnectionScreen} />
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
           <Stack.Screen name="CreateMember" component={CreateMemberScreen} />
           </Stack.Navigator>
