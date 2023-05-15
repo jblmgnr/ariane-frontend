@@ -28,6 +28,7 @@ export default function ConnectionScreen({ navigation }) {
       setVisible(true);
     } else {
       fetch("http://10.33.210.172:3000/users/signup", {
+        // BIEN PENSER A CHANGER L'URL DU FETCH
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +47,7 @@ export default function ConnectionScreen({ navigation }) {
             dispatch(setAddUser(data));
             navigation.navigate("TabNavigator");
           } else {
-            alert("L'utilisateur existe déjà");
+            alert(data.error);
           }
         })
         .catch((error) => {
@@ -57,24 +58,35 @@ export default function ConnectionScreen({ navigation }) {
 
   //connection d'un user déjà existant
   const signIn = () => {
-    fetch("http://10.33.210.172:3000/users/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: userInfos.email,
-        password: userInfos.password,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        dispatch(setAddUser(userInfos));
-        navigation.navigate("TabNavigator");
+    const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //regex pour vérifier si l'email est valide
+    if (re.test(userInfos.email) === false) {
+      setVisible(true);
+    } else {
+      fetch("http://10.33.210.172:3000/users/signin", {
+        // BIEN PENSER A CHANGER L'URL DU FETCH
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userInfos.email,
+          password: userInfos.password,
+        }),
       })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            console.log("Success:", data);
+            dispatch(setAddUser(data));
+            navigation.navigate("TabNavigator");
+          } else {
+            alert(data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   };
 
   return (
@@ -114,6 +126,7 @@ export default function ConnectionScreen({ navigation }) {
       />
       <TextInput
         placeholder="Adresse mail"
+        autoCapitalize="none"
         onChangeText={(value) => setUserInfos({ ...userInfos, email: value })}
         value={userInfos.email}
       />
