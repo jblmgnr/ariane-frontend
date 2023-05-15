@@ -1,14 +1,9 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
+import { Button, TextInput, Stack } from "@react-native-material/core";
 
 export default function ConnectionScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -90,71 +85,79 @@ export default function ConnectionScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <Text>Ariane</Text>
-      <TouchableOpacity
-        onPress={() => {
-          setIsVisible(false);
-        }}
-      >
-        <Text>Se connecter</Text>
-      </TouchableOpacity>
+      <View style={styles.inputChoices}>
+        <Button
+          onPress={() => {
+            setIsVisible(false);
+          }}
+          title="Se connecter"
+          uppercase={false}
+          variant={isVisible ? "text" : "contained"}
+          style={styles.button}/>
 
-      <TouchableOpacity
-        onPress={() => {
-          setIsVisible(true);
-        }}
-      >
-        <Text>S'inscrire</Text>
-      </TouchableOpacity>
-
+        <Button
+          onPress={() => {
+            setIsVisible(true);
+          }}
+          uppercase={false}
+          title={"S'inscrire"}
+          variant={isVisible ? "contained" : "text"} />
+      </View>
       <TextInput
-        placeholder="Nom"
+        label="Nom"
+        variant="outlined"
         onChangeText={(value) =>
           setUserInfos({ ...userInfos, lastName: value })
         }
         value={userInfos.lastName}
-        style={{ display: isVisible ? "flex" : "none" }}
+        style={[{ display: isVisible ? "flex" : "none" }, styles.input]}
       />
       <TextInput
-        placeholder="Prénom"
+        label="Prénom"
+        variant="outlined"
         onChangeText={(value) =>
           setUserInfos({ ...userInfos, firstName: value })
         }
         value={userInfos.firstName}
-        style={{ display: isVisible ? "flex" : "none" }}
+        style={[{ display: isVisible ? "flex" : "none" }, styles.input]}
       />
       <TextInput
-        placeholder="Adresse mail"
+        label="Adresse mail"
+        variant="outlined"
         autoCapitalize="none"
         onChangeText={(value) => setUserInfos({ ...userInfos, email: value })}
         value={userInfos.email}
+        style={styles.input}
       />
       <Text style={[styles.alert, { display: visible ? "flex" : "none" }]}>
         L'adresse mail n'est pas valide
       </Text>
       <TextInput
-        placeholder="Mot de passe"
+        label="Mot de passe"
+        variant="outlined"
         secureTextEntry={true}
         onChangeText={(value) =>
           setUserInfos({ ...userInfos, password: value })
         }
         value={userInfos.password}
+        style={styles.input}
       />
-      <TouchableOpacity
+      <Button
         onPress={signUp}
         style={{ display: !isVisible ? "none" : "flex" }}
-      >
-        <Text>S'inscrire</Text>
-      </TouchableOpacity>
+        title={"S'inscrire"}
+        uppercase={false}
+      ></Button>
 
-      <TouchableOpacity
+      <Button
         onPress={signIn}
         style={{ display: isVisible ? "none" : "flex" }}
-      >
-        <Text>Se connecter </Text>
-      </TouchableOpacity>
-    </View>
+        title="Se connecter"
+        uppercase={false}
+      ></Button>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -164,5 +167,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "space-around",
+  },
+  input: {
+    width: 200,
+    height: 40,
+  },
+  inputChoices: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
+  },
+  button: {
+
   },
 });
