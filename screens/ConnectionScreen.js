@@ -4,6 +4,7 @@ import {
   View,
   KeyboardAvoidingView,
   Image,
+  ScrollView,
 } from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -126,152 +127,174 @@ export default function ConnectionScreen({ navigation }) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={{ flex: 1 }}
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>Ariane</Text>
-        <Image style={styles.image} source={require("../assets/logo.png")} />
-      </View>
-      <View style={styles.inputChoices}>
-        <Button
-          onPress={() => {
-            setSubscribe(false);
-          }}
-          title="Se connecter"
-          uppercase={false}
-          variant={doSubscribe ? "text" : "contained"}
-          style={styles.button}
-          titleStyle={{ fontFamily: "Quicksand" }}
-        />
-
-        <Button
-          onPress={() => {
-            setSubscribe(true);
-          }}
-          uppercase={false}
-          title={"S'inscrire"}
-          variant={doSubscribe ? "contained" : "text"}
-          titleStyle={{ fontFamily: "Quicksand" }}
-        />
-      </View>
-      <View style={styles.inputs}>
-        {doSubscribe && (
-          <View style={styles.textInput}>
-            <TextInput
-              label="Nom"
-              variant="outlined"
-              onChangeText={(value) =>
-                setUserInfo({ ...userInfo, lastName: value })
-              }
-              value={userInfo.lastName}
-              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
-              labelStyle={{ fontFamily: "Quicksand" }}
-            />
-            <TextInput
-              label="Prénom"
-              variant="outlined"
-              onChangeText={(value) =>
-                setUserInfo({ ...userInfo, firstName: value })
-              }
-              value={userInfo.firstName}
-              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
-              titleStyle={{ fontFamily: "Quicksand" }}
-            />
-          </View>
-        )}
-        <View
-          style={[styles.textInput2, { marginBottom: !doSubscribe ? 200 : 0 }]}
-        >
-          <TextInput
-            label="Adresse mail"
-            variant="outlined"
-            autoCapitalize="none"
-            onChangeText={(value) => onEmailChanged(value)}
-            value={userInfo.email}
-            style={styles.input}
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Ariane</Text>
+          <Image
+            style={styles.image}
+            source={require("../assets/logo-transparent.png")}
+          />
+        </View>
+        <View style={styles.inputChoices}>
+          <Button
+            onPress={() => {
+              setSubscribe(false);
+            }}
+            title="Se connecter"
+            uppercase={false}
+            variant={doSubscribe ? "text" : "contained"}
             titleStyle={{ fontFamily: "Quicksand" }}
-            color={isEmailValid ? "#6101EE" : "#FF0000"}
           />
 
-          {isEmailErrorVisible && (
-            <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
-          )}
-
-          <TextInput
-            label="Mot de passe"
-            variant="outlined"
-            secureTextEntry={true}
-            onChangeText={(value) =>
-              setUserInfo({ ...userInfo, password: value })
-            }
-            value={userInfo.password}
-            style={styles.input}
+          <Button
+            onPress={() => {
+              setSubscribe(true);
+            }}
+            uppercase={false}
+            title={"S'inscrire"}
+            variant={doSubscribe ? "contained" : "text"}
             titleStyle={{ fontFamily: "Quicksand" }}
           />
         </View>
-      </View>
-      <Button
-        onPress={doAction}
-        style={{ display: "flex" }}
-        title={doSubscribe ? "S'inscrire" : "Se connecter"}
-        uppercase={false}
-        titleStyle={{ fontFamily: "Quicksand" }}
-      ></Button>
+        <View style={styles.inputs}>
+          {doSubscribe && (
+            <View style={styles.textInput}>
+              <TextInput
+                label="Nom"
+                variant="outlined"
+                onChangeText={(value) =>
+                  setUserInfo({ ...userInfo, lastName: value })
+                }
+                value={userInfo.lastName}
+                style={[
+                  { display: doSubscribe ? "flex" : "none" },
+                  styles.input,
+                ]}
+                labelStyle={{ fontFamily: "Quicksand" }}
+              />
+              <TextInput
+                label="Prénom"
+                variant="outlined"
+                onChangeText={(value) =>
+                  setUserInfo({ ...userInfo, firstName: value })
+                }
+                value={userInfo.firstName}
+                style={[
+                  { display: doSubscribe ? "flex" : "none" },
+                  styles.input,
+                ]}
+                titleStyle={{ fontFamily: "Quicksand" }}
+              />
+            </View>
+          )}
+          <View
+            style={[
+              styles.textInput2,
+              { marginBottom: !doSubscribe ? 200 : 0 },
+            ]}
+          >
+            <TextInput
+              label="Adresse mail"
+              variant="outlined"
+              autoCapitalize="none"
+              onChangeText={(value) => onEmailChanged(value)}
+              value={userInfo.email}
+              style={styles.input}
+              titleStyle={{ fontFamily: "Quicksand" }}
+              color={isEmailValid ? "#6101EE" : "#FF0000"}
+            />
+
+            {isEmailErrorVisible && (
+              <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
+            )}
+
+            <TextInput
+              label="Mot de passe"
+              variant="outlined"
+              secureTextEntry={true}
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, password: value })
+              }
+              value={userInfo.password}
+              style={styles.input}
+              titleStyle={{ fontFamily: "Quicksand" }}
+            />
+          </View>
+        </View>
+        <Button
+          onPress={doAction}
+          title={doSubscribe ? "S'inscrire" : "Se connecter"}
+          uppercase={false}
+          titleStyle={{ fontFamily: "Quicksand" }}
+          style={styles.validateButton}
+        ></Button>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: 50,
+    backgroundColor: "#fff",
+  },
+  header: {
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    height: 150,
+    marginBottom: 20,
+  },
+  image: {
+    width: 170,
+    height: 170,
+    borderRadius: 70,
+    marginTop: 20,
+  },
   title: {
     fontFamily: "Quicksand",
     fontSize: 40,
-  },
-
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  input: {
-    width: 200,
-    height: 40,
-    fontFamily: "Quicksand",
+    marginTop: 40,
   },
   inputChoices: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     width: "100%",
-    fontFamily: "Quicksand",
+    marginBottom: 100,
   },
-  alert: {
-    color: "#FF0000",
+  inputs: {
+    justifyContent: "space-evenly",
+    height: 200,
+    width: "80%",
+    marginBottom: 10,
   },
   textInput: {
     alignItems: "center",
     justifyContent: "space-evenly",
     height: 200,
     marginBottom: 50,
-    fontFamily: "Quicksand",
   },
   textInput2: {
     justifyContent: "space-evenly",
     height: 200,
+  },
+  input: {
+    width: "100%",
     fontFamily: "Quicksand",
   },
-  inputs: {
-    justifyContent: "space-evenly",
-    height: 200,
+  alert: {
+    color: "#FF0000",
   },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 70,
-    marginTop: 20,
+  button: {
+    fontFamily: "Quicksand",
   },
-  header: {
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    height: 150,
+  validateButton: {
+    width: "80%",
+    borderRadius: 10,
+    marginTop: 70,
   },
 });
