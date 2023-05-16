@@ -1,14 +1,30 @@
-import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  TouchableOpacity,
+} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { SelectList } from "react-native-dropdown-select-list";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { Button, TextInput } from "@react-native-material/core";
+import {
+  Button,
+  TextInput,
+  Stack,
+  IconButton,
+} from "@react-native-material/core";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
 import { fontFamily } from "../modules/deco";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+
+import { Gender, RelationShip } from "../modules/common";
 
 export default function CreateMemberScreen() {
   const { height, width, scale, fontScale } = useWindowDimensions();
@@ -22,8 +38,17 @@ export default function CreateMemberScreen() {
     currentCity: "",
     job: "",
     hobbies: "",
+    gender: Gender.Undefined,
   });
 
+  const [relationShip, setRelationShip] = useState("");
+
+  const onRelationChanged = () => {};
+
+  const onGenderChanged = (gender) => {
+    console.log("Gender  :", gender);
+    setMember({ ...member, gender });
+  };
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
       <View style={[styles.container, { height: height }]}>
@@ -34,7 +59,6 @@ export default function CreateMemberScreen() {
             onChangeText={(value) => setMember({ ...member, firstName: value })}
             value={member.firstName}
             style={styles.input}
-            titleStyle={{ fontFamily }}
           />
           <TextInput
             label="Nom"
@@ -42,7 +66,6 @@ export default function CreateMemberScreen() {
             onChangeText={(value) => setMember({ ...member, lastName: value })}
             value={member.lastName}
             style={styles.input}
-            titleStyle={{ fontFamily }}
           />
           <TextInput
             label="Surnom"
@@ -50,7 +73,6 @@ export default function CreateMemberScreen() {
             onChangeText={(value) => setMember({ ...member, nickname: value })}
             value={member.nickname}
             style={styles.input}
-            titleStyle={{ fontFamily }}
           />
           {/* TODO : Did : Format date*/}
           <TextInput
@@ -59,8 +81,38 @@ export default function CreateMemberScreen() {
             onChangeText={(value) => setMember({ ...member, bir: value })}
             value={member.nickname}
             style={styles.input}
-            titleStyle={{ fontFamily }}
           />
+          <View style={styles.genderView}>
+            <Text>Gender : </Text>
+            <FontAwesome
+              style={styles.genderIcon}
+              name="male"
+              size={35}
+              color={member.gender === Gender.Male ? "#4781f6" : "#AAAAAA"}
+              onPress={() => {
+                onGenderChanged(Gender.Male);
+              }}
+            />
+            <FontAwesome
+              style={styles.genderIcon}
+              name="female"
+              size={35}
+              color={member.gender === Gender.Female ? "#f081f6" : "#AAAAAA"}
+              onPress={() => {
+                onGenderChanged(Gender.Female);
+              }}
+            />
+          </View>
+          <SelectList
+            onSelect={() => onRelationChanged(relationShip)}
+            setSelected={setRelationShip}
+            fontFamily={fontFamily}
+            data={RelationShip}
+            search={false}
+            boxStyles={{ borderRadius: 0 }} //override default styles
+            defaultOption={{ key: "1", value: "Relation" }} //default selected option
+          />
+          <Text>After selector</Text>
         </View>
         <View>
           <Text>Create member Screen !!!!!!!!!!</Text>
@@ -83,8 +135,16 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    fontFamily: "Quicksand",
+    fontFamily: fontFamily,
     marginBottom: 5,
     marginTop: 5,
+  },
+  genderView: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  genderIcon: {
+    marginLeft: 50,
+    margin: 10,
   },
 });

@@ -14,7 +14,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
-import { Button, TextInput, Stack } from "@react-native-material/core";
+import { Button, TextInput } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
 
@@ -153,7 +153,6 @@ export default function ConnectionScreen({ navigation }) {
               title="Connexion"
               uppercase={false}
               variant={doSubscribe ? "text" : "contained"}
-              titleStyle={{ fontFamily: "Quicksand" }}
             />
             <Button
               onPress={() => {
@@ -162,7 +161,6 @@ export default function ConnectionScreen({ navigation }) {
               uppercase={false}
               title={"Inscription"}
               variant={doSubscribe ? "contained" : "text"}
-              titleStyle={{ fontFamily: "Quicksand" }}
             />
           </View>
         </View>
@@ -177,7 +175,6 @@ export default function ConnectionScreen({ navigation }) {
               }
               value={userInfo.firstName}
               style={[styles.input]}
-              titleStyle={{ fontFamily: "Quicksand" }}
             />
           )}
 
@@ -190,7 +187,6 @@ export default function ConnectionScreen({ navigation }) {
               }
               value={userInfo.lastName}
               style={[styles.input]}
-              labelStyle={{ fontFamily: "Quicksand" }}
             />
           )}
 
@@ -201,7 +197,6 @@ export default function ConnectionScreen({ navigation }) {
             onChangeText={(value) => onEmailChanged(value)}
             value={userInfo.email}
             style={styles.input}
-            titleStyle={{ fontFamily: "Quicksand" }}
             color={isEmailValid ? "#6101EE" : "#FF0000"}
           />
           {isEmailErrorVisible && (
@@ -217,7 +212,6 @@ export default function ConnectionScreen({ navigation }) {
             }
             value={userInfo.password}
             style={styles.input}
-            titleStyle={{ fontFamily: "Quicksand" }}
           />
         </View>
         <Button
@@ -273,7 +267,7 @@ const styles = StyleSheet.create({
     color: "#FF0000",
   },
   button: {
-    fontFamily: "Quicksand",
+    fontFamily: fontFamily,
   },
   validateButton: {
     width: "80%",
