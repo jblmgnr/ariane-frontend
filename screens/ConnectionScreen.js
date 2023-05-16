@@ -5,6 +5,9 @@ import {
   KeyboardAvoidingView,
   Image,
   ScrollView,
+  useWindowDimensions,
+  SafeAreaView,
+  Platform,
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -17,7 +20,12 @@ const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 console.log("API to fetch : ", FETCH_API);
+
+// useWindowDimensions
+// ------------------------------------------------------------
+
 export default function ConnectionScreen({ navigation }) {
+  const { height, width, scale, fontScale } = useWindowDimensions();
   const dispatch = useDispatch();
   const [doSubscribe, setSubscribe] = useState(false); // Connect or Register
   const [isEmailErrorVisible, setEmailErrorVisible] = useState(false); // Display email error message
@@ -127,34 +135,34 @@ export default function ConnectionScreen({ navigation }) {
   //-----------------------------------------------------------------------
 
   return (
-    <KeyboardAwareScrollView>
-      <View style={styles.container}>
+    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
+      <View style={[styles.container, { height: height }]}>
         <View style={styles.header}>
           <Text style={styles.title}>Ariane</Text>
           <Image
             style={styles.image}
             source={require("../assets/logo-transparent.png")}
           />
-        </View>
-        <View style={styles.buttonChoices}>
-          <Button
-            onPress={() => {
-              setSubscribe(false);
-            }}
-            title="Se connecter"
-            uppercase={false}
-            variant={doSubscribe ? "text" : "contained"}
-            titleStyle={{ fontFamily: "Quicksand" }}
-          />
-          <Button
-            onPress={() => {
-              setSubscribe(true);
-            }}
-            uppercase={false}
-            title={"S'inscrire"}
-            variant={doSubscribe ? "contained" : "text"}
-            titleStyle={{ fontFamily: "Quicksand" }}
-          />
+          <View style={styles.buttonChoices}>
+            <Button
+              onPress={() => {
+                setSubscribe(false);
+              }}
+              title="Se connecter"
+              uppercase={false}
+              variant={doSubscribe ? "text" : "contained"}
+              titleStyle={{ fontFamily: "Quicksand" }}
+            />
+            <Button
+              onPress={() => {
+                setSubscribe(true);
+              }}
+              uppercase={false}
+              title={"S'inscrire"}
+              variant={doSubscribe ? "contained" : "text"}
+              titleStyle={{ fontFamily: "Quicksand" }}
+            />
+          </View>
         </View>
 
         <View style={styles.inputsView}>
@@ -224,11 +232,8 @@ export default function ConnectionScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // height: 900, // Uwe window dimension and we are OK !!!
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 30,
+    justifyContent: "space-evenly",
     backgroundColor: "#fff",
   },
   header: {
@@ -239,11 +244,12 @@ const styles = StyleSheet.create({
     width: 170,
     height: 170,
     borderRadius: 70,
-    backgroundColor: "red",
+    margin: 20,
   },
   title: {
     fontFamily: "Quicksand",
     fontSize: 40,
+    marginTop: Platform.OS === "ios" ? 50 : 30,
   },
   buttonChoices: {
     flexDirection: "row",
@@ -251,8 +257,9 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputsView: {
-    justifyContent: "space-evenly",
+    justifyContent: "center",
     width: "80%",
+    flex: 1,
   },
   input: {
     width: "100%",
@@ -269,5 +276,6 @@ const styles = StyleSheet.create({
   validateButton: {
     width: "80%",
     borderRadius: 10,
+    marginBottom: 40,
   },
 });
