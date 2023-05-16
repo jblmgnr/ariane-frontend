@@ -11,18 +11,21 @@ import { fontFamily } from "../modules/deco";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
-export default function HomePageScreen() {
+
+// Home Page Screen
+//======================================================
+export default function HomePageScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [popup, setPopup] = useState("");
-  const [tree, setTree] = useState(null);
   const user = useSelector((state) => state.user.value);
 
   useEffect(() => {
     // If no tree exists, create the first default tree
-    if (!user.tree) {
+    console.log("user in reduceer : ", user);
+    if (!user.tree_id) {
       console.log("Create the default tree !!!!!");
-      fetch(FETCH_API + "/tree", {
+      fetch(FETCH_API + "/trees", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,11 +70,10 @@ export default function HomePageScreen() {
       <Text>HomePage Screen</Text>
       <Button
         onPress={() => {
-          setSubscribe(false);
+          navigation.navigate("CreateMember");
         }}
         title="Crée membre"
         uppercase={false}
-        // variant={doSubscribe ? "text" : "contained"}
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />

@@ -17,7 +17,8 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setAddUser: (state, action) => {
-      console.log("action.payload : ", action.payload);
+      console.log("In reducer : action.payload : ");
+      console.log(action.payload);
       state.value.id = action.payload._id;
       state.value.lastName = action.payload.lastName;
       state.value.firstName = action.payload.firstName;
@@ -25,6 +26,9 @@ export const userSlice = createSlice({
       state.value.email = action.payload.email;
       state.value.password = action.payload.password;
       state.value.tree_id = action.payload.tree;
+
+      console.log("After addUser in reducer ");
+      console.log(state.value);
     },
 
     setTreeId: (state, action) => {

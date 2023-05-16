@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
 import { Button, TextInput, Stack } from "@react-native-material/core";
 import { useFonts } from "expo-font";
+import { fontFamily } from "../modules/deco";
+
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
@@ -84,7 +86,7 @@ export default function ConnectionScreen({ navigation }) {
           return;
         }
         console.log("SignUP OK");
-        dispatch(setAddUser(data));
+        dispatch(setAddUser(data.user));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
@@ -111,8 +113,8 @@ export default function ConnectionScreen({ navigation }) {
           alert(data.error);
           return;
         }
-        console.log("SignUP OK");
-        dispatch(setAddUser(userInfo));
+        console.log("SignIn OK");
+        dispatch(setAddUser(data.user));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
@@ -148,7 +150,7 @@ export default function ConnectionScreen({ navigation }) {
               onPress={() => {
                 setSubscribe(false);
               }}
-              title="Se connecter"
+              title="Connexion"
               uppercase={false}
               variant={doSubscribe ? "text" : "contained"}
               titleStyle={{ fontFamily: "Quicksand" }}
@@ -158,7 +160,7 @@ export default function ConnectionScreen({ navigation }) {
                 setSubscribe(true);
               }}
               uppercase={false}
-              title={"S'inscrire"}
+              title={"Inscription"}
               variant={doSubscribe ? "contained" : "text"}
               titleStyle={{ fontFamily: "Quicksand" }}
             />
@@ -168,27 +170,27 @@ export default function ConnectionScreen({ navigation }) {
         <View style={styles.inputsView}>
           {doSubscribe && (
             <TextInput
-              label="Nom"
-              variant="outlined"
-              onChangeText={(value) =>
-                setUserInfo({ ...userInfo, lastName: value })
-              }
-              value={userInfo.lastName}
-              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
-              labelStyle={{ fontFamily: "Quicksand" }}
-            />
-          )}
-
-          {doSubscribe && (
-            <TextInput
               label="Prénom"
               variant="outlined"
               onChangeText={(value) =>
                 setUserInfo({ ...userInfo, firstName: value })
               }
               value={userInfo.firstName}
-              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+              style={[styles.input]}
               titleStyle={{ fontFamily: "Quicksand" }}
+            />
+          )}
+
+          {doSubscribe && (
+            <TextInput
+              label="Nom"
+              variant="outlined"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, lastName: value })
+              }
+              value={userInfo.lastName}
+              style={[styles.input]}
+              labelStyle={{ fontFamily: "Quicksand" }}
             />
           )}
 
