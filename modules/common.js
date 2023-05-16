@@ -4,7 +4,14 @@ export const Gender = {
   Female: "Feminin",
 };
 
-export const RelationShip = [
-  { key: "1", value: "Child of" },
-  { key: "2", value: "In group" },
+export const RelationShip = {
+  None: "None",
+  ChildOf: "Child of",
+  GroupOf: "In group",
+};
+
+export const RelationShipCombo = [
+  { key: "0", value: RelationShip.None },
+  { key: "1", value: RelationShip.ChildOf },
+  { key: "2", value: RelationShip.GroupOf },
 ];

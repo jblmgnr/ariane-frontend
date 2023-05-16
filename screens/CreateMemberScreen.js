@@ -24,7 +24,7 @@ import { setAddUser } from "../reducers/user";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-import { Gender, RelationShip } from "../modules/common";
+import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 
 export default function CreateMemberScreen() {
   const { height, width, scale, fontScale } = useWindowDimensions();
@@ -36,6 +36,7 @@ export default function CreateMemberScreen() {
     deathDate: "",
     birthCity: "",
     currentCity: "",
+    relationShip: RelationShip.None,
     job: "",
     hobbies: "",
     gender: Gender.Undefined,
@@ -43,12 +44,18 @@ export default function CreateMemberScreen() {
 
   const [relationShip, setRelationShip] = useState("");
 
-  const onRelationChanged = () => {};
+  const onRelationChanged = (key) => {
+    const relationShip = RelationShipCombo.find((r) => r.key === key).value;
+    console.log("Relation ship : ", relationShip);
+
+    setMember({ ...member, relationShip: relationShip });
+  };
 
   const onGenderChanged = (gender) => {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
   };
+
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
       <View style={[styles.container, { height: height }]}>
@@ -83,12 +90,11 @@ export default function CreateMemberScreen() {
             style={styles.input}
           />
           <View style={styles.genderView}>
-            <Text>Gender : </Text>
             <FontAwesome
               style={styles.genderIcon}
               name="male"
               size={35}
-              color={member.gender === Gender.Male ? "#4781f6" : "#AAAAAA"}
+              color={member.gender === Gender.Male ? "#4781ff" : "#AAAAAA"}
               onPress={() => {
                 onGenderChanged(Gender.Male);
               }}
@@ -107,7 +113,7 @@ export default function CreateMemberScreen() {
             onSelect={() => onRelationChanged(relationShip)}
             setSelected={setRelationShip}
             fontFamily={fontFamily}
-            data={RelationShip}
+            data={RelationShipCombo}
             search={false}
             boxStyles={{ borderRadius: 0 }} //override default styles
             defaultOption={{ key: "1", value: "Relation" }} //default selected option
@@ -115,7 +121,15 @@ export default function CreateMemberScreen() {
           <Text>After selector</Text>
         </View>
         <View>
-          <Text>Create member Screen !!!!!!!!!!</Text>
+          <Button
+            onPress={() => {
+              navigation.navigate("CreateMember");
+            }}
+            title="Créé le membre"
+            uppercase={false}
+            style={styles.button}
+            titleStyle={{ fontFamily: fontFamily }}
+          />
         </View>
       </View>
     </KeyboardAwareScrollView>
@@ -142,9 +156,9 @@ const styles = StyleSheet.create({
   genderView: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-evenly",
   },
   genderIcon: {
-    marginLeft: 50,
     margin: 10,
   },
 });

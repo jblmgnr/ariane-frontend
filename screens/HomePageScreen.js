@@ -72,7 +72,7 @@ export default function HomePageScreen({ navigation }) {
         onPress={() => {
           navigation.navigate("CreateMember");
         }}
-        title="Crée membre"
+        title="Ajoute un membre"
         uppercase={false}
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
