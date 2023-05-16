@@ -1,18 +1,16 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import MyPopup from "./components/MyPopup";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddUser } from "../reducers/user";
+import { setTreeId } from "../reducers/user";
+import { Button, TextInput } from "@react-native-material/core";
+import { fontFamily } from "../modules/deco";
 
+const { getFetchAPI } = require("../modules/util");
+
+const FETCH_API = getFetchAPI();
 export default function HomePageScreen() {
   const dispatch = useDispatch();
 
@@ -24,6 +22,28 @@ export default function HomePageScreen() {
     // If no tree exists, create the first default tree
     if (!user.tree) {
       console.log("Create the default tree !!!!!");
+      fetch(FETCH_API + "/tree", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "Defaut",
+          userId: user.id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.result) {
+            alert(data.error);
+            return;
+          }
+          console.log("Tree saved in DB");
+          dispatch(setTreeId(data._id));
+        })
+        .catch((error) => {
+          console.error("While connecting back-end on " + FETCH_API, error);
+        });
     }
   }, []);
 
@@ -45,10 +65,16 @@ export default function HomePageScreen() {
   return (
     <View>
       <Text>HomePage Screen</Text>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
-        <Text style={styles.text}>Click to show popup</Text>
-      </TouchableOpacity>
-      {popup}
+      <Button
+        onPress={() => {
+          setSubscribe(false);
+        }}
+        title="Crée membre"
+        uppercase={false}
+        // variant={doSubscribe ? "text" : "contained"}
+        style={styles.button}
+        titleStyle={{ fontFamily: fontFamily }}
+      />
     </View>
   );
 }
