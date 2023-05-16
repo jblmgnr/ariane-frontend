@@ -5,17 +5,29 @@ import {
   KeyboardAvoidingView,
   Image,
   ScrollView,
+  useWindowDimensions,
+  SafeAreaView,
+  Platform,
 } from "react-native";
+
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
 import { Button, TextInput, Stack } from "@react-native-material/core";
 import { useFonts } from "expo-font";
+import { fontFamily } from "../modules/deco";
+
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 console.log("API to fetch : ", FETCH_API);
+
+// useWindowDimensions
+// ------------------------------------------------------------
+
 export default function ConnectionScreen({ navigation }) {
+  const { height, width, scale, fontScale } = useWindowDimensions();
   const dispatch = useDispatch();
   const [doSubscribe, setSubscribe] = useState(false); // Connect or Register
   const [isEmailErrorVisible, setEmailErrorVisible] = useState(false); // Display email error message
@@ -74,7 +86,7 @@ export default function ConnectionScreen({ navigation }) {
           return;
         }
         console.log("SignUP OK");
-        dispatch(setAddUser(data));
+        dispatch(setAddUser(data.user));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
@@ -101,8 +113,8 @@ export default function ConnectionScreen({ navigation }) {
           alert(data.error);
           return;
         }
-        console.log("SignUP OK");
-        dispatch(setAddUser(userInfo));
+        console.log("SignIn OK");
+        dispatch(setAddUser(data.user));
         navigation.navigate("TabNavigator");
       })
       .catch((error) => {
@@ -125,103 +137,88 @@ export default function ConnectionScreen({ navigation }) {
   //-----------------------------------------------------------------------
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
+    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
+      <View style={[styles.container, { height: height }]}>
         <View style={styles.header}>
           <Text style={styles.title}>Ariane</Text>
           <Image
             style={styles.image}
             source={require("../assets/logo-transparent.png")}
           />
-        </View>
-        <View style={styles.inputChoices}>
-          <Button
-            onPress={() => {
-              setSubscribe(false);
-            }}
-            title="Se connecter"
-            uppercase={false}
-            variant={doSubscribe ? "text" : "contained"}
-            titleStyle={{ fontFamily: "Quicksand" }}
-          />
-
-          <Button
-            onPress={() => {
-              setSubscribe(true);
-            }}
-            uppercase={false}
-            title={"S'inscrire"}
-            variant={doSubscribe ? "contained" : "text"}
-            titleStyle={{ fontFamily: "Quicksand" }}
-          />
-        </View>
-        <View style={styles.inputs}>
-          {doSubscribe && (
-            <View style={styles.textInput}>
-              <TextInput
-                label="Nom"
-                variant="outlined"
-                onChangeText={(value) =>
-                  setUserInfo({ ...userInfo, lastName: value })
-                }
-                value={userInfo.lastName}
-                style={[
-                  { display: doSubscribe ? "flex" : "none" },
-                  styles.input,
-                ]}
-                labelStyle={{ fontFamily: "Quicksand" }}
-              />
-              <TextInput
-                label="Prénom"
-                variant="outlined"
-                onChangeText={(value) =>
-                  setUserInfo({ ...userInfo, firstName: value })
-                }
-                value={userInfo.firstName}
-                style={[
-                  { display: doSubscribe ? "flex" : "none" },
-                  styles.input,
-                ]}
-                titleStyle={{ fontFamily: "Quicksand" }}
-              />
-            </View>
-          )}
-          <View
-            style={[
-              styles.textInput2,
-              { marginBottom: !doSubscribe ? 200 : 0 },
-            ]}
-          >
-            <TextInput
-              label="Adresse mail"
-              variant="outlined"
-              autoCapitalize="none"
-              onChangeText={(value) => onEmailChanged(value)}
-              value={userInfo.email}
-              style={styles.input}
+          <View style={styles.buttonChoices}>
+            <Button
+              onPress={() => {
+                setSubscribe(false);
+              }}
+              title="Connexion"
+              uppercase={false}
+              variant={doSubscribe ? "text" : "contained"}
               titleStyle={{ fontFamily: "Quicksand" }}
-              color={isEmailValid ? "#6101EE" : "#FF0000"}
             />
-
-            {isEmailErrorVisible && (
-              <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
-            )}
-
-            <TextInput
-              label="Mot de passe"
-              variant="outlined"
-              secureTextEntry={true}
-              onChangeText={(value) =>
-                setUserInfo({ ...userInfo, password: value })
-              }
-              value={userInfo.password}
-              style={styles.input}
-              titleStyle={{ fontFamily: "Quicksand", backgroundColor: "white" }}
+            <Button
+              onPress={() => {
+                setSubscribe(true);
+              }}
+              uppercase={false}
+              title={"Inscription"}
+              variant={doSubscribe ? "contained" : "text"}
+              titleStyle={{ fontFamily: "Quicksand" }}
             />
           </View>
+        </View>
+
+        <View style={styles.inputsView}>
+          {doSubscribe && (
+            <TextInput
+              label="Prénom"
+              variant="outlined"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, firstName: value })
+              }
+              value={userInfo.firstName}
+              style={[styles.input]}
+              titleStyle={{ fontFamily: "Quicksand" }}
+            />
+          )}
+
+          {doSubscribe && (
+            <TextInput
+              label="Nom"
+              variant="outlined"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, lastName: value })
+              }
+              value={userInfo.lastName}
+              style={[styles.input]}
+              labelStyle={{ fontFamily: "Quicksand" }}
+            />
+          )}
+
+          <TextInput
+            label="Adresse mail"
+            variant="outlined"
+            autoCapitalize="none"
+            onChangeText={(value) => onEmailChanged(value)}
+            value={userInfo.email}
+            style={styles.input}
+            titleStyle={{ fontFamily: "Quicksand" }}
+            color={isEmailValid ? "#6101EE" : "#FF0000"}
+          />
+          {isEmailErrorVisible && (
+            <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
+          )}
+
+          <TextInput
+            label="Mot de passe"
+            variant="outlined"
+            secureTextEntry={true}
+            onChangeText={(value) =>
+              setUserInfo({ ...userInfo, password: value })
+            }
+            value={userInfo.password}
+            style={styles.input}
+            titleStyle={{ fontFamily: "Quicksand" }}
+          />
         </View>
         <Button
           onPress={doAction}
@@ -230,61 +227,47 @@ export default function ConnectionScreen({ navigation }) {
           titleStyle={{ fontFamily: "Quicksand" }}
           style={styles.validateButton}
         ></Button>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </View>
+    </KeyboardAwareScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     alignItems: "center",
-    justifyContent: "flex-start",
-    paddingTop: 50,
+    justifyContent: "space-evenly",
     backgroundColor: "#fff",
   },
   header: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    height: 150,
-    marginBottom: 20,
   },
   image: {
     width: 170,
     height: 170,
     borderRadius: 70,
-    marginTop: 20,
+    margin: 20,
   },
   title: {
     fontFamily: "Quicksand",
     fontSize: 40,
-    marginTop: 40,
+    marginTop: Platform.OS === "ios" ? 50 : 30,
   },
-  inputChoices: {
+  buttonChoices: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     width: "100%",
-    marginBottom: 100,
   },
-  inputs: {
-    justifyContent: "space-evenly",
-    height: 200,
+  inputsView: {
+    justifyContent: "center",
     width: "80%",
-    marginBottom: 10,
-  },
-  textInput: {
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    height: 200,
-    marginBottom: 50,
-  },
-  textInput2: {
-    justifyContent: "space-evenly",
-    height: 200,
+    flex: 1,
   },
   input: {
     width: "100%",
     fontFamily: "Quicksand",
+    marginBottom: 5,
+    marginTop: 5,
   },
   alert: {
     color: "#FF0000",
@@ -295,6 +278,6 @@ const styles = StyleSheet.create({
   validateButton: {
     width: "80%",
     borderRadius: 10,
-    marginTop: 70,
+    marginBottom: 40,
   },
 });
