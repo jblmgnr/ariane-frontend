@@ -219,7 +219,7 @@ export default function ConnectionScreen({ navigation }) {
               }
               value={userInfo.password}
               style={styles.input}
-              titleStyle={{ fontFamily: "Quicksand" }}
+              titleStyle={{ fontFamily: "Quicksand", backgroundColor: "white" }}
             />
           </View>
         </View>
