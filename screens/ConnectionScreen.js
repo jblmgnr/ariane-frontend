@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  Image,
+} from "react-native";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAddUser } from "../reducers/user";
@@ -114,12 +120,18 @@ export default function ConnectionScreen({ navigation }) {
     setEmailValid(isValid);
   };
 
+  // Style inputs
+  //-----------------------------------------------------------------------
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Text style={styles.title}>Ariane</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Ariane</Text>
+        <Image style={styles.image} source={require("../assets/logo.png")} />
+      </View>
       <View style={styles.inputChoices}>
         <Button
           onPress={() => {
@@ -142,46 +154,62 @@ export default function ConnectionScreen({ navigation }) {
           titleStyle={{ fontFamily: "Quicksand" }}
         />
       </View>
-      <TextInput
-        label="Nom"
-        variant="outlined"
-        onChangeText={(value) => setUserInfo({ ...userInfo, lastName: value })}
-        value={userInfo.lastName}
-        style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
-        labelStyle={{ fontFamily: "Quicksand" }}
-      />
-      <TextInput
-        label="Prénom"
-        variant="outlined"
-        onChangeText={(value) => setUserInfo({ ...userInfo, firstName: value })}
-        value={userInfo.firstName}
-        style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
-        titleStyle={{ fontFamily: "Quicksand" }}
-      />
-      <TextInput
-        label="Adresse mail"
-        variant="outlined"
-        autoCapitalize="none"
-        onChangeText={(value) => onEmailChanged(value)}
-        value={userInfo.email}
-        style={styles.input}
-        titleStyle={{ fontFamily: "Quicksand" }}
-        color={isEmailValid ? "#6101EE" : "#FF0000"}
-      />
+      <View style={styles.inputs}>
+        {doSubscribe && (
+          <View style={styles.textInput}>
+            <TextInput
+              label="Nom"
+              variant="outlined"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, lastName: value })
+              }
+              value={userInfo.lastName}
+              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+              labelStyle={{ fontFamily: "Quicksand" }}
+            />
+            <TextInput
+              label="Prénom"
+              variant="outlined"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, firstName: value })
+              }
+              value={userInfo.firstName}
+              style={[{ display: doSubscribe ? "flex" : "none" }, styles.input]}
+              titleStyle={{ fontFamily: "Quicksand" }}
+            />
+          </View>
+        )}
+        <View
+          style={[styles.textInput2, { marginBottom: !doSubscribe ? 200 : 0 }]}
+        >
+          <TextInput
+            label="Adresse mail"
+            variant="outlined"
+            autoCapitalize="none"
+            onChangeText={(value) => onEmailChanged(value)}
+            value={userInfo.email}
+            style={styles.input}
+            titleStyle={{ fontFamily: "Quicksand" }}
+            color={isEmailValid ? "#6101EE" : "#FF0000"}
+          />
 
-      {isEmailErrorVisible && (
-        <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
-      )}
+          {isEmailErrorVisible && (
+            <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
+          )}
 
-      <TextInput
-        label="Mot de passe"
-        variant="outlined"
-        secureTextEntry={true}
-        onChangeText={(value) => setUserInfo({ ...userInfo, password: value })}
-        value={userInfo.password}
-        style={styles.input}
-        titleStyle={{ fontFamily: "Quicksand" }}
-      />
+          <TextInput
+            label="Mot de passe"
+            variant="outlined"
+            secureTextEntry={true}
+            onChangeText={(value) =>
+              setUserInfo({ ...userInfo, password: value })
+            }
+            value={userInfo.password}
+            style={styles.input}
+            titleStyle={{ fontFamily: "Quicksand" }}
+          />
+        </View>
+      </View>
       <Button
         onPress={doAction}
         style={{ display: "flex" }}
@@ -203,7 +231,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "space-evenly",
   },
   input: {
     width: 200,
@@ -218,5 +246,32 @@ const styles = StyleSheet.create({
   },
   alert: {
     color: "#FF0000",
+  },
+  textInput: {
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    height: 200,
+    marginBottom: 50,
+    fontFamily: "Quicksand",
+  },
+  textInput2: {
+    justifyContent: "space-evenly",
+    height: 200,
+    fontFamily: "Quicksand",
+  },
+  inputs: {
+    justifyContent: "space-evenly",
+    height: 200,
+  },
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 70,
+    marginTop: 20,
+  },
+  header: {
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    height: 150,
   },
 });
