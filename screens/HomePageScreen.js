@@ -46,7 +46,7 @@ export default function HomePageScreen({ navigation }) {
           dispatch(setTreeId(data._id));
         })
         .catch((error) => {
-          console.error("While connecting back-end on " + FETCH_API, error);
+          console.error("2 While connecting back-end on " + FETCH_API, error);
         });
     }
 
@@ -62,6 +62,7 @@ export default function HomePageScreen({ navigation }) {
         }
 
         console.log("Find ", data.members.length, " members in DB");
+
         dispatch(setMembers(data.members));
       })
       .catch((error) => {

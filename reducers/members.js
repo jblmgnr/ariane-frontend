@@ -16,7 +16,7 @@ export const membersSlice = createSlice({
       console.log(state.value);
     },
     setMembers: (state, action) => {
-      console.log("In reducer : action.payload : ", action.payload);
+      // console.log("In reducer : action.payload : ", action.payload);
       state.value = [...action.payload];
 
       for (let i = 0; i < state.value.length; i++) {
