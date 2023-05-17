@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTreeId } from "../reducers/user";
 import { Button, TextInput } from "@react-native-material/core";
 import { fontFamily } from "../modules/deco";
-
+// import { readMembersFromDataBase } from "../modules/db";
+import { setMembers } from "../reducers/members";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
@@ -23,7 +24,7 @@ export default function HomePageScreen({ navigation }) {
   useEffect(() => {
     // If no tree exists, create the first default tree
     console.log("user in reduceer : ", user);
-    if (!user.tree_id) {
+    if (!user.tree) {
       console.log("Create the default tree !!!!!");
       fetch(FETCH_API + "/trees", {
         method: "POST",
@@ -48,6 +49,24 @@ export default function HomePageScreen({ navigation }) {
           console.error("While connecting back-end on " + FETCH_API, error);
         });
     }
+
+    // readMembersFromDataBase();
+    // TODO: Did move the following block in the function
+    // If a tree already exists load it ...
+    fetch(FETCH_API + "/members")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.result) {
+          alert(data.error);
+          return;
+        }
+
+        console.log("Find ", data.members.length, " members in DB");
+        dispatch(setMembers(data.members));
+      })
+      .catch((error) => {
+        console.error("1 While connecting back-end on : " + FETCH_API, error);
+      });
   }, []);
 
   const closePopup = (buttonPressed) => {

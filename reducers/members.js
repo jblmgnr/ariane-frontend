@@ -1,42 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Gender, RelationShip } from "../modules/common";
 
 const initialState = {
-  value: {
-    id: null,
-    lastName: "",
-    firstName: "",
-    nickname: "",
-    birthDate: "",
-    deathDate: "",
-    gender: Gender.Undefined,
-  },
+  value: [],
 };
 
-export const userSlice = createSlice({
-  name: "user",
+export const membersSlice = createSlice({
+  name: "members",
   initialState,
   reducers: {
-    setAddUser: (state, action) => {
-      console.log("In reducer : action.payload : ");
-      console.log(action.payload);
-      state.value.id = action.payload._id;
-      state.value.lastName = action.payload.lastName;
-      state.value.firstName = action.payload.firstName;
-      state.value.adress = action.payload.adress;
-      state.value.email = action.payload.email;
-      state.value.password = action.payload.password;
-      state.value.tree_id = action.payload.tree;
+    addMember: (state, action) => {
+      console.log("In reducer : action.payload : ", action.payload);
+      state.value.push(action.payload);
 
-      console.log("After addUser in reducer ");
+      console.log("After addMember in reducer ");
       console.log(state.value);
     },
+    setMembers: (state, action) => {
+      console.log("In reducer : action.payload : ", action.payload);
+      state.value = [...action.payload];
 
-    setTreeId: (state, action) => {
-      state.value.tree_id = action.payload;
+      for (let i = 0; i < state.value.length; i++) {
+        const str = JSON.stringify(state.value[i], null, 4);
+        // console.log(`member[${i}] : `, str);
+      }
     },
   },
 });
 
-export const { setAddUser, setTreeId } = userSlice.actions;
-export default userSlice.reducer;
+export const { addMember, setMembers } = membersSlice.actions;
+export default membersSlice.reducer;

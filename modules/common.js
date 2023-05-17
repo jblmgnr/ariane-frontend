@@ -1,17 +1,17 @@
 export const Gender = {
-  Undefined: "Undef",
-  Male: "Masculin",
-  Female: "Feminin",
+  undefined: "Undef",
+  male: "Male",
+  female: "Female",
 };
 
 export const RelationShip = {
-  None: "None",
-  ChildOf: "Child of",
-  GroupOf: "In group",
+  none: "None",
+  childOf: "Child of",
+  groupOf: "In group",
 };
 
 export const RelationShipCombo = [
-  { key: "0", value: RelationShip.None },
-  { key: "1", value: RelationShip.ChildOf },
-  { key: "2", value: RelationShip.GroupOf },
+  { key: "0", value: RelationShip.none },
+  { key: "1", value: RelationShip.childOf },
+  { key: "2", value: RelationShip.groupOf },
 ];

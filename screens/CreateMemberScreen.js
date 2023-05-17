@@ -20,40 +20,165 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddUser } from "../reducers/user";
+import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
+const { getFetchAPI, showObject } = require("../modules/util");
 
+const FETCH_API = getFetchAPI();
+
+const initialMemberState = {
+  firstName: "",
+  lastName: "",
+  nickName: "",
+  birthDate: "",
+  deathDate: "",
+  birthCity: "",
+  currentCity: "",
+  relationShip: RelationShip.none,
+  job: "",
+  hobbies: "",
+  gender: Gender.undefined,
+  group: null,
+  father: null,
+  mother: null,
+};
 export default function CreateMemberScreen() {
+  const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
-  const [member, setMember] = useState({
-    firstName: "",
-    lastName: "",
-    nickname: "",
-    birthDate: "",
-    deathDate: "",
-    birthCity: "",
-    currentCity: "",
-    relationShip: RelationShip.None,
-    job: "",
-    hobbies: "",
-    gender: Gender.Undefined,
-  });
+  const [member, setMember] = useState(initialMemberState);
 
-  const [relationShip, setRelationShip] = useState("");
+  // States
+  const [relationShipKey, setRelationShipKey] = useState("");
+  const [fatherKey, setFatherKey] = useState("");
+  const [motherKey, setMotherKey] = useState("");
+
+  // Members from reducer
+  const members = useSelector((state) => state.members.value);
+
+  // Create contents of member drop down for Parent and Partner
+  const memberItems = [];
+  for (let i = 0; i < members.length; i++) {
+    const m = members[i];
+    // console.log("In create member item  ");
+    let value = m.firstName + " " + m.firstName;
+    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+    memberItems.push({ key: (i + 1).toString(), value, id: m._id });
+  }
+  const fatherItems = [];
+  for (let i = 0; i < members.length; i++) {
+    const m = members[i];
+    if (m.gender !== Gender.male) continue;
+    let value = m.firstName + " " + m.firstName;
+    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+    fatherItems.push({ key: (i + 1).toString(), value, id: m._id });
+  }
+  const motherItems = [];
+  for (let i = 0; i < members.length; i++) {
+    const m = members[i];
+    if (m.gender !== Gender.female) continue;
+    let value = m.firstName + " " + m.firstName;
+    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+    motherItems.push({ key: (i + 1).toString(), value, id: m._id });
+  }
+
+  console.log("Available members  : ", members.length);
+  console.log("Member items  : ", memberItems);
 
   const onRelationChanged = (key) => {
+    console.log("key ship : ", key);
+
     const relationShip = RelationShipCombo.find((r) => r.key === key).value;
     console.log("Relation ship : ", relationShip);
 
     setMember({ ...member, relationShip: relationShip });
   };
 
+  const onFatherChanged = (key) => {
+    // console.log("key parent : ", key, " to be found in ", memberItems);
+    const item = memberItems.find((r) => r.key === key);
+    const parentId = item ? item.id : null;
+    console.log("Parent id : ", parentId);
+    setMember({ ...member, father: parentId });
+  };
+
+  const onMotherChanged = (key) => {
+    // console.log("key parent : ", key, " to be found in ", memberItems);
+    const item = memberItems.find((r) => r.key === key);
+    const parentId = item ? item.id : null;
+    console.log("Partner id : ", parentId);
+    setMember({ ...member, mother: parentId });
+  };
+
+  // Check validity of input fields before to save the member
+  const checkMember = () => {
+    let status = {
+      value: true,
+      error: [],
+      warning: [],
+    };
+    if (member.gender === Gender.undefined) {
+      status.value = false;
+      status.error.push("Selectionner un genre !");
+    }
+    if (relationShipKey === RelationShip.none && member.group === null) {
+      status.warning.push("Vous n'avez selectionné ni relation, ni groupe.");
+    }
+
+    if (member.firstName === "" || member.lastName === "") {
+      status.value = false;
+      status.error.push("Les noms et prénoms sont obligatoires.");
+    }
+    return status;
+  };
+
   const onGenderChanged = (gender) => {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
+  };
+
+  // Save a member in DB and in reducer
+  //====================================
+  const saveMember = () => {
+    const status = checkMember();
+    if (!status.value) {
+      alert(status.error.join("\n"));
+      return;
+    }
+    console.log("Status ", status);
+    console.log("Need tosave : ", member);
+
+    fetch(FETCH_API + "/members", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        lastName: member.lastName,
+        firstName: member.firstName,
+        nickName: member.nickName,
+        father: member.father,
+        mother: member.mother,
+        gender: member.gender,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.result) {
+          alert(data.error);
+          return;
+        }
+        console.log("Member Saved in DB OK ", member);
+        dispatch(addMember(member));
+      })
+      .catch((error) => {
+        console.error("While connecting back-end on : " + FETCH_API, error);
+      });
+
+    // Clear interface
+    setMember(initialMemberState);
   };
 
   return (
@@ -77,16 +202,16 @@ export default function CreateMemberScreen() {
           <TextInput
             label="Surnom"
             variant="outlined"
-            onChangeText={(value) => setMember({ ...member, nickname: value })}
-            value={member.nickname}
+            onChangeText={(value) => setMember({ ...member, nickName: value })}
+            value={member.nickName}
             style={styles.input}
           />
           {/* TODO : Did : Format date*/}
           <TextInput
             label="Date de naissance"
             variant="outlined"
-            onChangeText={(value) => setMember({ ...member, bir: value })}
-            value={member.nickname}
+            onChangeText={(value) => setMember({ ...member, birthDate: value })}
+            value={member.birthDate}
             style={styles.input}
           />
           <View style={styles.genderView}>
@@ -94,36 +219,56 @@ export default function CreateMemberScreen() {
               style={styles.genderIcon}
               name="male"
               size={35}
-              color={member.gender === Gender.Male ? "#4781ff" : "#AAAAAA"}
+              color={member.gender === Gender.male ? "#4781ff" : "#AAAAAA"}
               onPress={() => {
-                onGenderChanged(Gender.Male);
+                onGenderChanged(Gender.male);
               }}
             />
             <FontAwesome
               style={styles.genderIcon}
               name="female"
               size={35}
-              color={member.gender === Gender.Female ? "#f081f6" : "#AAAAAA"}
+              color={member.gender === Gender.female ? "#f081f6" : "#AAAAAA"}
               onPress={() => {
-                onGenderChanged(Gender.Female);
+                onGenderChanged(Gender.female);
               }}
             />
           </View>
-          <SelectList
-            onSelect={() => onRelationChanged(relationShip)}
-            setSelected={setRelationShip}
+          {/* <SelectList
+            onSelect={() => onRelationChanged(relationShipKey)}
+            setSelected={setRelationShipKey}
             fontFamily={fontFamily}
             data={RelationShipCombo}
             search={false}
             boxStyles={{ borderRadius: 0 }} //override default styles
             defaultOption={{ key: "1", value: "Relation" }} //default selected option
+          /> */}
+          <SelectList
+            style={styles.input}
+            onSelect={() => onFatherChanged(fatherKey)}
+            setSelected={setFatherKey}
+            fontFamily={fontFamily}
+            data={fatherItems}
+            search={false}
+            boxStyles={styles.input} //override default styles
+            defaultOption={{ key: "1", value: "Father" }} //default selected option
+          />
+          <SelectList
+            style={styles.input}
+            onSelect={() => onMotherChanged(motherKey)}
+            setSelected={setMotherKey}
+            fontFamily={fontFamily}
+            data={motherItems}
+            search={false}
+            boxStyles={styles.input} //override default styles
+            defaultOption={{ key: "1", value: "Mother" }} //default selected option
           />
           <Text>After selector</Text>
         </View>
         <View>
           <Button
             onPress={() => {
-              navigation.navigate("CreateMember");
+              saveMember();
             }}
             title="Créé le membre"
             uppercase={false}
