@@ -7,6 +7,7 @@ import { Avatar } from "@react-native-material/core";
 
 const ImageUploader = ({ uploadUrl, onUpload, enabled = true, diameter }) => {
   const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const handlePress = () => {
     if (enabled === false) {
@@ -29,6 +30,9 @@ const ImageUploader = ({ uploadUrl, onUpload, enabled = true, diameter }) => {
         })
           .then((response) => response.json())
           .then((data) => {
+            if (data && data.url) {
+              setImageUrl(data.url);
+            }
             if (onUpload) {
               onUpload(data);
             }
@@ -43,11 +47,15 @@ const ImageUploader = ({ uploadUrl, onUpload, enabled = true, diameter }) => {
   return (
     <View>
       <TouchableOpacity onPress={handlePress}>
-        <Avatar
-          icon={(props) => <Icon name="account" {...props} />}
-          autoColor
-          size={diameter}
-        />
+        {imageUrl ? (
+          <Avatar image={{ uri: imageUrl }} size={diameter} />
+        ) : (
+          <Avatar
+            icon={(props) => <Icon name="account" {...props} />}
+            color="black"
+            size={diameter}
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
