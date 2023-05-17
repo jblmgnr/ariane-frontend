@@ -54,9 +54,19 @@ export default function CreateMemberScreen() {
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
   // Members from reducer
   const members = useSelector((state) => state.members.value);
+
+  // let statusMessage = "Empty";
+  const showStatusMessage = (message) => {
+    setStatusMessage(message);
+
+    setTimeout(() => {
+      setStatusMessage("");
+    }, 3000);
+  };
 
   // Create contents of member drop down for Parent and Partner
   const memberItems = [];
@@ -84,8 +94,8 @@ export default function CreateMemberScreen() {
     motherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
 
-  console.log("Available members  : ", members.length);
-  console.log("Member items  : ", memberItems);
+  // console.log("Available members  : ", members.length);
+  // console.log("Member items  : ", memberItems);
 
   const onRelationChanged = (key) => {
     console.log("key ship : ", key);
@@ -100,7 +110,7 @@ export default function CreateMemberScreen() {
     // console.log("key parent : ", key, " to be found in ", memberItems);
     const item = memberItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Parent id : ", parentId);
+    // console.log("Parent id : ", parentId);
     setMember({ ...member, father: parentId });
   };
 
@@ -108,7 +118,7 @@ export default function CreateMemberScreen() {
     // console.log("key parent : ", key, " to be found in ", memberItems);
     const item = memberItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Partner id : ", parentId);
+    // console.log("Partner id : ", parentId);
     setMember({ ...member, mother: parentId });
   };
 
@@ -162,6 +172,8 @@ export default function CreateMemberScreen() {
         father: member.father,
         mother: member.mother,
         gender: member.gender,
+        job: member.job,
+        birthDate: member.birthDate,
       }),
     })
       .then((response) => response.json())
@@ -172,10 +184,11 @@ export default function CreateMemberScreen() {
         }
         console.log("Member Saved in DB OK ", member);
         dispatch(addMember(member));
-      })
-      .catch((error) => {
-        console.error("While connecting back-end on : " + FETCH_API, error);
+        showStatusMessage(member.firstName + " " + member.lastName + " créé");
       });
+    // .catch((error) => {
+    //   console.error("3 While connecting back-end on : " + FETCH_API, error);
+    // });
 
     // Clear interface
     setMember(initialMemberState);
@@ -250,7 +263,7 @@ export default function CreateMemberScreen() {
             fontFamily={fontFamily}
             data={fatherItems}
             search={false}
-            boxStyles={styles.input} //override default styles
+            boxStyles={[styles.input, { borderRadius: 5 }]}
             defaultOption={{ key: "1", value: "Father" }} //default selected option
           />
           <SelectList
@@ -260,11 +273,18 @@ export default function CreateMemberScreen() {
             fontFamily={fontFamily}
             data={motherItems}
             search={false}
-            boxStyles={styles.input} //override default styles
+            boxStyles={[styles.input, { borderRadius: 5 }]}
             defaultOption={{ key: "1", value: "Mother" }} //default selected option
           />
-          <Text>After selector</Text>
+          <TextInput
+            label="Activité"
+            variant="outlined"
+            onChangeText={(value) => setMember({ ...member, job: value })}
+            value={member.job}
+            style={styles.input}
+          />
         </View>
+        <Text style={styles.statusMessage}>{statusMessage}</Text>
         <View>
           <Button
             onPress={() => {
@@ -305,5 +325,9 @@ const styles = StyleSheet.create({
   },
   genderIcon: {
     margin: 10,
+  },
+  statusMessage: {
+    fontWeight: 700,
+    marginBottom: 5,
   },
 });
