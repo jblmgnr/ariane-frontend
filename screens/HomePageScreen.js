@@ -10,6 +10,7 @@ import { fontFamily } from "../modules/deco";
 // import { readMembersFromDataBase } from "../modules/db";
 import { setMembers } from "../reducers/members";
 const { getFetchAPI } = require("../modules/util");
+import MembersList from "../components/MembersList";
 
 const FETCH_API = getFetchAPI();
 
@@ -20,6 +21,7 @@ export default function HomePageScreen({ navigation }) {
 
   const [popup, setPopup] = useState("");
   const user = useSelector((state) => state.user.value);
+  const members = useSelector((state) => state.members.value);
 
   useEffect(() => {
     // If no tree exists, create the first default tree
@@ -97,6 +99,7 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
+      <MembersList />
     </View>
   );
 }
@@ -107,5 +110,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  button: {
+    marginTop: 50,
   },
 });

@@ -1,13 +1,16 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
-const MembersList = ({}) => {
+const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
+  //   const memberProfile =
   const membersList = members.map((member, i) => {
     return (
       <View key={i}>
-        <Text>{member.firstName} lol</Text>
-        <Text>{member.lastName}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("TabNavigator")}>
+          <Text>{member.firstName} lol</Text>
+          <Text>{member.lastName}</Text>
+        </TouchableOpacity>
       </View>
     );
   });
