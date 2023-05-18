@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
-import MyPopup from "./components/MyPopup";
+import MyPopup from "../components/MyPopup";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
@@ -8,8 +8,11 @@ import { setTreeId } from "../reducers/user";
 import { Button, TextInput } from "@react-native-material/core";
 import { fontFamily } from "../modules/deco";
 // import { readMembersFromDataBase } from "../modules/db";
-import { setMembers } from "../reducers/members";
+import members, { setMembers } from "../reducers/members";
+import Tree from "../components/Tree";
+import ImageItem from "../components/ImageItem";
 const { getFetchAPI } = require("../modules/util");
+import { showObject } from "../modules/util";
 
 const FETCH_API = getFetchAPI();
 
@@ -32,7 +35,7 @@ export default function HomePageScreen({ navigation }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: "Defaut",
+          name: "Defaut by " + user.firstName,
           userId: user.id,
         }),
       })
@@ -42,18 +45,20 @@ export default function HomePageScreen({ navigation }) {
             alert(data.error);
             return;
           }
-          console.log("Tree saved in DB");
-          dispatch(setTreeId(data._id));
-        })
-        .catch((error) => {
-          console.error("2 While connecting back-end on " + FETCH_API, error);
+          console.log("Result of POST query /tree ");
+          showObject(data);
+          console.log("Tree saved in DB with id ", data.tree._id);
+          dispatch(setTreeId(data.tree._id));
         });
+      // .catch((error) => {
+      //   console.error("2 While connecting back-end on " + FETCH_API, error);
+      // });
     }
 
     // readMembersFromDataBase();
     // TODO: Did move the following block in the function
     // If a tree already exists load it ...
-    fetch(FETCH_API + "/members")
+    fetch(FETCH_API + "/members/")
       .then((response) => response.json())
       .then((data) => {
         if (!data.result) {
@@ -64,10 +69,10 @@ export default function HomePageScreen({ navigation }) {
         console.log("Find ", data.members.length, " members in DB");
 
         dispatch(setMembers(data.members));
-      })
-      .catch((error) => {
-        console.error("1 While connecting back-end on : " + FETCH_API, error);
       });
+    // .catch((error) => {
+    //   console.error("1 While connecting back-end on : " + FETCH_API, error);
+    // });
   }, []);
 
   const closePopup = (buttonPressed) => {
@@ -86,7 +91,7 @@ export default function HomePageScreen({ navigation }) {
   };
 
   return (
-    <View>
+    <View styles={styles.container}>
       <Text>HomePage Screen</Text>
       <Button
         onPress={() => {
@@ -97,6 +102,10 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
+      <Text>Current tree: {user.tree}</Text>
+      <Text>Member count : {members.length}</Text>
+      <Tree></Tree>
+      <Text>Under tree</Text>
     </View>
   );
 }
@@ -104,6 +113,7 @@ export default function HomePageScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: 1000,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",

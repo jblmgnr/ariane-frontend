@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+import { showObject } from "../modules/util";
 const initialState = {
   value: {
     id: null,
@@ -33,6 +33,8 @@ export const userSlice = createSlice({
 
     setTreeId: (state, action) => {
       state.value.tree = action.payload;
+      console.log(state.value);
+      showObject(state.value, "After set tree id in user reducer");
     },
   },
 });

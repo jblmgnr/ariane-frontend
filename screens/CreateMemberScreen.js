@@ -56,8 +56,9 @@ export default function CreateMemberScreen() {
   const [motherKey, setMotherKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
 
-  // Members from reducer
+  // From reducer
   const members = useSelector((state) => state.members.value);
+  const user = useSelector((state) => state.user.value);
 
   // let statusMessage = "Empty";
   const showStatusMessage = (message) => {
@@ -166,6 +167,7 @@ export default function CreateMemberScreen() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        tree: user.tree,
         lastName: member.lastName,
         firstName: member.firstName,
         nickName: member.nickName,
