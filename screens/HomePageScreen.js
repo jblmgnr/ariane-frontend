@@ -156,7 +156,7 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
-      <MembersList />
+      {/* <MembersList /> */}
       <Text>Current tree: {user.tree}</Text>
       <Text>Member count : {members.length}</Text>
       <Tree></Tree>

@@ -34,7 +34,7 @@ const MembersList = ({ navigation }) => {
           <TouchableOpacity
             style={styles.member}
             onPress={() => {
-              navigation.navigate("MemberProfile", { member: member });
+              navigation.navigate("MemberProfile", { member });
             }}
           >
             {member.photo ? (
