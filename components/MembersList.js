@@ -10,22 +10,29 @@ const MembersList = ({ navigation }) => {
 
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
-      container: {
-        backgroundColor: "blue",
-      },
       member: {
         flexDirection: "row",
+        justifyContent: "flex-start",
         alignItems: "center",
-        justifyContent: "space-evenly",
+        backgroundColor: "#fff",
+        padding: 10,
+        margin: 5,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#000",
       },
       avatar: {
-        backgroundColor: "green",
+        marginRight: 10,
+      },
+      text: {
+        marginRight: 10,
       },
     });
     return (
       <View key={i} style={styles.container}>
-        <View style={styles.member}>
+        <View>
           <TouchableOpacity
+            style={styles.member}
             onPress={() => {
               navigation.navigate("MemberProfile", { member: member });
             }}
@@ -45,9 +52,9 @@ const MembersList = ({ navigation }) => {
                 size={30}
               />
             )}
-            <Text>{member.firstName}</Text>
-            <Text>{member.lastName}</Text>
-            <Text>{member.nickName}</Text>
+            <Text style={styles.text}>Prénom : {member.firstName}</Text>
+            <Text style={styles.text}>Nom : {member.lastName}</Text>
+            <Text style={styles.text}>Surnom : {member.nickName}</Text>
           </TouchableOpacity>
         </View>
       </View>

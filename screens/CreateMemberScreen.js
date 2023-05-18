@@ -24,6 +24,8 @@ import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
+import ImageUploader from "../components/ImageUploader";
+
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject } = require("../modules/util");
 
@@ -45,6 +47,7 @@ const initialMemberState = {
   group: null,
   father: null,
   mother: null,
+  photo: null,
 };
 export default function CreateMemberScreen() {
   const dispatch = useDispatch();
@@ -61,6 +64,7 @@ export default function CreateMemberScreen() {
   const [motherKey, setMotherKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
+  const [reset, setReset] = useState(false);
 
   // let statusMessage = "Empty";
   const showStatusMessage = (message) => {
@@ -180,6 +184,7 @@ export default function CreateMemberScreen() {
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
+        photo: member.photo,
       }),
     })
       .then((response) => response.json())
@@ -198,12 +203,22 @@ export default function CreateMemberScreen() {
 
     // Clear interface
     setMember(initialMemberState);
+    setReset((prevReset) => !prevReset);
   };
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
+          <ImageUploader
+            uploadUrl={FETCH_API + "/upload"}
+            onUpload={(data) => {
+              console.log("Image uploaded:", data);
+              setMember({ ...member, photo: data.url });
+            }}
+            reset={reset}
+            diameter={100}
+          />
           <TextInput
             label="Prénom"
             variant="outlined"
