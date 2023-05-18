@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { showObject } from "../modules/util";
 
 const initialState = {
   value: [],
@@ -14,14 +15,19 @@ export const membersSlice = createSlice({
 
       console.log("After addMember in reducer ");
       console.log(state.value);
+      showObject(state.value);
     },
     setMembers: (state, action) => {
+      console.log(
+        "Udpdate list of memeber is reducer with ",
+        action.payload.length,
+        " members "
+      );
       // console.log("In reducer : action.payload : ", action.payload);
       state.value = [...action.payload];
 
       for (let i = 0; i < state.value.length; i++) {
-        const str = JSON.stringify(state.value[i], null, 4);
-        // console.log(`member[${i}] : `, str);
+        showObject(state.value[i], "  In reducer " + i);
       }
     },
   },
