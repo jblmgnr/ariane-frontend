@@ -32,12 +32,12 @@ export default function ConnectionScreen({ navigation }) {
   const a = "navigation";
   const [doSubscribe, setSubscribe] = useState(false); // Connect or Register
   const [isEmailErrorVisible, setEmailErrorVisible] = useState(false); // Display email error message
-  const [isEmailValid, setEmailValid] = useState(false); // Display email with error style
+  const [isEmailValid, setEmailValid] = useState(true); // Display email with error style
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "",
-    password: "",
+    email: "dlascaux@yahoo.fr",
+    password: "a",
   });
 
   // load font family Quicksand useFont expo-font
@@ -57,6 +57,10 @@ export default function ConnectionScreen({ navigation }) {
     setEmailErrorVisible(!isEmailValid);
     console.log("setEmailErrorVisible ", !isEmailValid);
 
+    if (userInfo.email.length <= 0) {
+      alert("L'Email est vide");
+      return;
+    }
     if (!isEmailValid) {
       return;
     }
@@ -86,7 +90,6 @@ export default function ConnectionScreen({ navigation }) {
           alert(data.error);
           return;
         }
-        const a = "data";
         console.log("SignUP OK");
         dispatch(setUser(data.user));
         navigation.navigate("TabNavigator");
@@ -99,6 +102,7 @@ export default function ConnectionScreen({ navigation }) {
   // Connection d'un user déjà existant
   //-----------------------------------------------------------------------
   const signIn = () => {
+    console.log("email : ", userInfo.email);
     fetch(FETCH_API + "/users/signin", {
       method: "POST",
       headers: {
@@ -127,6 +131,8 @@ export default function ConnectionScreen({ navigation }) {
   // Check email
   //-----------------------------------------------------------------------
   const onEmailChanged = (value) => {
+    console.log("onEmailChanged : ", value);
+
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; //regex pour vérifier si l'email est valide
     setUserInfo({ ...userInfo, email: value });
 

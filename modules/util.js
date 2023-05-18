@@ -6,8 +6,18 @@ function getFetchAPI() {
   return "LA BONNE ADRESSE UNE FOIS DEPLOIYE";
 }
 
-function showObject(obj, title) {
-  console.log(title, JSON.stringify(obj, null, 4));
+function showObject(obj, title = "") {
+  console.log(
+    "=========================================",
+    title,
+    JSON.stringify(obj, null, 4)
+  );
 }
 
-module.exports = { getFetchAPI, showObject };
+function showObjects(list, title = "") {
+  console.log(title + " =============== count " + list.length);
+
+  for (let obj of list) console.log(JSON.stringify(obj, null, 8));
+}
+
+module.exports = { getFetchAPI, showObject, showObjects };
