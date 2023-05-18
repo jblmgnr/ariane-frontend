@@ -12,8 +12,8 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   Button,
   TextInput,
-  Stack,
-  IconButton,
+  ListItem,
+  Switch,
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
@@ -45,6 +45,7 @@ const initialMemberState = {
   group: null,
   father: null,
   mother: null,
+  linked: null,
 };
 export default function CreateMemberScreen() {
   const dispatch = useDispatch();
@@ -59,8 +60,10 @@ export default function CreateMemberScreen() {
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
+  const [linkedKey, setLinkedKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
+  const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
 
   // Ref
 
@@ -73,17 +76,14 @@ export default function CreateMemberScreen() {
     }, 3000);
   };
 
-  // // Create contents of member drop down for Parent and Partner
-  // const memberItems = [];
-  // for (let i = 0; i < members.length; i++) {
-  //   const m = members[i];
-  //   // console.log("In create member item  ");
-  //   let value = m.firstName + " " + m.firstName;
-  //   if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
-  //   memberItems.push({ key: (i + 1).toString(), value, id: m._id });
-  // }
-
-  // showObjects(memberItems, "Members items");
+  const linkItems = [];
+  linkItems.push({ key: "0", value: "Aucun lien", id: null });
+  for (let i = 0; i < members.length; i++) {
+    const m = members[i];
+    let value = m.firstName + " " + m.lastName;
+    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+    linkItems.push({ key: (i + 1).toString(), value, id: m._id });
+  }
 
   const fatherItems = [];
   fatherItems.push({ key: "0", value: "Père inconnu", id: null });
@@ -94,6 +94,7 @@ export default function CreateMemberScreen() {
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
     fatherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
+
   const motherItems = [];
   motherItems.push({ key: "0", value: "Mère inconnue", id: null });
   for (let i = 0; i < members.length; i++) {
@@ -130,6 +131,14 @@ export default function CreateMemberScreen() {
     const parentId = item ? item.id : null;
     console.log("Mother id : ", parentId);
     setMember({ ...member, mother: parentId });
+  };
+
+  const onLinkChanged = (key) => {
+    // console.log("key parent : ", key, " to be found in ", memberItems);
+    const item = linkItems.find((r) => r.key === key);
+    const parentId = item ? item.id : null;
+    console.log("Link id : ", parentId);
+    setMember({ ...member, linked: parentId });
   };
 
   // Check validity of input fields before to save the member
@@ -187,6 +196,7 @@ export default function CreateMemberScreen() {
         nickName: member.nickName,
         father: member.father,
         mother: member.mother,
+        linked: member.linked,
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
@@ -266,7 +276,22 @@ export default function CreateMemberScreen() {
               }}
             />
           </View>
-          {/* <SelectList
+          <ListItem
+            title={
+              member.gender === Gender.female
+                ? "Issue de la famille"
+                : "Issu de la famille"
+            }
+            trailing={
+              <Switch
+                value={internal}
+                onValueChange={() => setInternal(!internal)}
+              />
+            }
+            onPress={() => setInternal(!enabled)}
+          />
+          {/* {internal && (
+          <SelectList
             onSelect={() => onRelationChanged(relationShipKey)}
             setSelected={setRelationShipKey}
             fontFamily={fontFamily}
@@ -274,29 +299,46 @@ export default function CreateMemberScreen() {
             search={false}
             boxStyles={{ borderRadius: 0 }} //override default styles
             defaultOption={{ key: "1", value: "Relation" }} //default selected option
-          /> */}
-          <SelectList
-            style={styles.input}
-            onSelect={() => onFatherChanged(fatherKey)}
-            setSelected={setFatherKey}
-            fontFamily={fontFamily}
-            data={fatherItems}
-            search={false}
-            boxStyles={[styles.input, { borderRadius: 5 }]}
-            placeholder="Père"
-            defaultOption={fatherItems[0]} //default selected option
-          />
-          <SelectList
-            style={styles.input}
-            onSelect={() => onMotherChanged(motherKey)}
-            setSelected={setMotherKey}
-            fontFamily={fontFamily}
-            data={motherItems}
-            search={false}
-            boxStyles={[styles.input, { borderRadius: 5 }]}
-            placeholder="Mère"
-            defaultOption={motherItems[0]} //default selected option
-          />
+          />)} */}
+          {internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onFatherChanged(fatherKey)}
+              setSelected={setFatherKey}
+              fontFamily={fontFamily}
+              data={fatherItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Père"
+              defaultOption={fatherItems[0]} //default selected option
+            />
+          )}
+          {internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onMotherChanged(motherKey)}
+              setSelected={setMotherKey}
+              fontFamily={fontFamily}
+              data={motherItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Mère"
+              defaultOption={motherItems[0]} //default selected option
+            />
+          )}
+          {!internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onLinkChanged(linkedKey)}
+              setSelected={setLinkedKey}
+              fontFamily={fontFamily}
+              data={linkItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Lié à"
+              defaultOption={linkItems[0]} //default selected option
+            />
+          )}
           <TextInput
             label="Activité"
             variant="outlined"
