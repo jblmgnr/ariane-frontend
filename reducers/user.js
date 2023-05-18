@@ -37,5 +37,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setAddUser, setTree } = userSlice.actions;
+export const { setAddUser, setTreeId } = userSlice.actions;
 export default userSlice.reducer;
