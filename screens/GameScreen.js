@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddUser } from "../reducers/user";
+import { setUser } from "../reducers/user";
 
 export default function GameScreen() {
   return (

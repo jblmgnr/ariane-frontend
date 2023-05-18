@@ -9,6 +9,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import user from "./reducers/user";
+import members from "./reducers/members";
 import ConnectionScreen from "./screens/ConnectionScreen";
 import GameScreen from "./screens/GameScreen";
 import HomePageScreen from "./screens/HomePageScreen";
@@ -16,7 +17,7 @@ import InviteScreen from "./screens/InviteScreen";
 import UsersParametersScreen from "./screens/UsersParametersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
 
-const reducers = combineReducers({ user });
+const reducers = combineReducers({ user, members });
 const persistConfig = {
   key: "Ariane",
   storage: AsyncStorage,

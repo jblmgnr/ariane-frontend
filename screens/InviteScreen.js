@@ -11,7 +11,7 @@ import {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddUser } from "../reducers/user";
+import { setUser } from "../reducers/user";
 import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
 
 export default function InviteScreen() {

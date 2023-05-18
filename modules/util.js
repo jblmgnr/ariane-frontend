@@ -6,4 +6,8 @@ function getFetchAPI() {
   return "LA BONNE ADRESSE UNE FOIS DEPLOIYE";
 }
 
-module.exports = { getFetchAPI };
+function showObject(obj, title) {
+  console.log(title, JSON.stringify(obj, null, 4));
+}
+
+module.exports = { getFetchAPI, showObject };
