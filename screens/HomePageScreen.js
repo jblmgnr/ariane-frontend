@@ -12,6 +12,7 @@ import members, { setMembers } from "../reducers/members";
 import Tree from "../components/Tree";
 import ImageItem from "../components/ImageItem";
 const { getFetchAPI } = require("../modules/util");
+import MembersList from "../components/MembersList";
 import { showObject } from "../modules/util";
 
 const FETCH_API = getFetchAPI();
@@ -155,6 +156,7 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
+      <MembersList />
       <Text>Current tree: {user.tree}</Text>
       <Text>Member count : {members.length}</Text>
       <Tree></Tree>
@@ -170,5 +172,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  button: {
+    marginTop: 50,
   },
 });
