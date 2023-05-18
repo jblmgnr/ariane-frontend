@@ -3,12 +3,14 @@ import { useSelector } from "react-redux";
 
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
-  //   const memberProfile =
+
   const membersList = members.map((member, i) => {
     return (
       <View key={i}>
-        <TouchableOpacity onPress={() => navigation.navigate("TabNavigator")}>
-          <Text>{member.firstName} lol</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("MemberProfile", { member })}
+        >
+          <Text>{member.firstName}</Text>
           <Text>{member.lastName}</Text>
         </TouchableOpacity>
       </View>

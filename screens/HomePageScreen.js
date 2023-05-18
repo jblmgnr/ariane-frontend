@@ -99,7 +99,7 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
-      <MembersList />
+      <MembersList navigation={navigation} />
     </View>
   );
 }

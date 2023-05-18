@@ -16,6 +16,7 @@ import HomePageScreen from "./screens/HomePageScreen";
 import InviteScreen from "./screens/InviteScreen";
 import UsersParametersScreen from "./screens/UsersParametersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
+import MemberProfile from "./screens/MemberProfile";
 
 const reducers = combineReducers({ user, members });
 const persistConfig = {
@@ -78,6 +79,7 @@ export default function App() {
             <Stack.Screen name="Connection" component={ConnectionScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="CreateMember" component={CreateMemberScreen} />
+            <Stack.Screen name="MemberProfile" component={MemberProfile} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>
