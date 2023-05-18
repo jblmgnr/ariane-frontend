@@ -25,7 +25,7 @@ import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
-const { getFetchAPI, showObject } = require("../modules/util");
+const { getFetchAPI, showObject, showObjects } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 
@@ -62,6 +62,8 @@ export default function CreateMemberScreen() {
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
 
+  // Ref
+
   // let statusMessage = "Empty";
   const showStatusMessage = (message) => {
     setStatusMessage(message);
@@ -71,28 +73,33 @@ export default function CreateMemberScreen() {
     }, 3000);
   };
 
-  // Create contents of member drop down for Parent and Partner
-  const memberItems = [];
-  for (let i = 0; i < members.length; i++) {
-    const m = members[i];
-    // console.log("In create member item  ");
-    let value = m.firstName + " " + m.firstName;
-    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
-    memberItems.push({ key: (i + 1).toString(), value, id: m._id });
-  }
+  // // Create contents of member drop down for Parent and Partner
+  // const memberItems = [];
+  // for (let i = 0; i < members.length; i++) {
+  //   const m = members[i];
+  //   // console.log("In create member item  ");
+  //   let value = m.firstName + " " + m.firstName;
+  //   if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+  //   memberItems.push({ key: (i + 1).toString(), value, id: m._id });
+  // }
+
+  // showObjects(memberItems, "Members items");
+
   const fatherItems = [];
+  fatherItems.push({ key: "0", value: "Père inconnu", id: null });
   for (let i = 0; i < members.length; i++) {
     const m = members[i];
     if (m.gender !== Gender.male) continue;
-    let value = m.firstName + " " + m.firstName;
+    let value = m.firstName + " " + m.lastName;
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
     fatherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
   const motherItems = [];
+  motherItems.push({ key: "0", value: "Mère inconnue", id: null });
   for (let i = 0; i < members.length; i++) {
     const m = members[i];
     if (m.gender !== Gender.female) continue;
-    let value = m.firstName + " " + m.firstName;
+    let value = m.firstName + " " + m.lastName;
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
     motherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
@@ -111,17 +118,17 @@ export default function CreateMemberScreen() {
 
   const onFatherChanged = (key) => {
     // console.log("key parent : ", key, " to be found in ", memberItems);
-    const item = memberItems.find((r) => r.key === key);
+    const item = fatherItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    // console.log("Parent id : ", parentId);
+    console.log("=========================> Father id : ", parentId);
     setMember({ ...member, father: parentId });
   };
 
   const onMotherChanged = (key) => {
     // console.log("key parent : ", key, " to be found in ", memberItems);
-    const item = memberItems.find((r) => r.key === key);
+    const item = motherItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    // console.log("Partner id : ", parentId);
+    console.log("Mother id : ", parentId);
     setMember({ ...member, mother: parentId });
   };
 
@@ -164,6 +171,9 @@ export default function CreateMemberScreen() {
 
     console.log("Status ", status);
     console.log("Need tosave : ", member);
+    console.log("Fater : ", member.father);
+
+    showObject(member, "SAVINNNNNNNNNNNNNG");
 
     fetch(FETCH_API + "/members", {
       method: "POST",
@@ -198,6 +208,9 @@ export default function CreateMemberScreen() {
 
     // Clear interface
     setMember(initialMemberState);
+    // TODO Did: Initialiser les drop down Pere et Mere !!!
+    setFatherKey("");
+    setMotherKey("");
   };
 
   return (
@@ -270,7 +283,8 @@ export default function CreateMemberScreen() {
             data={fatherItems}
             search={false}
             boxStyles={[styles.input, { borderRadius: 5 }]}
-            defaultOption={{ key: "1", value: "Father" }} //default selected option
+            placeholder="Père"
+            defaultOption={fatherItems[0]} //default selected option
           />
           <SelectList
             style={styles.input}
@@ -280,7 +294,8 @@ export default function CreateMemberScreen() {
             data={motherItems}
             search={false}
             boxStyles={[styles.input, { borderRadius: 5 }]}
-            defaultOption={{ key: "1", value: "Mother" }} //default selected option
+            placeholder="Mère"
+            defaultOption={motherItems[0]} //default selected option
           />
           <TextInput
             label="Activité"

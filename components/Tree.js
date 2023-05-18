@@ -5,6 +5,7 @@ import { Button, TextInput } from "@react-native-material/core";
 import { fontFamily } from "../modules/deco";
 import { setMembers } from "../reducers/members";
 import { Canvas, Circle, Group } from "@shopify/react-native-skia";
+import { buildReps } from "../modules/tree";
 
 const size = 306;
 const r = size * 0.33;
@@ -13,6 +14,8 @@ const r = size * 0.33;
 function Tree() {
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+
+  buildReps(members);
 
   // useEffect(() => {
   //   // If no tree exists, create the first default tree
