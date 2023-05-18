@@ -48,7 +48,7 @@ const ImageUploader = ({ uploadUrl, onUpload, enabled = true, diameter }) => {
     <View>
       <TouchableOpacity onPress={handlePress}>
         {imageUrl ? (
-          <Avatar image={{ uri: imageUrl }} size={diameter} />
+          <Avatar image={{ uri: imageUrl }} size={diameter} color="black" />
         ) : (
           <Avatar
             icon={(props) => <Icon name="account" {...props} />}
