@@ -8,7 +8,7 @@ const initialState = {
     adress: "",
     email: "",
     password: "",
-    tree: "",
+    tree: null,
   },
 };
 

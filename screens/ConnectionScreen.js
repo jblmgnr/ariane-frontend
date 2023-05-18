@@ -36,8 +36,8 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "dlascaux@yahoo.fr",
-    password: "a",
+    email: "",
+    password: "",
   });
 
   // load font family Quicksand useFont expo-font
@@ -57,6 +57,10 @@ export default function ConnectionScreen({ navigation }) {
     setEmailErrorVisible(!isEmailValid);
     console.log("setEmailErrorVisible ", !isEmailValid);
 
+    if (userInfo.email.length <= 0) {
+      alert("L'Email est vide");
+      return;
+    }
     if (!isEmailValid) {
       return;
     }

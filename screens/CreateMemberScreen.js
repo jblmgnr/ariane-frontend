@@ -30,6 +30,7 @@ const { getFetchAPI, showObject } = require("../modules/util");
 const FETCH_API = getFetchAPI();
 
 const initialMemberState = {
+  tree: null,
   firstName: "",
   lastName: "",
   nickName: "",
@@ -48,17 +49,18 @@ const initialMemberState = {
 export default function CreateMemberScreen() {
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
-  const [member, setMember] = useState(initialMemberState);
+
+  // From reducer
+  const members = useSelector((state) => state.members.value);
+  const user = useSelector((state) => state.user.value);
+  initialMemberState.tree = user.tree;
 
   // States
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
-
-  // From reducer
-  const members = useSelector((state) => state.members.value);
-  const user = useSelector((state) => state.user.value);
+  const [member, setMember] = useState(initialMemberState);
 
   // let statusMessage = "Empty";
   const showStatusMessage = (message) => {
@@ -124,6 +126,7 @@ export default function CreateMemberScreen() {
   };
 
   // Check validity of input fields before to save the member
+  //----------------------------------------------------------
   const checkMember = () => {
     let status = {
       value: true,
@@ -158,6 +161,7 @@ export default function CreateMemberScreen() {
       alert(status.error.join("\n"));
       return;
     }
+
     console.log("Status ", status);
     console.log("Need tosave : ", member);
 
@@ -167,7 +171,7 @@ export default function CreateMemberScreen() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        tree: user.tree,
+        tree: member.tree,
         lastName: member.lastName,
         firstName: member.firstName,
         nickName: member.nickName,
