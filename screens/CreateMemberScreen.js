@@ -10,6 +10,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SelectList } from "react-native-dropdown-select-list";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Button,
   TextInput,
@@ -38,8 +39,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: [{ name: null, latitude: 0, longitude: 0 }],
-  currentCity: [{ name: null, latitude: 0, longitude: 0 }],
+  birthCity: { name: null, latitude: 0, longitude: 0 },
+  currentCity: { name: null, latitude: 0, longitude: 0 },
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -50,7 +51,7 @@ const initialMemberState = {
   photo: null,
   partner: null,
 };
-export default function CreateMemberScreen() {
+export default function CreateMemberScreen({ navigation }) {
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
 
@@ -68,6 +69,33 @@ export default function CreateMemberScreen() {
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
+
+  // States for the date picker
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+
+  // Functions for the date picker
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+    setMember({ ...member, birthDate: currentDate });
+    console.log(member);
+  };
+
+  const showMode = (currentMode) => {
+    if (Platform.OS === "android") {
+      setShow(true);
+      // for iOS, add a button that closes the picker
+    }
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode("date");
+  };
+
   // Ref
 
   // let statusMessage = "Empty";
@@ -171,7 +199,6 @@ export default function CreateMemberScreen() {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
   };
-
   // Save a member in DB and in reducer
   //====================================
   const saveMember = () => {
@@ -248,13 +275,11 @@ export default function CreateMemberScreen() {
     } else {
       setMember({
         ...member,
-        birthCity: [
-          {
-            name: data.features[0].properties.city,
-            latitude: data.features[0].geometry.coordinates[1],
-            longitude: data.features[0].geometry.coordinates[0],
-          },
-        ],
+        birthCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
       });
       alert("Ville enregistrée");
     }
@@ -272,13 +297,11 @@ export default function CreateMemberScreen() {
     } else {
       setMember({
         ...member,
-        currentCity: [
-          {
-            name: data.features[0].properties.city,
-            latitude: data.features[0].geometry.coordinates[1],
-            longitude: data.features[0].geometry.coordinates[0],
-          },
-        ],
+        currentCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
       });
       alert("Ville enregistrée");
     }
@@ -287,11 +310,16 @@ export default function CreateMemberScreen() {
   return (
     <KeyboardAwareScrollView
       style={{
-        marginTop: Platform.OS === "android" ? 30 : 0,
+        marginTop: Platform.OS === "android" ? 30 : 60,
         backgroundColor: "#ffffff",
       }}
     >
       <View style={[styles.container, { height: height }]}>
+        <View style={styles.buttoncontainer}>
+          <TouchableOpacity onPress={onPress} style={styles.backButton}>
+            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
             <ImagePicker
@@ -327,12 +355,14 @@ export default function CreateMemberScreen() {
             style={styles.input}
           />
           {/* TODO : Did : Format date*/}
-          <TextInput
-            label="Date de naissance"
-            variant="outlined"
-            onChangeText={(value) => setMember({ ...member, birthDate: value })}
-            value={member.birthDate}
-            style={styles.input}
+          <Text>Date de naissance</Text>
+          <DateTimePicker
+            testID="dateTimePicker"
+            locale="fr-FR"
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            onChange={onChange}
           />
           <View style={styles.genderView}>
             <FontAwesome
@@ -428,7 +458,7 @@ export default function CreateMemberScreen() {
             label="Ville de naissance"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={member.birthCity[0].name}
+            value={member.birthCity.name}
             style={styles.input}
           />
           <Button
@@ -444,7 +474,7 @@ export default function CreateMemberScreen() {
             onChangeText={(value) =>
               setMember({ ...member, currentCity: value })
             }
-            value={member.currentCity[0].name}
+            value={member.currentCity.name}
             style={styles.input}
           />
           <Button
@@ -481,7 +511,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: 63,
+    bottom: 150,
+    zIndex: 1,
   },
   validatebuttoncurrentcity: {
     width: "30%",
@@ -491,7 +522,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: -6,
+    bottom: 78,
   },
 
   container: {
@@ -533,5 +564,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fontFamily,
     marginBottom: 5,
+  },
+  buttoncontainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "left",
+    position: "absolute",
+    marginTop: 50,
+    width: "100%",
+  },
+  backButton: {
+    padding: 5,
+    margin: 10,
+    borderColor: "#7C4DFF",
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
