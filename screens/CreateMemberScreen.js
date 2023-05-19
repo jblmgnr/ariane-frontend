@@ -24,6 +24,8 @@ import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
+import ImageUploader from "../components/ImageUploader";
+
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
 
@@ -45,6 +47,7 @@ const initialMemberState = {
   group: null,
   father: null,
   mother: null,
+  photo: null,
   linked: null,
 };
 export default function CreateMemberScreen() {
@@ -63,6 +66,7 @@ export default function CreateMemberScreen() {
   const [linkedKey, setLinkedKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
+  const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
 
   // Ref
@@ -200,6 +204,7 @@ export default function CreateMemberScreen() {
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
+        photo: member.photo,
       }),
     })
       .then((response) => response.json())
@@ -221,12 +226,22 @@ export default function CreateMemberScreen() {
     // TODO Did: Initialiser les drop down Pere et Mere !!!
     setFatherKey("");
     setMotherKey("");
+    setReset((prevReset) => !prevReset);
   };
 
   return (
     <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
+          <ImageUploader
+            uploadUrl={FETCH_API + "/upload"}
+            onUpload={(data) => {
+              console.log("Image uploaded:", data);
+              setMember({ ...member, photo: data.url });
+            }}
+            reset={reset}
+            diameter={100}
+          />
           <TextInput
             label="Prénom"
             variant="outlined"

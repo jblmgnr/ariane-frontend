@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { pickImage } from "../modules/imagePicker";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { Avatar } from "@react-native-material/core";
 
-const ImageUploader = ({ uploadUrl, onUpload, enabled = true, diameter }) => {
+const ImageUploader = ({
+  uploadUrl,
+  onUpload,
+  enabled = true,
+  diameter,
+  reset,
+}) => {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
+
+  useEffect(() => {
+    setImageUrl(null);
+  }, [reset]);
 
   const handlePress = () => {
     if (enabled === false) {
