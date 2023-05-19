@@ -38,8 +38,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: [],
-  currentCity: [],
+  birthCity: [{ name: null, latitude: 0, longitude: 0 }],
+  currentCity: [{ name: null, latitude: 0, longitude: 0 }],
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -428,7 +428,7 @@ export default function CreateMemberScreen() {
             label="Ville de naissance"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={member.birthCity}
+            value={member.birthCity[0].name}
             style={styles.input}
           />
           <Button
@@ -444,7 +444,7 @@ export default function CreateMemberScreen() {
             onChangeText={(value) =>
               setMember({ ...member, currentCity: value })
             }
-            value={member.currentCity}
+            value={member.currentCity[0].name}
             style={styles.input}
           />
           <Button
