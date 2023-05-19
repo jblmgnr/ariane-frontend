@@ -183,13 +183,13 @@ export default function MemberProfileScreen({ route, navigation }) {
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
               {member.birthCity === null
-                ? member.birthCity[0].name
+                ? member.birthCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Ville actuelle</Text>
             <Text style={styles.text}>
               {member.currentCity === null
-                ? member.currentCity[0].name
+                ? member.currentCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Job</Text>
