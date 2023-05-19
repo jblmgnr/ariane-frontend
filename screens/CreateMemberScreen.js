@@ -38,8 +38,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: "",
-  currentCity: "",
+  birthCity: [],
+  currentCity: [],
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -68,8 +68,6 @@ export default function CreateMemberScreen() {
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-  const [birthCity, setBirthCity] = useState();
-  const [currentCity, setCurrentCity] = useState();
   // Ref
 
   // let statusMessage = "Empty";
@@ -285,7 +283,7 @@ export default function CreateMemberScreen() {
       alert("Ville enregistrée");
     }
   };
-
+  console.log("member", member);
   return (
     <KeyboardAwareScrollView
       style={{
