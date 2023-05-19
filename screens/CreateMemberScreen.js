@@ -47,7 +47,7 @@ const initialMemberState = {
   father: null,
   mother: null,
   photo: null,
-  linked: null,
+  partner: null,
 };
 export default function CreateMemberScreen() {
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ export default function CreateMemberScreen() {
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
-  const [linkedKey, setLinkedKey] = useState("");
+  const [partnerKey, setPartnerKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
@@ -79,13 +79,13 @@ export default function CreateMemberScreen() {
     }, 3000);
   };
 
-  const linkItems = [];
-  linkItems.push({ key: "0", value: "Aucun lien", id: null });
+  const partnerItems = [];
+  partnerItems.push({ key: "0", value: "Aucun lien", id: null });
   for (let i = 0; i < members.length; i++) {
     const m = members[i];
     let value = m.firstName + " " + m.lastName;
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
-    linkItems.push({ key: (i + 1).toString(), value, id: m._id });
+    partnerItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
 
   const fatherItems = [];
@@ -136,12 +136,12 @@ export default function CreateMemberScreen() {
     setMember({ ...member, mother: parentId });
   };
 
-  const onLinkChanged = (key) => {
+  const onPartnerKeyChanged = (key) => {
     // console.log("key parent : ", key, " to be found in ", memberItems);
-    const item = linkItems.find((r) => r.key === key);
+    const item = partnerItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Link id : ", parentId);
-    setMember({ ...member, linked: parentId });
+    console.log("Partner id : ", parentId);
+    setMember({ ...member, partner: parentId });
   };
 
   // Check validity of input fields before to save the member
@@ -199,7 +199,7 @@ export default function CreateMemberScreen() {
         nickName: member.nickName,
         father: member.father,
         mother: member.mother,
-        linked: member.linked,
+        partner: member.partner,
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
@@ -347,14 +347,14 @@ export default function CreateMemberScreen() {
           {!internal && (
             <SelectList
               style={styles.input}
-              onSelect={() => onLinkChanged(linkedKey)}
-              setSelected={setLinkedKey}
+              onSelect={() => onPartnerKeyChanged(partnerKey)}
+              setSelected={setPartnerKey}
               fontFamily={fontFamily}
-              data={linkItems}
+              data={partnerItems}
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Lié à"
-              defaultOption={linkItems[0]} //default selected option
+              defaultOption={partnerItems[0]} //default selected option
             />
           )}
           <TextInput
