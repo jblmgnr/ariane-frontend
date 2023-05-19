@@ -49,7 +49,7 @@ const initialMemberState = {
   photo: null,
   linked: null,
 };
-export default function CreateMemberScreen() {
+export default function CreateMemberScreen({ navigation }) {
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
 
@@ -229,9 +229,22 @@ export default function CreateMemberScreen() {
     setReset((prevReset) => !prevReset);
   };
 
+  // load to TabNavigator
+  // ------------------------------------------------------------
+  const onPress = () => {
+    navigation.navigate("TabNavigator");
+  };
+
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
+    <KeyboardAwareScrollView
+      style={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
+    >
       <View style={[styles.container, { height: height }]}>
+        <View style={styles.buttoncontainer}>
+          <TouchableOpacity onPress={onPress} style={styles.backButton}>
+            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
             <ImagePicker
@@ -421,5 +434,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fontFamily,
     marginBottom: 5,
+  },
+  buttoncontainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "left",
+    position: "absolute",
+    marginTop: 50,
+    width: "100%",
+  },
+  backButton: {
+    padding: 5,
+    margin: 10,
+    borderColor: "#7C4DFF",
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
