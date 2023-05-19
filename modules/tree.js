@@ -1,6 +1,14 @@
 const { showObject, showObjects } = require("./util");
 import { RelationShip } from "./common";
 
+const memberWidth = 100;
+const memberHeight = 50;
+const hSpaceBetweenGroup = 100;
+const hSpaceBetweenMembers = 50;
+const vSpaceBetweenMembers = 100;
+const vExternalMargin = 50;
+const hExternalMargin = 50;
+
 // Return Graphic Representation of the tree from members list
 //=============================================================
 function buildReps(members) {
@@ -20,14 +28,19 @@ function buildReps(members) {
 
   genNb = 0;
   // For each generation, gather members with same ascendants
+  const groupedGen = [];
   for (const gen of generations) {
     // TODO Did : Ici, il faudrait trie les gen par birthDate
     // Group members by same parents
     console.log(
       " \u001b[31m   Group by same parents for gen  " + genNb++ + "\u001b[0m"
     );
-    const groups = groupBySameParents(gen);
+    const groups = groupBySameParentsAndInsertPartners(gen);
+    console.log(" ======= groups");
+    console.log(groups);
+    groupedGen.push(groups);
     let gNb = 0;
+
     for (let g of groups) {
       console.log("  Group[" + gNb + "]");
       for (let m of g.members) console.log("   = " + m.firstName);
@@ -35,7 +48,111 @@ function buildReps(members) {
     }
   }
 
-  function groupBySameParents(gen, genNb) {
+  for (let x = 0; x < groupedGen.length; x++) {
+    const gen = groupedGen[x];
+    console.log("gen " + x + " contains " + gen.length + " groups ...");
+    for (let y = 0; y < gen.length; y++) {
+      const group = gen[y];
+      for (let z = 0; z < group.members.length; z++) {
+        const member = group.members[z];
+        console.log(
+          "   Gen " + x + " Group: " + y + "  Member : " + member.firstName
+        );
+      }
+    }
+  }
+
+  const graphDef = convertsGenrationArrayIntoNodeArray(groupedGen);
+
+  console.log(graphDef);
+
+  return graphDef;
+
+  function convertsGenrationArrayIntoNodeArray(groupedGen) {
+    let graphDef = { width: 0, height: 0, nodes: [] };
+
+    let biggestGeneration = 0;
+    let maxNumber = 0;
+    for (let genNb = 0; genNb < groupedGen.length; genNb++) {
+      let memberNb = 0;
+      for (let g of groupedGen[genNb]) {
+        memberNb += g.members.length;
+      }
+
+      console.log("Gen " + genNb + " has " + memberNb + " members");
+      if (memberNb > maxNumber) {
+        biggestGeneration = genNb;
+        maxNumber = memberNb;
+      }
+    }
+
+    console.log("Biggest generation is " + biggestGeneration);
+
+    // Compute max horizontal space from biggest group
+    computeMaxCanvasDimensionFromGeneration(
+      groupedGen[biggestGeneration],
+      graphDef,
+      groupedGen.length
+    );
+
+    // Create node in graph def
+    //--------------------------
+    for (let gen = 0; gen < groupedGen.length; gen++) {
+      const yOri = yOriForGeneration(gen);
+      console.log("Y ori", yOri);
+      let xOri = hExternalMargin;
+      for (const group of groupedGen[gen]) {
+        for (const member of group.members) {
+          console.log(" Build node for " + member.firstName);
+          xOri += memberWidth;
+
+          let node = {
+            x: xOri,
+            y: yOri,
+            name: member.firstName,
+            member: member,
+          };
+
+          showObject(node);
+          graphDef.nodes.push(node);
+        }
+        xOri += hSpaceBetweenGroup;
+      }
+    }
+
+    return graphDef;
+  }
+
+  // Return y origin corrdinate for given generation index (start at 0)
+  function yOriForGeneration(genNb) {
+    return vExternalMargin + genNb * (vSpaceBetweenMembers + memberHeight);
+  }
+
+  // Update width and height properties in graphDef with maximum dimension of
+  // draw area according to number of member horizontaly and number of generation
+  // verticaly.
+  function computeMaxCanvasDimensionFromGeneration(gen, graphDef, genCount) {
+    // Compute max horizontal space from biggest group
+    const groupCount = gen.length;
+
+    console.log("Group count : ", groupCount);
+    console.log("Generation count ", genCount);
+    graphDef.width = 0;
+    for (let group of gen) {
+      const memberCount = group.members.length;
+      graphDef.width +=
+        memberCount * memberWidth + (memberCount - 1) * hSpaceBetweenMembers;
+    }
+    graphDef.width +=
+      (gen.length - 1) * hSpaceBetweenGroup + 2 * hExternalMargin;
+    graphDef.height =
+      genCount * memberHeight +
+      (genCount - 1) * vSpaceBetweenMembers +
+      2 * vExternalMargin;
+  }
+
+  // Organise each group of generation by parent and by partner
+  function groupBySameParentsAndInsertPartners(gen) {
     const groups = [];
     if (gen.length === 0) return groups;
 
@@ -44,6 +161,8 @@ function buildReps(members) {
 
     // First group is the group of the first father found.
     groups.push({ father: fatherOf(gen[0]), members: [gen[0]] });
+
+    const toBeAssociatedWithPartner = [];
 
     // If 2 members shares at least mother or father, they are in the same group
     for (let i = 1; i < gen.length; i++) {
@@ -56,23 +175,44 @@ function buildReps(members) {
         if (existingGroup) existingGroup.members.push(m);
         else groups.push({ father: father, members: [m] });
       } else {
-        // Here we have a partner
-        const partner = partnerOf(m);
-        if (partner === null) {
-          console.error(
-            "It seems that's member " +
-              m.firstName +
-              " has no relation with any one ! It will be ignored"
-          );
-          continue;
-        }
-        console.log(
-          "Suppose to find partner " +
-            partner.firstName +
-            " to organize " +
-            m.firstName
-        );
+        toBeAssociatedWithPartner.push(m);
       }
+    }
+
+    // Now, insert the member just after ist partner if the appropriate group
+    for (const m of toBeAssociatedWithPartner) {
+      const partner = partnerOf(m);
+      if (partner === null) {
+        console.error(
+          "It seems that's member " +
+            m.firstName +
+            " has no relation with any one ! It will be ignored"
+        );
+        continue;
+      }
+
+      console.log(
+        "Suppose to find partner " +
+          partner.firstName +
+          " to organize " +
+          m.firstName
+      );
+
+      const groupOfPartner = groups.find((e) => e.members.includes(partner));
+      if (!groupOfPartner) {
+        console.error(
+          "Should find partner if one of these groups. Member is ignored"
+        );
+        continue;
+      }
+
+      const indexOfPartner = groupOfPartner.members.findIndex(
+        (m) => m._id === partner._id
+      );
+      console.log(
+        "Should insert " + m.firstName + " after index " + indexOfPartner
+      );
+      groupOfPartner.members.splice(indexOfPartner + 1, 0, m);
     }
 
     return groups;
