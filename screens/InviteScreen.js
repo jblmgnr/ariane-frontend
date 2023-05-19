@@ -26,7 +26,7 @@ export default function InviteScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Text>HomePage Screen</Text>
+        <Text>Invite Screen</Text>
         <Button
           onPress={() => {
             navigation.navigate("CreateMember");
