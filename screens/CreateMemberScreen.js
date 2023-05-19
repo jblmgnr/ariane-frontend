@@ -226,22 +226,26 @@ export default function CreateMemberScreen() {
     // TODO Did: Initialiser les drop down Pere et Mere !!!
     setFatherKey("");
     setMotherKey("");
+    // Clear the image picker
     setReset((prevReset) => !prevReset);
   };
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
+    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
-          <ImageUploader
-            uploadUrl={FETCH_API + "/upload"}
-            onUpload={(data) => {
-              console.log("Image uploaded:", data);
-              setMember({ ...member, photo: data.url });
-            }}
-            reset={reset}
-            diameter={100}
-          />
+          <View style={styles.imagePicker}>
+            <ImageUploader
+              uploadUrl={FETCH_API + "/upload"}
+              onUpload={(data) => {
+                console.log("Image uploaded:", data);
+                setMember({ ...member, photo: data.url });
+              }}
+              reset={reset}
+              diameter={100}
+              style={styles.imagePicker}
+            />
+          </View>
           <TextInput
             label="Prénom"
             variant="outlined"
@@ -406,6 +410,17 @@ const styles = StyleSheet.create({
   },
   statusMessage: {
     fontWeight: 700,
+    marginBottom: 5,
+  },
+  imagePicker: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  button: {
+    width: "80%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
     marginBottom: 5,
   },
 });
