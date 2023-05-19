@@ -18,15 +18,28 @@ function buildReps(members) {
     console.log(
       " ========== Process Generation " + genNb + "============================"
     );
-    let currentGeneration = [];
+    let directChildren = [];
     // Dispatch members by generation
     for (const m of toDispatch) {
       console.log("Member: ", m.firstName);
 
-      if (isMemberLinkToList(m, previousGeneration)) {
-        currentGeneration.push(m);
+      if (isMemberDirectChildOfAnyOfList(m, previousGeneration)) {
+        directChildren.push(m);
       }
     }
+
+    toDispatch = toDispatch.filter((e) => !directChildren.includes(e));
+
+    let linkToDirectChildren = [];
+    for (const m of toDispatch) {
+      console.log("Member: ", m.firstName);
+
+      if (isMemberLinkToList(m, directChildren)) {
+        linkToDirectChildren.push(m);
+      }
+    }
+
+    currentGeneration = directChildren.concat(linkToDirectChildren);
 
     console.log("  ------------ Result of generation ----------- " + genNb);
     for (let i of currentGeneration)
@@ -55,6 +68,33 @@ function buildReps(members) {
 
   // Return wether the given member has a mother, father ot is linked
   // to a member of the given list
+  function isMemberDirectChildOfAnyOfList(member, list) {
+    console.log(
+      "Test if " + member.firstName + " is linked to any members of "
+    );
+    for (let i of list) console.log(" - " + i.firstName);
+
+    if (list === null || list.length === 0) {
+      const value = isRoot(member);
+      console.log(" GEN 0 --------------------------->>>>  " + value);
+      return value;
+    }
+
+    for (let candidat of list) {
+      if (motherOf(member) === candidat || fatherOf(member) === candidat) {
+        console.log(
+          "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
+        );
+        return true;
+      }
+    }
+
+    console.log("No link found for " + member.firstName);
+    return false;
+  }
+
+  // Return wether the given member has a mother, father ot is linked
+  // to a member of the given list
   function isMemberLinkToList(member, list) {
     console.log(
       "Test if " + member.firstName + " is linked to any members of "
@@ -68,11 +108,7 @@ function buildReps(members) {
     }
 
     for (let candidat of list) {
-      if (
-        motherOf(member) === candidat ||
-        fatherOf(member) === candidat ||
-        linkOf(member) === candidat
-      ) {
+      if (linkOf(member) === candidat) {
         console.log(
           "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
         );
