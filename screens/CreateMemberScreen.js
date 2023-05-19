@@ -17,14 +17,13 @@ import {
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
-import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-import ImageUploader from "../components/ImageUploader";
+import ImagePicker from "../components/ImagePicker";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
@@ -235,7 +234,7 @@ export default function CreateMemberScreen() {
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
-            <ImageUploader
+            <ImagePicker
               uploadUrl={FETCH_API + "/upload"}
               onUpload={(data) => {
                 console.log("Image uploaded:", data);

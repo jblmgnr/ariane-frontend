@@ -5,7 +5,7 @@ import { pickImage } from "../modules/imagePicker";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { Avatar } from "@react-native-material/core";
 
-const ImageUploader = ({
+const ImagePicker = ({
   uploadUrl,
   onUpload,
   enabled = true,
@@ -71,4 +71,4 @@ const ImageUploader = ({
   );
 };
 
-export default ImageUploader;
+export default ImagePicker;
