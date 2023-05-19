@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import moment from "moment";
+import localization from "moment/locale/fr";
+
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useState } from "react";
 import { Button, Avatar } from "@react-native-material/core";
@@ -127,15 +130,21 @@ export default function MemberProfileScreen({ route, navigation }) {
             </Text>
             <Text style={styles.subtitle}>Date de naissance</Text>
             <Text style={styles.text}>
-              {member.birthDate ? member.birthDate : "Non renseigné"}
+              {member.birthDate !== null
+                ? moment(member.birthDate)
+                    .locale("fr", localization)
+                    .format("LL")
+                : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
-              {member.birthCity ? member.birthCity : "Non renseigné"}
+              {member.birthCity ? member.birthCity[0].name : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Ville actuelle</Text>
             <Text style={styles.text}>
-              {member.currentCity ? member.currentCity : "Non renseigné"}
+              {member.currentCity
+                ? member.currentCity[0].name
+                : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Job</Text>
             <Text style={styles.text}>

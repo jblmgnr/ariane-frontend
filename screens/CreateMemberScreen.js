@@ -10,6 +10,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SelectList } from "react-native-dropdown-select-list";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Button,
   TextInput,
@@ -38,8 +39,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: "",
-  currentCity: "",
+  birthCity: [{ name: null, longitude: 0, latitude: 0 }],
+  currentCity: [{ name: null, longitude: 0, latitude: 0 }],
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -68,6 +69,33 @@ export default function CreateMemberScreen({ navigation }) {
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
+
+  // States for the date picker
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState("date");
+  const [show, setShow] = useState(false);
+
+  // Functions for the date picker
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+    setMember({ ...member, birthDate: currentDate });
+    console.log(member);
+  };
+
+  const showMode = (currentMode) => {
+    if (Platform.OS === "android") {
+      setShow(true);
+      // for iOS, add a button that closes the picker
+    }
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode("date");
+  };
+
   // Ref
 
   // let statusMessage = "Empty";
@@ -171,7 +199,6 @@ export default function CreateMemberScreen({ navigation }) {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
   };
-
   // Save a member in DB and in reducer
   //====================================
   const saveMember = () => {
@@ -229,6 +256,9 @@ export default function CreateMemberScreen({ navigation }) {
     setMotherKey("");
     // Clear the image picker
     setReset((prevReset) => !prevReset);
+    //clear textInput birthCity and currentCity
+    // setBirthCity();
+    // setCurrentCity();
   };
 
   //check via fetch if city exists
@@ -287,8 +317,6 @@ export default function CreateMemberScreen({ navigation }) {
     navigation.navigate("TabNavigator");
   };
 
-  console.log("test debug", member.birthCity);
-
   return (
     <KeyboardAwareScrollView
       style={{
@@ -337,12 +365,14 @@ export default function CreateMemberScreen({ navigation }) {
             style={styles.input}
           />
           {/* TODO : Did : Format date*/}
-          <TextInput
-            label="Date de naissance"
-            variant="outlined"
-            onChangeText={(value) => setMember({ ...member, birthDate: value })}
-            value={member.birthDate}
-            style={styles.input}
+          <Text>Date de naissance</Text>
+          <DateTimePicker
+            testID="dateTimePicker"
+            locale="fr-FR"
+            value={date}
+            mode={mode}
+            is24Hour={true}
+            onChange={onChange}
           />
           <View style={styles.genderView}>
             <FontAwesome
@@ -438,7 +468,7 @@ export default function CreateMemberScreen({ navigation }) {
             label="Ville de naissance"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={member.birthCity}
+            value={member.birthCity[0].name}
             style={styles.input}
           />
           <Button
@@ -454,7 +484,7 @@ export default function CreateMemberScreen({ navigation }) {
             onChangeText={(value) =>
               setMember({ ...member, currentCity: value })
             }
-            value={member.currentCity}
+            value={member.currentCity[0].name}
             style={styles.input}
           />
           <Button
