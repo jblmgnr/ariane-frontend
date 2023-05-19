@@ -16,7 +16,7 @@ import { fontFamily } from "../modules/deco";
 const { getFetchAPI } = require("../modules/util");
 const FETCH_API = getFetchAPI();
 
-export default function MemberPRofile({ route, navigation }) {
+export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;
   const [fatherName, setFatherName] = useState("");
   const [motherName, setMotherName] = useState("");
