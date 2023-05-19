@@ -1,10 +1,17 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import ImagePicker from "./ImagePicker";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import { setMembers } from "../reducers/members";
+
+const { getFetchAPI } = require("../modules/util");
+
+const FETCH_API = getFetchAPI();
 
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
+  const dispatch = useDispatch();
 
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
@@ -18,6 +25,7 @@ const MembersList = ({ navigation }) => {
         borderRadius: 10,
         borderWidth: 1,
         borderColor: "#000",
+        flexWrap: "wrap",
       },
       avatar: {
         marginRight: 10,
@@ -25,7 +33,31 @@ const MembersList = ({ navigation }) => {
       text: {
         marginRight: 10,
       },
+      deleteContainer: {
+        marginLeft: "auto",
+      },
     });
+
+    const handleDelete = async (id) => {
+      try {
+        const response = await fetch(FETCH_API + `/members/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        // // This will update the redux store after successful deletion.
+        // dispatch(deleteMember(id));
+      } catch (error) {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      }
+      dispatch(setMembers(members.filter((member) => member._id !== id)));
+    };
     return (
       <View key={i} style={styles.container}>
         <View>
@@ -53,6 +85,16 @@ const MembersList = ({ navigation }) => {
             <Text style={styles.text}>Prénom : {member.firstName}</Text>
             <Text style={styles.text}>Nom : {member.lastName}</Text>
             <Text style={styles.text}>Surnom : {member.nickName}</Text>
+            <View style={styles.deleteContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDelete(member._id);
+                }}
+                style={styles.deleteButton}
+              >
+                <Icon name="delete" size={30} />
+              </TouchableOpacity>
+            </View>
           </TouchableOpacity>
         </View>
       </View>

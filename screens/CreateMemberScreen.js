@@ -13,18 +13,18 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import {
   Button,
   TextInput,
-  Stack,
-  IconButton,
+  ListItem,
+  Switch,
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import * as ImagePicker from "expo-image-picker";
+
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
-import ImageUploader from "../components/ImageUploader";
+import ImagePicker from "../components/ImagePicker";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
@@ -38,8 +38,20 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: "",
-  currentCity: "",
+  birthCity: [
+    {
+      name: "",
+      latitude: 0,
+      longitude: 0,
+    },
+  ],
+  currentCity: [
+    {
+      name: "",
+      latitude: 0,
+      longitude: 0,
+    },
+  ],
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -48,6 +60,7 @@ const initialMemberState = {
   father: null,
   mother: null,
   photo: null,
+  linked: null,
 };
 export default function CreateMemberScreen() {
   const dispatch = useDispatch();
@@ -62,10 +75,13 @@ export default function CreateMemberScreen() {
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
+  const [linkedKey, setLinkedKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
-
+  const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
+  const [birthCity, setBirthCity] = useState();
+  const [currentCity, setCurrentCity] = useState();
   // Ref
 
   // let statusMessage = "Empty";
@@ -77,17 +93,14 @@ export default function CreateMemberScreen() {
     }, 3000);
   };
 
-  // // Create contents of member drop down for Parent and Partner
-  // const memberItems = [];
-  // for (let i = 0; i < members.length; i++) {
-  //   const m = members[i];
-  //   // console.log("In create member item  ");
-  //   let value = m.firstName + " " + m.firstName;
-  //   if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
-  //   memberItems.push({ key: (i + 1).toString(), value, id: m._id });
-  // }
-
-  // showObjects(memberItems, "Members items");
+  const linkItems = [];
+  linkItems.push({ key: "0", value: "Aucun lien", id: null });
+  for (let i = 0; i < members.length; i++) {
+    const m = members[i];
+    let value = m.firstName + " " + m.lastName;
+    if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
+    linkItems.push({ key: (i + 1).toString(), value, id: m._id });
+  }
 
   const fatherItems = [];
   fatherItems.push({ key: "0", value: "Père inconnu", id: null });
@@ -98,6 +111,7 @@ export default function CreateMemberScreen() {
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
     fatherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
+
   const motherItems = [];
   motherItems.push({ key: "0", value: "Mère inconnue", id: null });
   for (let i = 0; i < members.length; i++) {
@@ -134,6 +148,14 @@ export default function CreateMemberScreen() {
     const parentId = item ? item.id : null;
     console.log("Mother id : ", parentId);
     setMember({ ...member, mother: parentId });
+  };
+
+  const onLinkChanged = (key) => {
+    // console.log("key parent : ", key, " to be found in ", memberItems);
+    const item = linkItems.find((r) => r.key === key);
+    const parentId = item ? item.id : null;
+    console.log("Link id : ", parentId);
+    setMember({ ...member, linked: parentId });
   };
 
   // Check validity of input fields before to save the member
@@ -191,10 +213,13 @@ export default function CreateMemberScreen() {
         nickName: member.nickName,
         father: member.father,
         mother: member.mother,
+        linked: member.linked,
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
         photo: member.photo,
+        birthCity: member.birthCity,
+        currentCity: member.currentCity,
       }),
     })
       .then((response) => response.json())
@@ -216,22 +241,86 @@ export default function CreateMemberScreen() {
     // TODO Did: Initialiser les drop down Pere et Mere !!!
     setFatherKey("");
     setMotherKey("");
+    // Clear the image picker
     setReset((prevReset) => !prevReset);
+    //clear textInput birthCity and currentCity
+    setBirthCity();
+    setCurrentCity();
+  };
+
+  //check via fetch if city exists
+  //-----------------------------------------------------------------------
+
+  const checkBirthCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        birthCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+    setBirthCity(data.features[0].properties.city);
+  };
+
+  const checkcurrentCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      setMember({ ...member, currentCity: "" });
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        currentCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+    setCurrentCity(data.features[0].properties.city);
   };
 
   return (
-    <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView
+      style={{
+        marginTop: Platform.OS === "android" ? 30 : 0,
+        backgroundColor: "#ffffff",
+      }}
+    >
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
-          <ImageUploader
-            uploadUrl={FETCH_API + "/upload"}
-            onUpload={(data) => {
-              console.log("Image uploaded:", data);
-              setMember({ ...member, photo: data.url });
-            }}
-            reset={reset}
-            diameter={100}
-          />
+          <View style={styles.imagePicker}>
+            <ImagePicker
+              uploadUrl={FETCH_API + "/upload"}
+              onUpload={(data) => {
+                console.log("Image uploaded:", data);
+                setMember({ ...member, photo: data.url });
+              }}
+              reset={reset}
+              diameter={100}
+              style={styles.imagePicker}
+            />
+          </View>
           <TextInput
             label="Prénom"
             variant="outlined"
@@ -281,7 +370,22 @@ export default function CreateMemberScreen() {
               }}
             />
           </View>
-          {/* <SelectList
+          <ListItem
+            title={
+              member.gender === Gender.female
+                ? "Issue de la famille"
+                : "Issu de la famille"
+            }
+            trailing={
+              <Switch
+                value={internal}
+                onValueChange={() => setInternal(!internal)}
+              />
+            }
+            onPress={() => setInternal(!enabled)}
+          />
+          {/* {internal && (
+          <SelectList
             onSelect={() => onRelationChanged(relationShipKey)}
             setSelected={setRelationShipKey}
             fontFamily={fontFamily}
@@ -289,35 +393,82 @@ export default function CreateMemberScreen() {
             search={false}
             boxStyles={{ borderRadius: 0 }} //override default styles
             defaultOption={{ key: "1", value: "Relation" }} //default selected option
-          /> */}
-          <SelectList
-            style={styles.input}
-            onSelect={() => onFatherChanged(fatherKey)}
-            setSelected={setFatherKey}
-            fontFamily={fontFamily}
-            data={fatherItems}
-            search={false}
-            boxStyles={[styles.input, { borderRadius: 5 }]}
-            placeholder="Père"
-            defaultOption={fatherItems[0]} //default selected option
-          />
-          <SelectList
-            style={styles.input}
-            onSelect={() => onMotherChanged(motherKey)}
-            setSelected={setMotherKey}
-            fontFamily={fontFamily}
-            data={motherItems}
-            search={false}
-            boxStyles={[styles.input, { borderRadius: 5 }]}
-            placeholder="Mère"
-            defaultOption={motherItems[0]} //default selected option
-          />
+          />)} */}
+          {internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onFatherChanged(fatherKey)}
+              setSelected={setFatherKey}
+              fontFamily={fontFamily}
+              data={fatherItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Père"
+              defaultOption={fatherItems[0]} //default selected option
+            />
+          )}
+          {internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onMotherChanged(motherKey)}
+              setSelected={setMotherKey}
+              fontFamily={fontFamily}
+              data={motherItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Mère"
+              defaultOption={motherItems[0]} //default selected option
+            />
+          )}
+          {!internal && (
+            <SelectList
+              style={styles.input}
+              onSelect={() => onLinkChanged(linkedKey)}
+              setSelected={setLinkedKey}
+              fontFamily={fontFamily}
+              data={linkItems}
+              search={false}
+              boxStyles={[styles.input, { borderRadius: 5 }]}
+              placeholder="Lié à"
+              defaultOption={linkItems[0]} //default selected option
+            />
+          )}
           <TextInput
             label="Activité"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, job: value })}
             value={member.job}
             style={styles.input}
+          />
+          <TextInput
+            label="Ville de naissance"
+            variant="outlined"
+            onChangeText={(value) => setMember({ ...member, birthCity: value })}
+            value={birthCity}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttonbirthcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkBirthCity}
+          />
+          <TextInput
+            label="Ville actuelle"
+            variant="outlined"
+            onChangeText={(value) =>
+              setMember({ ...member, currentCity: value })
+            }
+            value={currentCity}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttoncurrentcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkcurrentCity}
           />
         </View>
         <Text style={styles.statusMessage}>{statusMessage}</Text>
@@ -338,10 +489,31 @@ export default function CreateMemberScreen() {
 }
 
 const styles = StyleSheet.create({
+  validatebuttonbirthcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: 63,
+  },
+  validatebuttoncurrentcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: -6,
+  },
+
   container: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
     marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
@@ -365,6 +537,17 @@ const styles = StyleSheet.create({
   },
   statusMessage: {
     fontWeight: 700,
+    marginBottom: 5,
+  },
+  imagePicker: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  button: {
+    width: "80%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
     marginBottom: 5,
   },
 });
