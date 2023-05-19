@@ -145,7 +145,7 @@ export default function HomePageScreen({ navigation }) {
   };
 
   return (
-    <View styles={styles.container}>
+    <View style={styles.container}>
       <Text>HomePage Screen</Text>
       <Button
         onPress={() => {
@@ -156,23 +156,22 @@ export default function HomePageScreen({ navigation }) {
         style={styles.button}
         titleStyle={{ fontFamily: fontFamily }}
       />
-      {/* <MembersList /> */}
+
       <Text>Current tree: {user.tree}</Text>
       <Text>Member count : {members.length}</Text>
-      <Tree></Tree>
-      <Text>Under tree</Text>
+      <MembersList navigation={navigation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    height: 1000,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  // container: {
+  //   flex: 1,
+  //   height: 1000,
+  //   backgroundColor: "#fff",
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  // },
   button: {
     marginTop: 50,
   },

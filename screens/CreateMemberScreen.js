@@ -4,6 +4,7 @@ import {
   View,
   useWindowDimensions,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -47,7 +48,7 @@ const initialMemberState = {
   father: null,
   mother: null,
   photo: null,
-  linked: null,
+  partner: null,
 };
 export default function CreateMemberScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -62,12 +63,11 @@ export default function CreateMemberScreen({ navigation }) {
   const [relationShipKey, setRelationShipKey] = useState("");
   const [fatherKey, setFatherKey] = useState("");
   const [motherKey, setMotherKey] = useState("");
-  const [linkedKey, setLinkedKey] = useState("");
+  const [partnerKey, setPartnerKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-
   // Ref
 
   // let statusMessage = "Empty";
@@ -79,13 +79,13 @@ export default function CreateMemberScreen({ navigation }) {
     }, 3000);
   };
 
-  const linkItems = [];
-  linkItems.push({ key: "0", value: "Aucun lien", id: null });
+  const partnerItems = [];
+  partnerItems.push({ key: "0", value: "Aucun lien", id: null });
   for (let i = 0; i < members.length; i++) {
     const m = members[i];
     let value = m.firstName + " " + m.lastName;
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
-    linkItems.push({ key: (i + 1).toString(), value, id: m._id });
+    partnerItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
 
   const fatherItems = [];
@@ -136,12 +136,12 @@ export default function CreateMemberScreen({ navigation }) {
     setMember({ ...member, mother: parentId });
   };
 
-  const onLinkChanged = (key) => {
+  const onPartnerKeyChanged = (key) => {
     // console.log("key parent : ", key, " to be found in ", memberItems);
-    const item = linkItems.find((r) => r.key === key);
+    const item = partnerItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Link id : ", parentId);
-    setMember({ ...member, linked: parentId });
+    console.log("Partner id : ", parentId);
+    setMember({ ...member, partner: parentId });
   };
 
   // Check validity of input fields before to save the member
@@ -199,11 +199,13 @@ export default function CreateMemberScreen({ navigation }) {
         nickName: member.nickName,
         father: member.father,
         mother: member.mother,
-        linked: member.linked,
+        partner: member.partner,
         gender: member.gender,
         job: member.job,
         birthDate: member.birthDate,
         photo: member.photo,
+        birthCity: member.birthCity,
+        currentCity: member.currentCity,
       }),
     })
       .then((response) => response.json())
@@ -229,15 +231,70 @@ export default function CreateMemberScreen({ navigation }) {
     setReset((prevReset) => !prevReset);
   };
 
+  //check via fetch if city exists
+  //-----------------------------------------------------------------------
+
+  const checkBirthCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        birthCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+  };
+
+  const checkcurrentCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      setMember({ ...member, currentCity: "" });
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        currentCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+  };
+
   // load to TabNavigator
   // ------------------------------------------------------------
   const onPress = () => {
     navigation.navigate("TabNavigator");
   };
 
+  console.log("test debug", member.birthCity);
+
   return (
     <KeyboardAwareScrollView
-      style={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
+      style={{
+        marginTop: Platform.OS === "android" ? 30 : 60,
+        backgroundColor: "#ffffff",
+      }}
     >
       <View style={[styles.container, { height: height }]}>
         <View style={styles.buttoncontainer}>
@@ -360,14 +417,14 @@ export default function CreateMemberScreen({ navigation }) {
           {!internal && (
             <SelectList
               style={styles.input}
-              onSelect={() => onLinkChanged(linkedKey)}
-              setSelected={setLinkedKey}
+              onSelect={() => onPartnerKeyChanged(partnerKey)}
+              setSelected={setPartnerKey}
               fontFamily={fontFamily}
-              data={linkItems}
+              data={partnerItems}
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Lié à"
-              defaultOption={linkItems[0]} //default selected option
+              defaultOption={partnerItems[0]} //default selected option
             />
           )}
           <TextInput
@@ -376,6 +433,36 @@ export default function CreateMemberScreen({ navigation }) {
             onChangeText={(value) => setMember({ ...member, job: value })}
             value={member.job}
             style={styles.input}
+          />
+          <TextInput
+            label="Ville de naissance"
+            variant="outlined"
+            onChangeText={(value) => setMember({ ...member, birthCity: value })}
+            value={member.birthCity}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttonbirthcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkBirthCity}
+          />
+          <TextInput
+            label="Ville actuelle"
+            variant="outlined"
+            onChangeText={(value) =>
+              setMember({ ...member, currentCity: value })
+            }
+            value={member.currentCity}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttoncurrentcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkcurrentCity}
           />
         </View>
         <Text style={styles.statusMessage}>{statusMessage}</Text>
@@ -396,10 +483,32 @@ export default function CreateMemberScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  validatebuttonbirthcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: 63,
+  },
+  validatebuttoncurrentcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: -6,
+  },
+
   container: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",
