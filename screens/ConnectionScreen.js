@@ -218,6 +218,7 @@ export default function ConnectionScreen({ navigation }) {
             onChangeText={(value) =>
               setUserInfo({ ...userInfo, password: value })
             }
+            value={userInfo.password}
             style={styles.input}
           />
         </View>

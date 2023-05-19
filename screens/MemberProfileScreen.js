@@ -20,6 +20,7 @@ export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;
   const [fatherName, setFatherName] = useState("");
   const [motherName, setMotherName] = useState("");
+  const [partnerName, setpartnerName] = useState("");
 
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
@@ -84,6 +85,56 @@ export default function MemberProfileScreen({ route, navigation }) {
   };
   fetchMotherName();
 
+  // fetchFirstName and LastName of member.partner
+  const verifyispartner = () => {
+    fetch(FETCH_API + "/members")
+      .then((response) => response.json())
+      .then((datapartner) => {
+        const partner = datapartner.members.find(
+          (member) => member._id === member.partner
+        );
+        partner
+          ? setpartnerName(partner.firstName + " " + partner.lastName)
+          : setpartnerName("non renseigné");
+      })
+      .catch((error) => {
+        console.error("2 While connecting back-end on " + FETCH_API, error);
+      });
+  };
+  verifyispartner();
+
+  // check if member.father or member.mother or member.partner exist
+  const showRelation = () => {
+    if (member.father || member.mother) {
+      return (
+        <View style={styles.optionnalinfos}>
+          <Text style={styles.subtitle}>Proches</Text>
+          <Text style={styles.subtitle}>Père</Text>
+          <Text style={styles.text}>{fatherName}</Text>
+          <Text style={styles.subtitle}>Mère</Text>
+          <Text style={styles.text}>{motherName}</Text>
+        </View>
+      );
+    } else if (member.partner) {
+      return (
+        <View style={styles.optionnalinfos}>
+          <Text style={styles.subtitle}>Proches</Text>
+          <Text style={styles.subtitle}>Conjoint</Text>
+          <Text style={styles.text}>{partnerName}</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.optionnalinfos}>
+          <Text style={styles.subtitle}>Proches</Text>
+          <Text style={styles.text}>Non renseignés</Text>
+        </View>
+      );
+    }
+  };
+
+  showRelation();
+
   return (
     <View style={styles.maincontainer}>
       <View style={styles.buttoncontainer}>
@@ -131,11 +182,15 @@ export default function MemberProfileScreen({ route, navigation }) {
             </Text>
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
-              {member.birthCity ? member.birthCity : "Non renseigné"}
+              {member.birthCity === null
+                ? member.birthCity[0].name
+                : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Ville actuelle</Text>
             <Text style={styles.text}>
-              {member.currentCity ? member.currentCity : "Non renseigné"}
+              {member.currentCity === null
+                ? member.currentCity[0].name
+                : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Job</Text>
             <Text style={styles.text}>
@@ -152,14 +207,7 @@ export default function MemberProfileScreen({ route, navigation }) {
               {member.story ? member.story : "Non renseigné"}
             </Text>
           </View>
-
-          <View style={styles.optionnalinfos}>
-            <Text style={styles.subtitle}>Proches</Text>
-            <Text style={styles.subtitle}>Père</Text>
-            <Text>{fatherName}</Text>
-            <Text style={styles.subtitle}>Mère</Text>
-            <Text>{motherName}</Text>
-          </View>
+          {showRelation()}
         </ScrollView>
       </View>
     </View>

@@ -4,6 +4,7 @@ import {
   View,
   useWindowDimensions,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -37,8 +38,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: "",
-  currentCity: "",
+  birthCity: [{ name: null, latitude: 0, longitude: 0 }],
+  currentCity: [{ name: null, latitude: 0, longitude: 0 }],
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -67,7 +68,6 @@ export default function CreateMemberScreen() {
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-
   // Ref
 
   // let statusMessage = "Empty";
@@ -204,6 +204,8 @@ export default function CreateMemberScreen() {
         job: member.job,
         birthDate: member.birthDate,
         photo: member.photo,
+        birthCity: member.birthCity,
+        currentCity: member.currentCity,
       }),
     })
       .then((response) => response.json())
@@ -227,10 +229,68 @@ export default function CreateMemberScreen() {
     setMotherKey("");
     // Clear the image picker
     setReset((prevReset) => !prevReset);
+    //clear textInput birthCity and currentCity
+    // setBirthCity();
+    // setCurrentCity();
   };
 
+  //check via fetch if city exists
+  //-----------------------------------------------------------------------
+
+  const checkBirthCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        birthCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+  };
+
+  const checkcurrentCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      setMember({ ...member, currentCity: "" });
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        currentCity: [
+          {
+            name: data.features[0].properties.city,
+            latitude: data.features[0].geometry.coordinates[1],
+            longitude: data.features[0].geometry.coordinates[0],
+          },
+        ],
+      });
+      alert("Ville enregistrée");
+    }
+  };
+  console.log("member", member);
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
+    <KeyboardAwareScrollView
+      style={{
+        marginTop: Platform.OS === "android" ? 30 : 0,
+        backgroundColor: "#ffffff",
+      }}
+    >
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
@@ -364,6 +424,36 @@ export default function CreateMemberScreen() {
             value={member.job}
             style={styles.input}
           />
+          <TextInput
+            label="Ville de naissance"
+            variant="outlined"
+            onChangeText={(value) => setMember({ ...member, birthCity: value })}
+            value={member.birthCity[0].name}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttonbirthcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkBirthCity}
+          />
+          <TextInput
+            label="Ville actuelle"
+            variant="outlined"
+            onChangeText={(value) =>
+              setMember({ ...member, currentCity: value })
+            }
+            value={member.currentCity[0].name}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttoncurrentcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkcurrentCity}
+          />
         </View>
         <Text style={styles.statusMessage}>{statusMessage}</Text>
         <View>
@@ -383,10 +473,32 @@ export default function CreateMemberScreen() {
 }
 
 const styles = StyleSheet.create({
+  validatebuttonbirthcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: 63,
+  },
+  validatebuttoncurrentcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: -6,
+  },
+
   container: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",
