@@ -1,22 +1,40 @@
-const {
-  collapseTextChangeRangesAcrossMultipleVersions,
-  canHaveDecorators,
-} = require("typescript");
 const { showObject, showObjects } = require("./util");
 
+// Return Graphic Representation of the tree from members list
+//=============================================================
 function buildReps(members) {
   console.log("Total members : ", members.length);
 
-  let toDispatch = [...members];
+  const generations = distributeByGeneration(members);
 
-  console.log("Members to dispatch : ", toDispatch.length);
+  console.log(" FOUND ", generations.length + " generations");
+  let genNb = 0;
+  for (let gen of generations) {
+    console.log("========================================== Gen " + genNb);
+    for (let m of gen) {
+      console.log(" - " + m.firstName);
+    }
+    genNb++;
+  }
+
+  // For each generation, gather members with same ascendants
+  for (const gen of generations) {
+  }
+}
+
+// Returns an array of members per generation
+//===========================================
+function distributeByGeneration(members) {
+  let toDispatch = [...members];
   let genNb = 0;
   const generations = [];
 
   let previousGeneration = [];
   while (toDispatch.length > 0) {
     console.log(
-      " ========== Process Generation " + genNb + "============================"
+      " \u001b[1m========== Process Generation " +
+        genNb +
+        "================\u001b[0m"
     );
     let directChildren = [];
     // Dispatch members by generation
@@ -39,52 +57,55 @@ function buildReps(members) {
       }
     }
 
+    console.log(
+      "\u001b[1m  >>>>>>>>>>>>>>>>>>>>>>>>> Result of generation : " +
+        genNb +
+        "\u001b[0m"
+    );
+    console.log(" By parents ...");
+    for (let i of directChildren)
+      console.log("  \u001b[35m - " + i.firstName + " \u001b[0m");
+    console.log(" By Link ...");
+    for (let i of linkToDirectChildren)
+      console.log("  \u001b[34m - " + i.firstName + " \u001b[0m");
+
     currentGeneration = directChildren.concat(linkToDirectChildren);
 
-    console.log("  ------------ Result of generation ----------- " + genNb);
-    for (let i of currentGeneration)
-      console.log("  \u001b[35m - " + i.firstName + " \u001b[0m");
-
     toDispatch = toDispatch.filter((e) => !currentGeneration.includes(e));
-    console.log("AFter remove element");
-    console.log(toDispatch.length);
-    for (let i of toDispatch) console.log(" - " + i.firstName);
+    // console.log("AFter remove element");
+    // console.log(toDispatch.length);
+    // for (let i of toDispatch) console.log(" - " + i.firstName);
 
     previousGeneration = [...currentGeneration];
 
+    console.log(" \u001b[32mAdd a new Generation : " + genNb + "\u001b[0m");
     generations.push(currentGeneration);
+
     currentGeneration = [];
     genNb++;
   }
 
-  genNb = 0;
-  for (let gen of generations) {
-    console.log("======= Gen " + genNb);
-    for (let m of gen) {
-      console.log(" - " + m.firstName);
-    }
-    genNb++;
-  }
+  return generations;
 
   // Return wether the given member has a mother, father ot is linked
   // to a member of the given list
   function isMemberDirectChildOfAnyOfList(member, list) {
-    console.log(
-      "Test if " + member.firstName + " is linked to any members of "
-    );
-    for (let i of list) console.log(" - " + i.firstName);
+    // console.log(
+    //   "Test if " + member.firstName + " is direct child to any members of "
+    // );
+    // for (let i of list) console.log(" - " + i.firstName);
 
     if (list === null || list.length === 0) {
       const value = isRoot(member);
-      console.log(" GEN 0 --------------------------->>>>  " + value);
+      // console.log("                      ROOT  " + value);
       return value;
     }
 
     for (let candidat of list) {
       if (motherOf(member) === candidat || fatherOf(member) === candidat) {
-        console.log(
-          "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
-        );
+        // console.log(
+        //   "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
+        // );
         return true;
       }
     }
@@ -96,22 +117,22 @@ function buildReps(members) {
   // Return wether the given member has a mother, father ot is linked
   // to a member of the given list
   function isMemberLinkToList(member, list) {
-    console.log(
-      "Test if " + member.firstName + " is linked to any members of "
-    );
-    for (let i of list) console.log(" - " + i.firstName);
+    // console.log(
+    //   "Test if " + member.firstName + " is linked to any members of "
+    // );
+    // for (let i of list) console.log(" - " + i.firstName);
 
     if (list === null || list.length === 0) {
       const value = isRoot(member);
-      console.log(" GEN 0 --------------------------->>>>  " + value);
+      // console.log(" GEN 0 --------------------------->>>>  " + value);
       return value;
     }
 
     for (let candidat of list) {
       if (linkOf(member) === candidat) {
-        console.log(
-          "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
-        );
+        // console.log(
+        //   "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
+        // );
         return true;
       }
     }
@@ -123,24 +144,24 @@ function buildReps(members) {
   // Return wether the member is root
   //---------------------------------
   function isRoot(member) {
-    console.log("  Test if member " + member.firstName + " is root ");
+    // console.log("  Test if member " + member.firstName + " is root ");
     // showObject(member);
     if (member === null || member === undefined) {
       console.error("Null or Undefined member");
       return false;
     }
 
-    console.log(
-      " ???? member " + member.firstName + " has parent : " + hasParent(member)
-    );
+    // console.log(
+    //   " ???? member " + member.firstName + " has parent : " + hasParent(member)
+    // );
     if (!hasParent(member)) {
-      console.log("No mother and father, test if it has link");
+      // console.log("No mother and father, test if it has link");
       if (!hasLink(member)) {
-        console.log(
-          "\u001b[31m YYYYYYYYESSSSSSS \u001b[0m, member " +
-            member.firstName +
-            " is ROOT"
-        );
+        // console.log(
+        //   "\u001b[31m YYYYYYYYESSSSSSS \u001b[0m, member " +
+        //     member.firstName +
+        //     " is ROOT"
+        // );
         return true;
       }
       console.log("   Test the link ", member.linked);
