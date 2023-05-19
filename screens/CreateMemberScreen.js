@@ -38,20 +38,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: [
-    {
-      name: "",
-      latitude: 0,
-      longitude: 0,
-    },
-  ],
-  currentCity: [
-    {
-      name: "",
-      latitude: 0,
-      longitude: 0,
-    },
-  ],
+  birthCity: "",
+  currentCity: "",
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -244,8 +232,8 @@ export default function CreateMemberScreen() {
     // Clear the image picker
     setReset((prevReset) => !prevReset);
     //clear textInput birthCity and currentCity
-    setBirthCity();
-    setCurrentCity();
+    // setBirthCity();
+    // setCurrentCity();
   };
 
   //check via fetch if city exists
@@ -272,7 +260,6 @@ export default function CreateMemberScreen() {
       });
       alert("Ville enregistrée");
     }
-    setBirthCity(data.features[0].properties.city);
   };
 
   const checkcurrentCity = async () => {
@@ -297,7 +284,6 @@ export default function CreateMemberScreen() {
       });
       alert("Ville enregistrée");
     }
-    setCurrentCity(data.features[0].properties.city);
   };
 
   return (
@@ -444,7 +430,7 @@ export default function CreateMemberScreen() {
             label="Ville de naissance"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={birthCity}
+            value={member.birthCity}
             style={styles.input}
           />
           <Button
@@ -460,7 +446,7 @@ export default function CreateMemberScreen() {
             onChangeText={(value) =>
               setMember({ ...member, currentCity: value })
             }
-            value={currentCity}
+            value={member.currentCity}
             style={styles.input}
           />
           <Button
