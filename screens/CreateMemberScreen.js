@@ -4,6 +4,7 @@ import {
   View,
   useWindowDimensions,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -16,7 +17,6 @@ import {
   IconButton,
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -220,7 +220,7 @@ export default function CreateMemberScreen() {
   };
 
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: "red" }}>
+    <KeyboardAwareScrollView>
       <View style={[styles.container, { height: height }]}>
         <View style={styles.inputsView}>
           <ImageUploader
@@ -342,6 +342,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#fff",
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",

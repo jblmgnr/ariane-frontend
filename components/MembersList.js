@@ -1,7 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
-import MemberProfile from "../components/MemberProfile";
-import ImageUploader from "../components/ImageUploader";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
