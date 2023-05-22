@@ -10,7 +10,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SelectList } from "react-native-dropdown-select-list";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+
 import {
   Button,
   TextInput,
@@ -26,6 +26,7 @@ import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import ImagePicker from "../components/ImagePicker";
+import MyDatePicker from "../components/MyDatePicker";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
@@ -37,7 +38,7 @@ const initialMemberState = {
   firstName: "",
   lastName: "",
   nickName: "",
-  birthDate: "",
+  birthDate: null,
   deathDate: "",
   birthCity: { name: null, latitude: 0, longitude: 0 },
   currentCity: { name: null, latitude: 0, longitude: 0 },
@@ -69,32 +70,6 @@ export default function CreateMemberScreen({ navigation }) {
   const [member, setMember] = useState(initialMemberState);
   const [reset, setReset] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-
-  // States for the date picker
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
-
-  // Functions for the date picker
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-    setMember({ ...member, birthDate: currentDate });
-    console.log(member);
-  };
-
-  const showMode = (currentMode) => {
-    if (Platform.OS === "android") {
-      setShow(true);
-      // for iOS, add a button that closes the picker
-    }
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
 
   // Ref
 
@@ -267,6 +242,12 @@ export default function CreateMemberScreen({ navigation }) {
     navigation.navigate("TabNavigator");
   };
 
+  // Update birthDate in reducer
+  // ------------------------------------------------------------
+  const updateBirthDate = (birthDate) => {
+    setMember({ ...member, birthDate });
+  };
+
   //check via fetch if city exists
   //-----------------------------------------------------------------------
 
@@ -362,13 +343,9 @@ export default function CreateMemberScreen({ navigation }) {
           />
           {/* TODO : Did : Format date*/}
           <Text>Date de naissance</Text>
-          <DateTimePicker
-            testID="dateTimePicker"
-            locale="fr-FR"
-            value={date}
-            mode={mode}
-            is24Hour={true}
-            onChange={onChange}
+          <MyDatePicker
+            defaultValue={member.birthDate}
+            setValueCallback={updateBirthDate}
           />
           <View style={styles.genderView}>
             <FontAwesome
