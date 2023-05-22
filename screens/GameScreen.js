@@ -5,13 +5,27 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 export default function GameScreen({ navigation }) {
+  const user = useSelector((state) => state.user.value);
+  const members = useSelector((state) => state.members.value);
+
+  const verifyBeforeGoGameMap = () => {
+    const memberHaveCurrentCity = members.filter((e) => e.currentCity === null);
+    console.log("memberHaveCurrentCity", memberHaveCurrentCity.length);
+    if (memberHaveCurrentCity.length === 0) {
+      alert(
+        "Vos membres n'ont pas de ville de résidence, vous ne pouvez pas jouer ohlalala"
+      );
+      return;
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connais-tu ta famille ?</Text>
       <TouchableOpacity
-        onPress={() => navigation.navigate("MapGame")}
+        onPress={verifyBeforeGoGameMap}
         style={styles.gamebutton}
       >
         <Text style={styles.text}>Il habite où celui là ?</Text>

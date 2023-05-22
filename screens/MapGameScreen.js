@@ -55,13 +55,19 @@ export default function MapGameScreen({ navigation }) {
         e.currentCity.latitude !== 0 &&
         e.currentCity.longitude !== 0
     );
-    setMemberCoordinates(memberHaveCurrentCity);
+    memberHaveCurrentCity === []
+      ? alert("Aucun membre n'a de ville")
+      : setMemberCoordinates(memberHaveCurrentCity);
   };
 
   //apply verifyMembers when members change
   // ------------------------------------------------------------
   useEffect(() => {
     verifyMembers();
+    if (memberCoordinates === []) {
+      alert("Aucun membre n'a de ville");
+      return;
+    }
   }, [members]);
 
   //create a random member from memberCoordinates at the beginning of the game and only when the user click on "Jouer"
@@ -97,6 +103,10 @@ export default function MapGameScreen({ navigation }) {
   //compare tempCoordinates and randomMember with a margin of 100km and set result to true or false and showMarker to true when click on "valider ma réponse"
   // ------------------------------------------------------------
   const compareCoordinates = () => {
+    if (tempCoordinates === null) {
+      alert("Veuillez indiquer une réponse");
+      return;
+    }
     if (
       tempCoordinates.latitude < randomMember.currentCity.latitude + 1 &&
       tempCoordinates.latitude > randomMember.currentCity.latitude - 1 &&
