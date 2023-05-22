@@ -19,6 +19,7 @@ export default function RelationGameScreen({ navigation }) {
   // State
   const [randomMember, setRandomMember] = useState(null);
   const [memberHaveParents, setMemberHaveParents] = useState(null);
+  const [responseChoice, setResponseChoice] = useState(null);
 
   // filter members to get only the ones who have father or mother
   const verifyMembers = () => {
