@@ -27,6 +27,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import ImagePicker from "../components/ImagePicker";
 import MyDatePicker from "../components/MyDatePicker";
+import MyCitySelector from "../components/MyCitySelector";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
@@ -40,8 +41,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: null,
   deathDate: "",
-  birthCity: { name: null, latitude: 0, longitude: 0 },
-  currentCity: { name: null, latitude: 0, longitude: 0 },
+  birthCity: { name: "", latitude: 0, longitude: 0 },
+  currentCity: { name: "", latitude: 0, longitude: 0 },
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -68,10 +69,8 @@ export default function CreateMemberScreen({ navigation }) {
   const [partnerKey, setPartnerKey] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [member, setMember] = useState(initialMemberState);
-  const [reset, setReset] = useState(false);
+  const [resetImagePicker, setResetImagePicker] = useState(false);
   const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-
-  // Ref
 
   // let statusMessage = "Empty";
   const showStatusMessage = (message) => {
@@ -111,15 +110,8 @@ export default function CreateMemberScreen({ navigation }) {
     motherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
 
-  // console.log("Available members  : ", members.length);
-  // console.log("Member items  : ", memberItems);
-
   const onRelationChanged = (key) => {
-    console.log("key ship : ", key);
-
     const relationShip = RelationShipCombo.find((r) => r.key === key).value;
-    console.log("Relation ship : ", relationShip);
-
     setMember({ ...member, relationShip: relationShip });
   };
 
@@ -127,7 +119,7 @@ export default function CreateMemberScreen({ navigation }) {
     // console.log("key parent : ", key, " to be found in ", memberItems);
     const item = fatherItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("=========================> Father id : ", parentId);
+    // console.log("=========================> Father id : ", parentId);
     setMember({ ...member, father: parentId });
   };
 
@@ -135,7 +127,7 @@ export default function CreateMemberScreen({ navigation }) {
     // console.log("key parent : ", key, " to be found in ", memberItems);
     const item = motherItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Mother id : ", parentId);
+    // console.log("Mother id : ", parentId);
     setMember({ ...member, mother: parentId });
   };
 
@@ -143,20 +135,21 @@ export default function CreateMemberScreen({ navigation }) {
     // console.log("key parent : ", key, " to be found in ", memberItems);
     const item = partnerItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    console.log("Partner id : ", parentId);
+    // console.log("Partner id : ", parentId);
     setMember({ ...member, partner: parentId });
   };
 
+  let c = 0;
   // Check validity of input fields before to save the member
   //----------------------------------------------------------
-  const checkMember = () => {
+  const checkMember = async () => {
     let status = {
-      value: true,
+      result: true,
       error: [],
       warning: [],
     };
     if (member.gender === Gender.undefined) {
-      status.value = false;
+      status.result = false;
       status.error.push("Selectionner un genre !");
     }
     if (relationShipKey === RelationShip.none && member.group === null) {
@@ -164,7 +157,7 @@ export default function CreateMemberScreen({ navigation }) {
     }
 
     if (member.firstName === "" || member.lastName === "") {
-      status.value = false;
+      status.result = false;
       status.error.push("Les noms et prénoms sont obligatoires.");
     }
 
@@ -177,18 +170,16 @@ export default function CreateMemberScreen({ navigation }) {
   };
   // Save a member in DB and in reducer
   //====================================
-  const saveMember = () => {
-    const status = checkMember();
-    if (!status.value) {
+  const saveMember = async () => {
+    const status = await checkMember();
+
+    console.log(c++, "Status : ", status);
+    if (!status.result) {
       alert(status.error.join("\n"));
       return;
     }
 
     console.log("Status ", status);
-    console.log("Need tosave : ", member);
-    console.log("Fater : ", member.father);
-
-    showObject(member, "SAVINNNNNNNNNNNNNG");
 
     fetch(FETCH_API + "/members", {
       method: "POST",
@@ -220,21 +211,18 @@ export default function CreateMemberScreen({ navigation }) {
         console.log("Member Saved in DB OK ", member);
         dispatch(addMember(member));
         showStatusMessage(member.firstName + " " + member.lastName + " créé");
-      });
-    // .catch((error) => {
-    //   console.error("3 While connecting back-end on : " + FETCH_API, error);
-    // });
 
-    // Clear interface
-    setMember(initialMemberState);
-    // TODO Did: Initialiser les drop down Pere et Mere !!!
-    setFatherKey("");
-    setMotherKey("");
-    // Clear the image picker
-    setReset((prevReset) => !prevReset);
-    //clear textInput birthCity and currentCity
-    // setBirthCity();
-    // setCurrentCity();
+        // Clear interface
+        setMember(initialMemberState);
+        // TODO Did: Initialiser les drop down Pere et Mere !!!
+        setFatherKey("");
+        setMotherKey("");
+        // Clear the image picker
+        setResetImagePicker((prevReset) => !prevReset);
+        //clear textInput birthCity and currentCity
+        // setBirthCity("");
+        // setCurrentCity("");
+      });
   };
 
   // load to TabNavigator
@@ -249,48 +237,14 @@ export default function CreateMemberScreen({ navigation }) {
     setMember({ ...member, birthDate });
   };
 
-  //check via fetch if city exists
-  //-----------------------------------------------------------------------
-
-  const checkBirthCity = async () => {
-    const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
-    );
-    const data = await response.json();
-    if (data.features.length === 0) {
-      alert("Ville inconnue, veuillez vérifier l'orthographe");
-    } else {
-      setMember({
-        ...member,
-        birthCity: {
-          name: data.features[0].properties.city,
-          latitude: data.features[0].geometry.coordinates[1],
-          longitude: data.features[0].geometry.coordinates[0],
-        },
-      });
-      alert("Ville enregistrée");
-    }
+  const updateBirthCity = (city) => {
+    console.log("IN CREATE MEMEBER :: birth city ", city);
+    setMember({ ...member, birthCity: city });
   };
 
-  const checkcurrentCity = async () => {
-    const response = await fetch(
-      `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
-    );
-    const data = await response.json();
-    if (data.features.length === 0) {
-      setMember({ ...member, currentCity: "" });
-      alert("Ville inconnue, veuillez vérifier l'orthographe");
-    } else {
-      setMember({
-        ...member,
-        currentCity: {
-          name: data.features[0].properties.city,
-          latitude: data.features[0].geometry.coordinates[1],
-          longitude: data.features[0].geometry.coordinates[0],
-        },
-      });
-      alert("Ville enregistrée");
-    }
+  const updateCurrentCity = (city) => {
+    console.log("IN CREATE MEMEBER :: current city ", city);
+    setMember({ ...member, currentCity: city });
   };
 
   return (
@@ -314,7 +268,7 @@ export default function CreateMemberScreen({ navigation }) {
                 console.log("Image uploaded:", data);
                 setMember({ ...member, photo: data.url });
               }}
-              reset={reset}
+              reset={resetImagePicker}
               diameter={100}
               style={styles.imagePicker}
             />
@@ -341,7 +295,6 @@ export default function CreateMemberScreen({ navigation }) {
             style={styles.input}
           />
 
-          <Text>Date de naissance</Text>
           <MyDatePicker
             defaultValue={member.birthDate}
             setValueCallback={updateBirthDate}
@@ -380,17 +333,6 @@ export default function CreateMemberScreen({ navigation }) {
             }
             onPress={() => setInternal(!enabled)}
           />
-          {internal && (
-            <SelectList
-              onSelect={() => onRelationChanged(relationShipKey)}
-              setSelected={setRelationShipKey}
-              fontFamily={fontFamily}
-              data={RelationShipCombo}
-              search={false}
-              boxStyles={{ borderRadius: 0 }} //override default styles
-              defaultOption={{ key: "1", value: "Relation" }} //default selected option
-            />
-          )}
           {internal && (
             <SelectList
               style={styles.input}
@@ -437,35 +379,15 @@ export default function CreateMemberScreen({ navigation }) {
             value={member.job}
             style={styles.input}
           />
-          <TextInput
+          <MyCitySelector
             label="Ville de naissance"
-            variant="outlined"
-            onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={member.birthCity.name}
-            style={styles.input}
+            defaultValue={member.birthCity.name}
+            setValueCallback={updateBirthCity}
           />
-          <Button
-            title="valider"
-            uppercase={false}
-            style={styles.validatebuttonbirthcity}
-            titleStyle={{ fontFamily: fontFamily }}
-            onPress={checkBirthCity}
-          />
-          <TextInput
+          <MyCitySelector
             label="Ville actuelle"
-            variant="outlined"
-            onChangeText={(value) =>
-              setMember({ ...member, currentCity: value })
-            }
-            value={member.currentCity.name}
-            style={styles.input}
-          />
-          <Button
-            title="valider"
-            uppercase={false}
-            style={styles.validatebuttoncurrentcity}
-            titleStyle={{ fontFamily: fontFamily }}
-            onPress={checkcurrentCity}
+            defaultValue={member.currentCity.name}
+            setValueCallback={updateCurrentCity}
           />
         </View>
         <Text style={styles.statusMessage}>{statusMessage}</Text>

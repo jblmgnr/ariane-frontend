@@ -12,7 +12,19 @@ const hExternalMargin = 50;
 // Return Graphic Representation of the tree from members list
 //=============================================================
 function buildReps(members) {
+  let graphDef = {
+    width: 0,
+    height: 0,
+    boxWidth: memberWidth,
+    boxHeight: memberHeight,
+    nodes: [],
+  };
+
   console.log("Total members : ", members.length);
+  if (!members.length) {
+    console.log("No members found !!!");
+    return graphDef;
+  }
 
   const generations = distributeByGeneration(members);
 
@@ -62,21 +74,13 @@ function buildReps(members) {
     }
   }
 
-  const graphDef = convertsGenrationArrayIntoNodeArray(groupedGen);
+  graphDef = convertsGenrationArrayIntoNodeArray(groupedGen);
 
   console.log(graphDef);
 
   return graphDef;
 
   function convertsGenrationArrayIntoNodeArray(groupedGen) {
-    let graphDef = {
-      width: 0,
-      height: 0,
-      boxWidth: memberWidth,
-      boxHeight: memberHeight,
-      nodes: [],
-    };
-
     let biggestGeneration = 0;
     let maxNumber = 0;
     for (let genNb = 0; genNb < groupedGen.length; genNb++) {
