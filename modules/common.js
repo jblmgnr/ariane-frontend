@@ -6,8 +6,8 @@ export const Gender = {
 
 export const RelationShip = {
   none: "None",
-  childOf: "Child of",
-  groupOf: "In group",
+  blood: "Blood", // child od
+  partner: "In group",
 };
 
 export const RelationShipCombo = [
