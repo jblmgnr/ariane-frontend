@@ -1,10 +1,10 @@
-// DID COURANT !!!!!!!!!!!!!!
 import {
   StyleSheet,
   Text,
   View,
   useWindowDimensions,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -52,7 +52,7 @@ const initialMemberState = {
   photo: null,
   partner: null,
 };
-export default function CreateMemberScreen() {
+export default function CreateMemberScreen({ navigation }) {
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
 
@@ -174,7 +174,6 @@ export default function CreateMemberScreen() {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
   };
-
   // Save a member in DB and in reducer
   //====================================
   const saveMember = () => {
@@ -273,17 +272,41 @@ export default function CreateMemberScreen() {
     }
   };
 
+  const checkcurrentCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      setMember({ ...member, currentCity: "" });
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        currentCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
+      });
+      alert("Ville enregistrée");
+    }
+  };
+  console.log("member", member);
   return (
-    <KeyboardAwareScrollView style={{ backgroundColor: "white" }}>
-      <View style={styles.buttoncontainer}>
-        <TouchableOpacity
-          onPress={console.log("GO BACK")}
-          style={styles.backButton}
-        >
-          <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
-        </TouchableOpacity>
-      </View>
+    <KeyboardAwareScrollView
+      style={{
+        marginTop: Platform.OS === "android" ? 30 : 60,
+        backgroundColor: "#ffffff",
+      }}
+    >
       <View style={[styles.container, { height: height }]}>
+        <View style={styles.buttoncontainer}>
+          <TouchableOpacity onPress={onPress} style={styles.backButton}>
+            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
             <ImagePicker
@@ -414,6 +437,36 @@ export default function CreateMemberScreen() {
             value={member.job}
             style={styles.input}
           />
+          <TextInput
+            label="Ville de naissance"
+            variant="outlined"
+            onChangeText={(value) => setMember({ ...member, birthCity: value })}
+            value={member.birthCity.name}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttonbirthcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkBirthCity}
+          />
+          <TextInput
+            label="Ville actuelle"
+            variant="outlined"
+            onChangeText={(value) =>
+              setMember({ ...member, currentCity: value })
+            }
+            value={member.currentCity.name}
+            style={styles.input}
+          />
+          <Button
+            title="valider"
+            uppercase={false}
+            style={styles.validatebuttoncurrentcity}
+            titleStyle={{ fontFamily: fontFamily }}
+            onPress={checkcurrentCity}
+          />
         </View>
         <Text style={styles.statusMessage}>{statusMessage}</Text>
         <View>
@@ -433,10 +486,33 @@ export default function CreateMemberScreen() {
 }
 
 const styles = StyleSheet.create({
+  validatebuttonbirthcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: 150,
+    zIndex: 1,
+  },
+  validatebuttoncurrentcity: {
+    width: "30%",
+    borderRadius: 5,
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginLeft: 10,
+    position: "absolute",
+    right: 5,
+    bottom: 78,
+  },
+
   container: {
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
+    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",
