@@ -10,6 +10,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { SelectList } from "react-native-dropdown-select-list";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
 import {
   Button,
   TextInput,
@@ -25,6 +26,7 @@ import { fontFamily } from "../modules/deco";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import ImagePicker from "../components/ImagePicker";
+import MyDatePicker from "../components/MyDatePicker";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
 const { getFetchAPI, showObject, showObjects } = require("../modules/util");
@@ -36,7 +38,7 @@ const initialMemberState = {
   firstName: "",
   lastName: "",
   nickName: "",
-  birthDate: "",
+  birthDate: null,
   deathDate: "",
   birthCity: { name: null, latitude: 0, longitude: 0 },
   currentCity: { name: null, latitude: 0, longitude: 0 },
@@ -241,6 +243,12 @@ export default function CreateMemberScreen() {
     navigation.navigate("TabNavigator");
   };
 
+  // Update birthDate in reducer
+  // ------------------------------------------------------------
+  const updateBirthDate = (birthDate) => {
+    setMember({ ...member, birthDate });
+  };
+
   //check via fetch if city exists
   //-----------------------------------------------------------------------
 
@@ -311,12 +319,10 @@ export default function CreateMemberScreen() {
             style={styles.input}
           />
           {/* TODO : Did : Format date*/}
-          <TextInput
-            label="Date de naissance"
-            variant="outlined"
-            onChangeText={(value) => setMember({ ...member, birthDate: value })}
-            value={member.birthDate}
-            style={styles.input}
+          <Text>Date de naissance</Text>
+          <MyDatePicker
+            defaultValue={member.birthDate}
+            setValueCallback={updateBirthDate}
           />
           <View style={styles.genderView}>
             <FontAwesome
