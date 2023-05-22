@@ -230,6 +230,39 @@ export default function CreateMemberScreen() {
     setMotherKey("");
     // Clear the image picker
     setReset((prevReset) => !prevReset);
+    //clear textInput birthCity and currentCity
+    // setBirthCity();
+    // setCurrentCity();
+  };
+
+  // load to TabNavigator
+  // ------------------------------------------------------------
+  const onPress = () => {
+    navigation.navigate("TabNavigator");
+  };
+
+  //check via fetch if city exists
+  //-----------------------------------------------------------------------
+
+  const checkBirthCity = async () => {
+    const response = await fetch(
+      `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
+    );
+    const data = await response.json();
+    console.log("data", data.features[0]);
+    if (data.features.length === 0) {
+      alert("Ville inconnue, veuillez vérifier l'orthographe");
+    } else {
+      setMember({
+        ...member,
+        birthCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
+      });
+      alert("Ville enregistrée");
+    }
   };
 
   return (
@@ -432,5 +465,19 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontFamily: fontFamily,
     marginBottom: 5,
+  },
+  buttoncontainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    position: "absolute",
+    marginTop: 50,
+    width: "100%",
+  },
+  backButton: {
+    padding: 5,
+    margin: 10,
+    borderColor: "#7C4DFF",
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
