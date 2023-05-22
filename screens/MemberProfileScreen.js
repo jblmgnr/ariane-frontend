@@ -11,6 +11,7 @@ import moment from "moment";
 import localization from "moment/locale/fr";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { useState } from "react";
 import { Button, Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
@@ -150,7 +151,21 @@ export default function MemberProfileScreen({ route, navigation }) {
       </View>
 
       <View style={styles.header}>
-        <Avatar image={{ uri: member.photo }} size={100} />
+        {member.photo ? (
+          <Avatar
+            style={styles.avatar}
+            image={{ uri: member.photo }}
+            size={100}
+            color="black"
+          />
+        ) : (
+          <Avatar
+            style={styles.avatar}
+            icon={(props) => <Icon name="account" {...props} />}
+            color="black"
+            size={100}
+          />
+        )}
         <Text style={styles.title}>
           {member.firstName} {member.lastName}
         </Text>
@@ -190,13 +205,13 @@ export default function MemberProfileScreen({ route, navigation }) {
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
               {member.birthCity === null
-                ? member.birthCity[0].name
+                ? member.birthCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Ville actuelle</Text>
             <Text style={styles.text}>
               {member.currentCity === null
-                ? member.currentCity[0].name
+                ? member.currentCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Job</Text>

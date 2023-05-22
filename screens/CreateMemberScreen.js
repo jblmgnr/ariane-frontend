@@ -577,7 +577,6 @@ const styles = StyleSheet.create({
   buttoncontainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    alignItems: "left",
     position: "absolute",
     marginTop: 50,
     width: "100%",
