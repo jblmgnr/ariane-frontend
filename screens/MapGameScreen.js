@@ -55,25 +55,19 @@ export default function MapGameScreen({ navigation }) {
         e.currentCity.latitude !== 0 &&
         e.currentCity.longitude !== 0
     );
-    memberHaveCurrentCity === []
-      ? alert("Aucun membre n'a de ville")
-      : setMemberCoordinates(memberHaveCurrentCity);
+    setMemberCoordinates(memberHaveCurrentCity);
   };
 
   //apply verifyMembers when members change
   // ------------------------------------------------------------
   useEffect(() => {
     verifyMembers();
-    if (memberCoordinates === []) {
-      alert("Aucun membre n'a de ville");
-      return;
-    }
   }, [members]);
 
   //create a random member from memberCoordinates at the beginning of the game and only when the user click on "Jouer"
   // ------------------------------------------------------------
   const handlePlay = () => {
-    if (memberCoordinates.length > 0) {
+    if (memberCoordinates.length >= 5) {
       const firstRandomMember =
         memberCoordinates[Math.floor(Math.random() * memberCoordinates.length)];
       setRandomMember(firstRandomMember);
@@ -81,9 +75,9 @@ export default function MapGameScreen({ navigation }) {
       setIsModalVisible(false);
       return;
     }
-    if (memberCoordinates.length === 0) {
+    if (memberCoordinates.length < 5) {
       alert(
-        "Aucun membre n'a une ville actuelle renseignée, au minimum 5 membres doivent avoi rune ville de renseignée pour jouer. Cliquer sur 'ok' pour être redirigé vers la page d'acceuil."
+        "Trop peu de membres ont une ville de résidence, il en faut au moins 5 !"
       );
       navigation.navigate("TabNavigator", { screen: "Arbre" });
       return;

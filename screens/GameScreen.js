@@ -12,13 +12,19 @@ export default function GameScreen({ navigation }) {
   const members = useSelector((state) => state.members.value);
 
   const verifyBeforeGoGameMap = () => {
-    const memberHaveCurrentCity = members.filter((e) => e.currentCity === null);
-    console.log("memberHaveCurrentCity", memberHaveCurrentCity.length);
-    if (memberHaveCurrentCity.length === 0) {
+    const memberHaveCurrentCity = members.some(
+      // check if CurrentCity doesn't exist or is an empty string for any member
+      (member) => !member.currentCity || member.currentCity === ""
+    );
+    console.log("memberHaveCurrentCity", memberHaveCurrentCity);
+    console.log("members", members);
+
+    if (memberHaveCurrentCity) {
       alert(
         "Vos membres n'ont pas de ville de résidence, vous ne pouvez pas jouer ohlalala"
       );
-      return;
+    } else {
+      navigation.navigate("MapGame");
     }
   };
   return (
