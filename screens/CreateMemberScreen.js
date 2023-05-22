@@ -39,8 +39,8 @@ const initialMemberState = {
   nickName: "",
   birthDate: "",
   deathDate: "",
-  birthCity: [{ name: null, latitude: 0, longitude: 0 }],
-  currentCity: [{ name: null, latitude: 0, longitude: 0 }],
+  birthCity: { name: null, latitude: 0, longitude: 0 },
+  currentCity: { name: null, latitude: 0, longitude: 0 },
   relationShip: RelationShip.none,
   job: "",
   hobbies: "",
@@ -275,13 +275,11 @@ export default function CreateMemberScreen({ navigation }) {
     } else {
       setMember({
         ...member,
-        birthCity: [
-          {
-            name: data.features[0].properties.city,
-            latitude: data.features[0].geometry.coordinates[1],
-            longitude: data.features[0].geometry.coordinates[0],
-          },
-        ],
+        birthCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
       });
       alert("Ville enregistrée");
     }
@@ -299,24 +297,16 @@ export default function CreateMemberScreen({ navigation }) {
     } else {
       setMember({
         ...member,
-        currentCity: [
-          {
-            name: data.features[0].properties.city,
-            latitude: data.features[0].geometry.coordinates[1],
-            longitude: data.features[0].geometry.coordinates[0],
-          },
-        ],
+        currentCity: {
+          name: data.features[0].properties.city,
+          latitude: data.features[0].geometry.coordinates[1],
+          longitude: data.features[0].geometry.coordinates[0],
+        },
       });
       alert("Ville enregistrée");
     }
   };
-
-  // load to TabNavigator
-  // ------------------------------------------------------------
-  const onPress = () => {
-    navigation.navigate("TabNavigator");
-  };
-
+  console.log("member", member);
   return (
     <KeyboardAwareScrollView
       style={{
@@ -468,7 +458,7 @@ export default function CreateMemberScreen({ navigation }) {
             label="Ville de naissance"
             variant="outlined"
             onChangeText={(value) => setMember({ ...member, birthCity: value })}
-            value={member.birthCity[0].name}
+            value={member.birthCity.name}
             style={styles.input}
           />
           <Button
@@ -484,7 +474,7 @@ export default function CreateMemberScreen({ navigation }) {
             onChangeText={(value) =>
               setMember({ ...member, currentCity: value })
             }
-            value={member.currentCity[0].name}
+            value={member.currentCity.name}
             style={styles.input}
           />
           <Button
@@ -521,7 +511,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: 63,
+    bottom: 150,
+    zIndex: 1,
   },
   validatebuttoncurrentcity: {
     width: "30%",
@@ -531,7 +522,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: -6,
+    bottom: 78,
   },
 
   container: {
