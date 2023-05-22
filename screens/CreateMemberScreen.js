@@ -261,6 +261,12 @@ export default function CreateMemberScreen({ navigation }) {
     // setCurrentCity();
   };
 
+  // load to TabNavigator
+  // ------------------------------------------------------------
+  const onPress = () => {
+    navigation.navigate("TabNavigator");
+  };
+
   //check via fetch if city exists
   //-----------------------------------------------------------------------
 
