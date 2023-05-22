@@ -9,26 +9,29 @@ const r = size * 0.33;
 
 // Tree component
 //======================================================
-function Tree() {
+function Tree({ navigation }) {
+  console.log("navigation ", navigation);
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
 
   const graphDef = buildReps(members);
   console.log("Graph depth height : ", graphDef.height);
+
+  const showMemberProfile = (member) => {
+    console.log("Member selected : ", member.firstName);
+    navigation.navigate("MemberProfile", { member });
+  };
+
   const draw = graphDef.nodes.map((node, index) => {
     return (
       <NodeMember
         key={index}
         graphDef={graphDef}
-        onClicked={onMemberSelected}
+        onClicked={showMemberProfile}
         node={node}
       />
     );
   });
-
-  const onMemberSelected = (member) => {
-    console.log("Member selected : ", member.firstName);
-  };
 
   return (
     <View style={styles.container}>

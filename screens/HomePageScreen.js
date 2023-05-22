@@ -111,7 +111,7 @@ export default function HomePageScreen({ navigation }) {
 
       <Text>Current tree: {user.tree}</Text>
       <Text>Member count : {members.length}</Text>
-      <Tree></Tree>
+      <Tree navigation={navigation}></Tree>
     </View>
   );
 }

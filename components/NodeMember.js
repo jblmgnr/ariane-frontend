@@ -1,9 +1,5 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, TextInput } from "@react-native-material/core";
-import { fontFamily } from "../modules/deco";
-import { setMembers } from "../reducers/members";
 import { Gender } from "../modules/common";
 
 const maleColor = "cyan";
@@ -14,6 +10,8 @@ const femaleColor = "pink";
 export function NodeMember({ graphDef, node, onClicked }) {
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+
+  console.log("XXXXXXXXXXXXXXXXX", onClicked);
 
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
@@ -46,8 +44,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
         //        onPress={() => onClicked(node.member)}
         onPress={() => {
           console.log("Click on ", node.member.firstName);
-          // Did: Todo inverse data flow !!!
-          // onClicked(node.member.firstName);
+          onClicked(node.member);
         }}
       >
         <Image
