@@ -1,115 +1,64 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../reducers/user";
-import MapView from "react-native-maps";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
 
-import { Marker } from "react-native-maps";
-import * as Location from "expo-location";
-const { getFetchAPI, showObject, showObjects } = require("../modules/util");
-
-export default function GameScreen() {
-  const FETCH_API = getFetchAPI();
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.value);
-  const members = useSelector((state) => state.members.value);
-
-  //usestate
-  // ------------------------------------------------------------
-  const [currentPosition, setCurrentPosition] = useState(null);
-  const [tempCoordinates, setTempCoordinates] = useState(null);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status === "granted") {
-        Location.watchPositionAsync({ distanceInterval: 1000 }, (location) => {
-          setCurrentPosition(location.coords);
-        });
-      }
-    })();
-  }, []);
-
-  const handleLongPress = (e) => {
-    setTempCoordinates(e.nativeEvent.coordinate);
-    console.log("coordonnées", tempCoordinates.longitude);
-  };
-
-  const verifyCoordinates = () => {
-    fetch(FETCH_API + "/members/")
-      .then((response) => response.json())
-      .then((userMember) => {
-        const member = userMember.members.filter((e) => e.tree === user.tree);
-        console.log("member", member);
-      });
-  };
-  verifyCoordinates();
-
+export default function GameScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text>Game Screen</Text>
-
-      <MapView
-        onLongPress={(e) => handleLongPress(e)}
-        mapType="terrain"
-        initialRegion={{
-          latitude: 48.856614,
-          longitude: 2.3522219,
-          latitudeDelta: 10,
-          longitudeDelta: 10,
-        }}
-        style={styles.map}
-      ></MapView>
+      <Text style={styles.title}>Connais-tu ta famille ?</Text>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("MapGame")}
+        style={styles.gamebutton}
+      >
+        <Text style={styles.text}>Il habite où celui là ?</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("RelationGame")}
+        style={styles.gamebutton}
+      >
+        <Text style={styles.text}>Qui sont ses parents ?</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.gamebutton}>
+        <Text style={styles.text}>Kifékoi dans la vie ?</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.gamebutton}>
+        <Text style={styles.text}>T'as quel âge ?</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  title: {
+    fontSize: 30,
+    fontFamily: "Quicksand",
+    textAlign: "center",
+    margin: 20,
+    marginBottom: 100,
+  },
+
+  gamebutton: {
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+    width: 300,
+    alignItems: "center",
+    borderColor: "#7C4DFF",
+    borderWidth: 2,
+  },
+  text: {
+    fontSize: 20,
+    fontFamily: "Quicksand",
+    textAlign: "center",
+  },
   container: {
     flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  centeredView: {
-    flex: 1,
+    backgroundColor: "#ffffff",
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
-  },
-  modalView: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 30,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  input: {
-    width: 150,
-    borderBottomColor: "#ec6e5b",
-    borderBottomWidth: 1,
-    fontSize: 16,
-  },
-  button: {
-    width: 150,
-    alignItems: "center",
-    marginTop: 20,
-    paddingTop: 8,
-    backgroundColor: "#ec6e5b",
-    borderRadius: 10,
-  },
-  textButton: {
-    color: "#ffffff",
-    height: 24,
-    fontWeight: "600",
-    fontSize: 15,
   },
 });

@@ -25,7 +25,7 @@ export default function InviteScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView style={styles.scrollview}>
         <Text>Invite Screen</Text>
         <Button
           onPress={() => {
@@ -46,12 +46,18 @@ export default function InviteScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  scrollview: {
+    width: "100%",
+    felx: 1,
+  },
+
   container: {
     flex: 1,
     height: 1000,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
   },
   button: {
     marginTop: 50,

@@ -13,6 +13,8 @@ import members from "./reducers/members";
 import ConnectionScreen from "./screens/ConnectionScreen";
 import GameScreen from "./screens/GameScreen";
 import HomePageScreen from "./screens/HomePageScreen";
+import MapGameScreen from "./screens/MapGameScreen";
+import RelationGameScreen from "./screens/RelationGameScreen";
 import InviteScreen from "./screens/InviteScreen";
 import UsersParametersScreen from "./screens/UsersParametersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
@@ -79,6 +81,8 @@ export default function App() {
             <Stack.Screen name="Connection" component={ConnectionScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="CreateMember" component={CreateMemberScreen} />
+            <Stack.Screen name="MapGame" component={MapGameScreen} />
+            <Stack.Screen name="RelationGame" component={RelationGameScreen} />
             <Stack.Screen
               name="MemberProfile"
               component={MemberProfileScreen}
