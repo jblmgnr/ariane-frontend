@@ -81,54 +81,6 @@ export default function HomePageScreen({ navigation }) {
     })();
   }, []);
 
-  useEffect(() => {
-    // // If no tree exists, create the first default tree
-    // console.log("user in reduceer : ", user);
-    // if (!user.tree) {
-    //   console.log("Create the default tree !!!!!");
-    //   fetch(FETCH_API + "/trees", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       name: "Defaut by " + user.firstName,
-    //       userId: user.id,
-    //     }),
-    //   })
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       if (!data.result) {
-    //         alert(data.error);
-    //         return;
-    //       }
-    //       console.log("Result of POST query /tree ");
-    //       showObject(data);
-    //       console.log("Tree saved in DB with id ", data.tree._id);
-    //       dispatch(setTreeId(data.tree._id));
-    //     });
-    //   // .catch((error) => {
-    //   //   console.error("2 While connecting back-end on " + FETCH_API, error);
-    //   // });
-    // }
-    // // readMembersFromDataBase();
-    // // TODO: Did move the following block in the function
-    // // If a tree already exists load it ...
-    // fetch(FETCH_API + "/members/")
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     if (!data.result) {
-    //       alert(data.error);
-    //       return;
-    //     }
-    //     console.log("Find ", data.members.length, " members in DB");
-    //     dispatch(setMembers(data.members));
-    //   });
-    // // .catch((error) => {
-    // //   console.error("1 While connecting back-end on : " + FETCH_API, error);
-    // // });
-  }, []);
-
   const closePopup = (buttonPressed) => {
     console.log("Close with action : ", buttonPressed);
     setPopup("");

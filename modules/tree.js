@@ -1,11 +1,11 @@
 const { showObject, showObjects } = require("./util");
 import { RelationShip } from "./common";
 
-const memberWidth = 100;
-const memberHeight = 50;
+const memberWidth = 250;
+const memberHeight = 150;
 const hSpaceBetweenGroup = 100;
-const hSpaceBetweenMembers = 50;
-const vSpaceBetweenMembers = 100;
+const hSpaceBetweenMembers = 30;
+const vSpaceBetweenMembers = 50;
 const vExternalMargin = 50;
 const hExternalMargin = 50;
 
@@ -69,7 +69,13 @@ function buildReps(members) {
   return graphDef;
 
   function convertsGenrationArrayIntoNodeArray(groupedGen) {
-    let graphDef = { width: 0, height: 0, nodes: [] };
+    let graphDef = {
+      width: 0,
+      height: 0,
+      boxWidth: memberWidth,
+      boxHeight: memberHeight,
+      nodes: [],
+    };
 
     let biggestGeneration = 0;
     let maxNumber = 0;
@@ -101,18 +107,41 @@ function buildReps(members) {
       const yOri = yOriForGeneration(gen);
       console.log("Y ori", yOri);
       let xOri = hExternalMargin;
+      let xOriShift = 0; // To be centered to the parent
       for (const group of groupedGen[gen]) {
         for (const member of group.members) {
           console.log(" Build node for " + member.firstName);
-          xOri += memberWidth;
 
+          // if (xOriShift === 0) {
+          //   const father = fatherOf(member);
+          //   if (father) {
+          //     const nodeFather = nodeOfMember(father);
+          //     if (nodeFather) {
+          //       // Here we can center child to to their parent.
+          //       console.log(
+          //         "Try to center chid ",
+          //         member.firstName,
+          //         " under ",
+          //         father.firstName
+          //       );
+          //       xOriShift = nodeFather.x + memberWidth;
+          //       console.log(
+          //         "Add ",
+          //         xOriShift,
+          //         "to Ceneter child",
+          //         member.firstName
+          //       );
+          //     }
+          //   }
+          // }
           let node = {
-            x: xOri,
+            x: xOri + xOriShift,
             y: yOri,
             name: member.firstName,
             member: member,
           };
 
+          xOri += memberWidth + hSpaceBetweenMembers;
           showObject(node);
           graphDef.nodes.push(node);
         }
@@ -121,6 +150,10 @@ function buildReps(members) {
     }
 
     return graphDef;
+
+    function nodeOfMember(member) {
+      return graphDef.nodes.find((e) => e.member._id === member._id);
+    }
   }
 
   // Return y origin corrdinate for given generation index (start at 0)
@@ -143,8 +176,8 @@ function buildReps(members) {
       graphDef.width +=
         memberCount * memberWidth + (memberCount - 1) * hSpaceBetweenMembers;
     }
-    graphDef.width +=
-      (gen.length - 1) * hSpaceBetweenGroup + 2 * hExternalMargin;
+    graphDef.width += groupCount * hSpaceBetweenGroup + 2 * hExternalMargin;
+
     graphDef.height =
       genCount * memberHeight +
       (genCount - 1) * vSpaceBetweenMembers +
@@ -183,7 +216,7 @@ function buildReps(members) {
     for (const m of toBeAssociatedWithPartner) {
       const partner = partnerOf(m);
       if (partner === null) {
-        console.error(
+        console.log(
           "It seems that's member " +
             m.firstName +
             " has no relation with any one ! It will be ignored"

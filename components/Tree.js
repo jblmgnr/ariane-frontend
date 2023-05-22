@@ -1,17 +1,11 @@
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, TextInput } from "@react-native-material/core";
-import { fontFamily } from "../modules/deco";
-import { setMembers } from "../reducers/members";
-import { Canvas, Circle, Group, Text } from "@shopify/react-native-skia";
 import { buildReps } from "../modules/tree";
-import { Gender } from "../modules/common";
+import { NodeMember } from "../components/NodeMember";
 
-const size = 50;
+const size = 100;
 const r = size * 0.33;
-const maleColor = "cyan";
-const femaleColor = "pink";
 
 // Tree component
 //======================================================
@@ -21,39 +15,34 @@ function Tree() {
 
   const graphDef = buildReps(members);
   console.log("Graph depth height : ", graphDef.height);
-
   const draw = graphDef.nodes.map((node, index) => {
     return (
-      <Group blendMode="multiply">
-        <Circle
-          key={index}
-          cx={node.x}
-          cy={node.y}
-          r={r}
-          color={node.member.gender === Gender.male ? maleColor : femaleColor}
-        />
-      </Group>
+      <NodeMember
+        key={index}
+        graphDef={graphDef}
+        onClicked={onMemberSelected}
+        node={node}
+      />
     );
   });
 
-  // useEffect(() => {
-  //   // If no tree exists, create the first default tree
-  //   console.log("Show tree with ", members.length, " members in DB");
-  // }, []);
+  const onMemberSelected = (member) => {
+    console.log("Member selected : ", member.firstName);
+  };
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.text}>Ici, mon arbre</Text> */}
       <ScrollView>
         <ScrollView horizontal={true}>
-          <Canvas
-            style={[
-              styles.canvas,
-              { height: graphDef.height, width: graphDef.width },
-            ]}
+          <View
+            style={{
+              width: graphDef.width,
+              height: 2000, //graphDef.height,
+              // backgroundColor: "grey",
+            }}
           >
             {draw}
-          </Canvas>
+          </View>
         </ScrollView>
       </ScrollView>
     </View>
@@ -63,7 +52,7 @@ function Tree() {
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    backgroundColor: "#edcdb8",
+    backgroundColor: "#CCCCCC",
     alignItems: "center",
     justifyContent: "center",
   },
