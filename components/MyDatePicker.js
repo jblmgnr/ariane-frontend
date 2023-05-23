@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import { View, Platform, TouchableOpacity, Text } from "react-native";
-import { Button } from "@react-native-material/core";
+import {
+  View,
+  Platform,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
+import { Button, TextInput } from "@react-native-material/core";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { fontFamily } from "../modules/deco";
 
 import moment from "moment";
 import localization from "moment/locale/fr";
 
 const MyDatePicker = ({ defaultValue, setValueCallback }) => {
-  const [date, setDate] = useState(new Date());
+  // console.log("Default date", defaultValue);
+  const [date, setDate] = useState(new Date(defaultValue));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
 
@@ -31,7 +39,15 @@ const MyDatePicker = ({ defaultValue, setValueCallback }) => {
   return (
     <View>
       <TouchableOpacity onPress={showDatepicker}>
-        <Text>Sélectionnez une date de naissance</Text>
+        <TextInput
+          label="Date de naissance"
+          variant="outlined"
+          onChangeText={(value) => setMember({ ...member, job: value })}
+          value={date ? moment(date).format("LL") : "Non renseignée"}
+          style={styles.input}
+          editable={false}
+          onPress={onChange}
+        />
       </TouchableOpacity>
       {show && (
         <DateTimePicker
@@ -44,9 +60,17 @@ const MyDatePicker = ({ defaultValue, setValueCallback }) => {
           style={{ width: 200 }}
         />
       )}
-      <Text>Date de naissance choisie : {moment(date).format("LL")}</Text>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    width: "100%",
+    fontFamily: fontFamily,
+    marginBottom: 5,
+    marginTop: 5,
+  },
+});
 
 export default MyDatePicker;
