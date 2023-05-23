@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#fff",
-    marginTop: Platform.OS === "ios" ? 50 : 30,
+    marginTop: Platform.OS === "ios" ? 20 : 30,
   },
   header: {
     alignItems: "center",
