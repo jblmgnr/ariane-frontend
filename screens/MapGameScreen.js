@@ -50,30 +50,23 @@ export default function MapGameScreen({ navigation }) {
   const verifyMembers = () => {
     const memberHaveCurrentCity = members.filter(
       (e) =>
-        e.tree === user.tree &&
         e.currentCity !== null &&
         e.currentCity.latitude !== 0 &&
         e.currentCity.longitude !== 0
     );
-    memberHaveCurrentCity === []
-      ? alert("Aucun membre n'a de ville")
-      : setMemberCoordinates(memberHaveCurrentCity);
+    setMemberCoordinates(memberHaveCurrentCity);
   };
 
   //apply verifyMembers when members change
   // ------------------------------------------------------------
   useEffect(() => {
     verifyMembers();
-    if (memberCoordinates === []) {
-      alert("Aucun membre n'a de ville");
-      return;
-    }
   }, [members]);
 
   //create a random member from memberCoordinates at the beginning of the game and only when the user click on "Jouer"
   // ------------------------------------------------------------
   const handlePlay = () => {
-    if (memberCoordinates.length > 0) {
+    if (memberCoordinates.length >= 5) {
       const firstRandomMember =
         memberCoordinates[Math.floor(Math.random() * memberCoordinates.length)];
       setRandomMember(firstRandomMember);
@@ -81,9 +74,9 @@ export default function MapGameScreen({ navigation }) {
       setIsModalVisible(false);
       return;
     }
-    if (memberCoordinates.length === 0) {
+    if (memberCoordinates.length < 5) {
       alert(
-        "Aucun membre n'a une ville actuelle renseignée, au minimum 5 membres doivent avoi rune ville de renseignée pour jouer. Cliquer sur 'ok' pour être redirigé vers la page d'acceuil."
+        "Trop peu de membres ont une ville de résidence, il en faut au moins 5 ! Complète tes membres ou rajoutes-en !"
       );
       navigation.navigate("TabNavigator", { screen: "Arbre" });
       return;
@@ -203,7 +196,7 @@ export default function MapGameScreen({ navigation }) {
             onPress={() => navigation.navigate("TabNavigator")}
             style={styles.buttonback}
           >
-            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+            <Text style={styles.textreturn}>Retour</Text>
           </TouchableOpacity>
           <Avatar image={{ uri: randomMember.photo }} size={25} />
           <Text style={styles.questiontext}>
@@ -257,12 +250,20 @@ export default function MapGameScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  textreturn: {
+    fontFamily: "Quicksand",
+    fontSize: 18,
+    textAlign: "center",
+    color: "#ffffff",
+  },
+
   buttonback: {
     padding: 5,
     margin: 10,
-    borderColor: "#7C4DFF",
-    borderWidth: 1,
+    backgroundColor: "#7C4DFF",
     borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   questiontext: {
     fontFamily: "Quicksand",
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 5,
     marginTop: Platform.OS === "ios" ? 50 : 40,
     zIndex: 1,
     flexWrap: "wrap",

@@ -14,9 +14,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../reducers/user";
-import { Button, TextInput } from "@react-native-material/core";
+import { Button, TextInput, IconButton } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -39,6 +40,7 @@ export default function ConnectionScreen({ navigation }) {
     email: "dlascaux@yahoo.fr",
     password: "a",
   });
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   // load font family Quicksand useFont expo-font
   // ------------------------------------------------------------
@@ -159,16 +161,18 @@ export default function ConnectionScreen({ navigation }) {
                 setSubscribe(false);
               }}
               title="Connexion"
-              uppercase={false}
-              variant={doSubscribe ? "text" : "contained"}
+              uppercase={true}
+              variant={doSubscribe ? "outlined" : "contained"}
+              titleStyle={{ fontFamily: "Quicksand" }}
             />
             <Button
               onPress={() => {
                 setSubscribe(true);
               }}
-              uppercase={false}
+              uppercase={true}
               title={"Inscription"}
-              variant={doSubscribe ? "contained" : "text"}
+              variant={doSubscribe ? "contained" : "outlined"}
+              titleStyle={{ fontFamily: "Quicksand" }}
             />
           </View>
         </View>
@@ -183,6 +187,7 @@ export default function ConnectionScreen({ navigation }) {
               }
               value={userInfo.firstName}
               style={[styles.input]}
+              inputStyle={{ fontFamily: "Quicksand" }}
             />
           )}
 
@@ -195,6 +200,7 @@ export default function ConnectionScreen({ navigation }) {
               }
               value={userInfo.lastName}
               style={[styles.input]}
+              inputStyle={{ fontFamily: "Quicksand" }}
             />
           )}
 
@@ -206,6 +212,7 @@ export default function ConnectionScreen({ navigation }) {
             value={userInfo.email}
             style={styles.input}
             color={isEmailValid ? "#6101EE" : "#FF0000"}
+            inputStyle={{ fontFamily: "Quicksand" }}
           />
           {isEmailErrorVisible && (
             <Text style={styles.alert}>L'adresse mail n'est pas valide</Text>
@@ -214,12 +221,20 @@ export default function ConnectionScreen({ navigation }) {
           <TextInput
             label="Mot de passe"
             variant="outlined"
-            secureTextEntry={true}
+            secureTextEntry={!isPasswordVisible}
             onChangeText={(value) =>
               setUserInfo({ ...userInfo, password: value })
             }
             value={userInfo.password}
             style={styles.input}
+            trailing={(props) => (
+              <IconButton
+                icon={(props) => <Icon name="eye" {...props} />}
+                {...props}
+                onPress={() => setPasswordVisible(!isPasswordVisible)}
+              />
+            )}
+            inputStyle={{ fontFamily: "Quicksand" }}
           />
         </View>
         <Button
@@ -239,15 +254,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#fff",
+    marginTop: Platform.OS === "ios" ? 20 : 30,
   },
   header: {
     alignItems: "center",
     justifyContent: "space-evenly",
   },
   image: {
-    width: 170,
-    height: 170,
-    borderRadius: 70,
+    width: 200,
+    height: 200,
+    borderRadius: 500,
     margin: 20,
   },
   title: {
@@ -259,6 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     width: "100%",
+    marginTop: 20,
   },
   inputsView: {
     justifyContent: "center",
@@ -273,6 +290,8 @@ const styles = StyleSheet.create({
   },
   alert: {
     color: "#FF0000",
+    fontFamily: "Quicksand",
+    marginBottom: 10,
   },
   button: {
     fontFamily: fontFamily,

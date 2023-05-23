@@ -34,6 +34,7 @@ const MyDatePicker = ({ defaultValue, setValueCallback }) => {
 
   const showDatepicker = () => {
     showMode("date");
+    console.log("showDatepicker test");
   };
 
   return (

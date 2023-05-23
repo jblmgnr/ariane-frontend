@@ -99,7 +99,6 @@ export default function HomePageScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text>HomePage Screen</Text>
       <Button
         onPress={() => {
           navigation.navigate("CreateMember", { create: true });
@@ -107,24 +106,28 @@ export default function HomePageScreen({ navigation }) {
         title="Ajoute un membre"
         uppercase={false}
         style={styles.button}
-        titleStyle={{ fontFamily: fontFamily }}
+        titleStyle={{ fontFamily: "Quicksand" }}
       />
 
-      <Text>Member count : {members.length}</Text>
+      <Text style={{ fontFamily: "Quicksand", color: "white" }}>
+        Personnes présentes dans l'arbre : {members.length}
+      </Text>
       <Tree navigation={navigation}></Tree>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   height: 1000,
-  //   backgroundColor: "#fff",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  // },
+  container: {
+    flex: 1,
+    height: "100%",
+    backgroundColor: "#363B44",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   button: {
-    marginTop: 50,
+    marginTop: Platform.OS === "IOS" ? 0 : 200,
+    padding: 5,
+    marginBottom: 10,
   },
 });

@@ -1,6 +1,5 @@
-import { StyleSheet, View, ScrollView, Text } from "react-native";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { StyleSheet, View, ScrollView, Text, Image } from "react-native";
+import { useSelector } from "react-redux";
 import { buildReps } from "../modules/tree";
 import { NodeMember } from "../components/NodeMember";
 
@@ -44,6 +43,10 @@ function Tree({ navigation }) {
               // backgroundColor: "grey",
             }}
           >
+            <Image
+              source={require("../assets/logo.png")}
+              style={styles.backgroundImage}
+            />
             {draw}
           </View>
         </ScrollView>
@@ -53,9 +56,15 @@ function Tree({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover", // or 'stretch'
+    zIndex: -1,
+    opacity: 0.5,
+  },
+
   container: {
     height: "100%",
-    backgroundColor: "#CCCCCC",
     alignItems: "center",
     justifyContent: "center",
   },

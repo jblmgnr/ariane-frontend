@@ -2,8 +2,8 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Gender } from "../modules/common";
 
-const maleColor = "cyan";
-const femaleColor = "pink";
+const maleColor = "#91E3FA";
+const femaleColor = "#FAA6D9";
 
 // Tree component
 //======================================================
@@ -21,8 +21,8 @@ export function NodeMember({ graphDef, node, onClicked }) {
   // Image size: 80% of min of with and height
   const imageSize =
     graphDef.boxWidth > graphDef.boxHeight
-      ? graphDef.boxHeight * 0.7
-      : graphDef.boxWidth * 0.7;
+      ? graphDef.boxHeight * 0.5
+      : graphDef.boxWidth * 0.5;
   return (
     <View
       style={[
@@ -34,7 +34,9 @@ export function NodeMember({ graphDef, node, onClicked }) {
           width: graphDef.boxWidth,
           height: graphDef.boxHeight,
           backgroundColor: backgroundColor,
-          borderRadius: 10,
+          borderRadius: 150,
+          justifyContent: "center",
+          alignItems: "center",
         },
       ]}
     >
@@ -85,8 +87,8 @@ const styles = StyleSheet.create({
   },
   image: {
     backgroundColor: "gray",
-    // borderBottomLeftRadius: 100,
     resizeMode: "cover",
-    borderRadius: 50,
+    borderRadius: 100,
+    margin: 5,
   },
 });

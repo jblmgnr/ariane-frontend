@@ -3,6 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { removeMember } from "../reducers/members";
+import * as Font from "expo-font";
+import { useFonts } from "expo-font";
+import React from "react";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -11,6 +14,15 @@ const FETCH_API = getFetchAPI();
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
   const dispatch = useDispatch();
+  // load font family Quicksand Bold useFont expo-font
+  // ------------------------------------------------------------
+  const [loaded] = useFonts({
+    QuicksandBold: require("../assets/fonts/Quicksand-Bold.ttf"),
+  });
+
+  if (!loaded) {
+    return null;
+  }
 
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
@@ -30,7 +42,10 @@ const MembersList = ({ navigation }) => {
         marginRight: 10,
       },
       text: {
-        marginRight: 10,
+        fontFamily: "Quicksand",
+      },
+      subtitle: {
+        fontFamily: "QuicksandBold",
       },
       deleteContainer: {
         marginLeft: "auto",
@@ -84,9 +99,18 @@ const MembersList = ({ navigation }) => {
                 size={30}
               />
             )}
-            <Text style={styles.text}>Prénom : {member.firstName}</Text>
-            <Text style={styles.text}>Nom : {member.lastName}</Text>
-            <Text style={styles.text}>Surnom : {member.nickName}</Text>
+            <Text style={styles.subtitle}>- Prénom :</Text>
+            <Text style={styles.text}> {member.firstName} - </Text>
+
+            <Text style={styles.subtitle}>Nom : </Text>
+            <Text style={styles.text}> {member.lastName} - </Text>
+
+            {member.nickName && (
+              <>
+                <Text style={styles.subtitle}>Surnom :</Text>
+                <Text style={styles.text}> {member.nickName}</Text>
+              </>
+            )}
             <View style={styles.deleteContainer}>
               <TouchableOpacity
                 onPress={() => {
