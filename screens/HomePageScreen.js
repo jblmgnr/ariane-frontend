@@ -27,6 +27,7 @@ export default function HomePageScreen({ navigation }) {
   // Reducers
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+  console.log("Member found in database : ", members.length);
 
   useEffect(() => {
     (async () => {
@@ -109,7 +110,6 @@ export default function HomePageScreen({ navigation }) {
         titleStyle={{ fontFamily: fontFamily }}
       />
 
-      <Text>Current tree: {user.tree}</Text>
       <Text>Member count : {members.length}</Text>
       <Tree navigation={navigation}></Tree>
     </View>

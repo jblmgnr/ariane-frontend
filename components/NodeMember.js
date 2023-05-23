@@ -11,8 +11,6 @@ export function NodeMember({ graphDef, node, onClicked }) {
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
 
-  console.log("XXXXXXXXXXXXXXXXX", onClicked);
-
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
   const photo_uri =
