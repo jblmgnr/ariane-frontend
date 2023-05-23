@@ -31,7 +31,10 @@ const MembersList = ({ navigation }) => {
         marginRight: 10,
       },
       text: {
-        marginRight: 10,
+        fontFamily: "Quicksand",
+      },
+      subtitle: {
+        fontFamily: "QuicksandBold",
       },
       deleteContainer: {
         marginLeft: "auto",
@@ -82,9 +85,18 @@ const MembersList = ({ navigation }) => {
                 size={30}
               />
             )}
-            <Text style={styles.text}>Prénom : {member.firstName}</Text>
-            <Text style={styles.text}>Nom : {member.lastName}</Text>
-            <Text style={styles.text}>Surnom : {member.nickName}</Text>
+            <Text style={styles.subtitle}>- Prénom :</Text>
+            <Text style={styles.text}> {member.firstName} - </Text>
+
+            <Text style={styles.subtitle}>Nom : </Text>
+            <Text style={styles.text}> {member.lastName} - </Text>
+
+            {member.nickName && (
+              <>
+                <Text style={styles.subtitle}>Surnom :</Text>
+                <Text style={styles.text}> {member.nickName}</Text>
+              </>
+            )}
             <View style={styles.deleteContainer}>
               <TouchableOpacity
                 onPress={() => {

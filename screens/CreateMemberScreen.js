@@ -38,7 +38,7 @@ const initialMemberState = {
   firstName: "",
   lastName: "",
   nickName: "",
-  birthDate: null,
+  birthDate: "",
   deathDate: "",
   birthCity: { name: null, latitude: 0, longitude: 0 },
   currentCity: { name: null, latitude: 0, longitude: 0 },
@@ -167,7 +167,6 @@ export default function CreateMemberScreen({ navigation }) {
       status.value = false;
       status.error.push("Les noms et prénoms sont obligatoires.");
     }
-
     return status;
   };
 
@@ -257,6 +256,7 @@ export default function CreateMemberScreen({ navigation }) {
       `https://api-adresse.data.gouv.fr/search/?q=${member.birthCity}&limit=1`
     );
     const data = await response.json();
+    console.log("data", data.features[0]);
     if (data.features.length === 0) {
       alert("Ville inconnue, veuillez vérifier l'orthographe");
     } else {
@@ -277,6 +277,7 @@ export default function CreateMemberScreen({ navigation }) {
       `https://api-adresse.data.gouv.fr/search/?q=${member.currentCity}&limit=1`
     );
     const data = await response.json();
+    console.log("data", data.features[0]);
     if (data.features.length === 0) {
       setMember({ ...member, currentCity: "" });
       alert("Ville inconnue, veuillez vérifier l'orthographe");
@@ -292,7 +293,7 @@ export default function CreateMemberScreen({ navigation }) {
       alert("Ville enregistrée");
     }
   };
-
+  console.log("member", member);
   return (
     <KeyboardAwareScrollView
       style={{
@@ -300,7 +301,7 @@ export default function CreateMemberScreen({ navigation }) {
         backgroundColor: "#ffffff",
       }}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { height: height }]}>
         <View style={styles.buttoncontainer}>
           <TouchableOpacity onPress={onPress} style={styles.backButton}>
             <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
@@ -340,7 +341,7 @@ export default function CreateMemberScreen({ navigation }) {
             value={member.nickName}
             style={styles.input}
           />
-
+          {/* TODO : Did : Format date*/}
           <Text>Date de naissance</Text>
           <MyDatePicker
             defaultValue={member.birthDate}
@@ -380,17 +381,16 @@ export default function CreateMemberScreen({ navigation }) {
             }
             onPress={() => setInternal(!enabled)}
           />
-          {internal && (
-            <SelectList
-              onSelect={() => onRelationChanged(relationShipKey)}
-              setSelected={setRelationShipKey}
-              fontFamily={fontFamily}
-              data={RelationShipCombo}
-              search={false}
-              boxStyles={{ borderRadius: 0 }} //override default styles
-              defaultOption={{ key: "1", value: "Relation" }} //default selected option
-            />
-          )}
+          {/* {internal && (
+          <SelectList
+            onSelect={() => onRelationChanged(relationShipKey)}
+            setSelected={setRelationShipKey}
+            fontFamily={fontFamily}
+            data={RelationShipCombo}
+            search={false}
+            boxStyles={{ borderRadius: 0 }} //override default styles
+            defaultOption={{ key: "1", value: "Relation" }} //default selected option
+          />)} */}
           {internal && (
             <SelectList
               style={styles.input}
@@ -494,7 +494,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: 63,
+    bottom: 150,
+    zIndex: 1,
   },
   validatebuttoncurrentcity: {
     width: "30%",
@@ -504,7 +505,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: -6,
+    bottom: 78,
   },
 
   container: {
