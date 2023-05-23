@@ -50,7 +50,6 @@ export default function MapGameScreen({ navigation }) {
   const verifyMembers = () => {
     const memberHaveCurrentCity = members.filter(
       (e) =>
-        e.tree === user.tree &&
         e.currentCity !== null &&
         e.currentCity.latitude !== 0 &&
         e.currentCity.longitude !== 0
@@ -77,7 +76,7 @@ export default function MapGameScreen({ navigation }) {
     }
     if (memberCoordinates.length < 5) {
       alert(
-        "Trop peu de membres ont une ville de résidence, il en faut au moins 5 !"
+        "Trop peu de membres ont une ville de résidence, il en faut au moins 5 ! Complète tes membres ou rajoutes-en !"
       );
       navigation.navigate("TabNavigator", { screen: "Arbre" });
       return;
@@ -197,7 +196,7 @@ export default function MapGameScreen({ navigation }) {
             onPress={() => navigation.navigate("TabNavigator")}
             style={styles.buttonback}
           >
-            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+            <Text style={styles.textreturn}>Retour</Text>
           </TouchableOpacity>
           <Avatar image={{ uri: randomMember.photo }} size={25} />
           <Text style={styles.questiontext}>
@@ -251,12 +250,20 @@ export default function MapGameScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  textreturn: {
+    fontFamily: "Quicksand",
+    fontSize: 18,
+    textAlign: "center",
+    color: "#ffffff",
+  },
+
   buttonback: {
     padding: 5,
     margin: 10,
-    borderColor: "#7C4DFF",
-    borderWidth: 1,
+    backgroundColor: "#7C4DFF",
     borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   questiontext: {
     fontFamily: "Quicksand",
@@ -267,7 +274,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 5,
     marginTop: Platform.OS === "ios" ? 50 : 40,
     zIndex: 1,
     flexWrap: "wrap",

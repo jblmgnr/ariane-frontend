@@ -12,8 +12,9 @@ import localization from "moment/locale/fr";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { useState } from "react";
-import { Button, Avatar } from "@react-native-material/core";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
 
@@ -22,9 +23,7 @@ const FETCH_API = getFetchAPI();
 
 export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;
-  const [fatherName, setFatherName] = useState("");
-  const [motherName, setMotherName] = useState("");
-  const [partnerName, setpartnerName] = useState("");
+  const members = useSelector((state) => state.members.value);
 
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
@@ -47,87 +46,46 @@ export default function MemberProfileScreen({ route, navigation }) {
   //     navigation.navigate("MemberProfileEdit");
   //   };
 
-  //fetch Firstname and Lastname of member.father
-  // ------------------------------------------------------------
   const fatherId = member.father;
-
-  const fetchFatherName = () => {
-    fetch(FETCH_API + "/members")
-      .then((response) => response.json())
-      .then((datafather) => {
-        const father = datafather.members.find(
-          (member) => member._id === fatherId
-        );
-        father
-          ? setFatherName(father.firstName + " " + father.lastName)
-          : setFatherName("non renseigné");
-      })
-      .catch((error) => {
-        console.error("2 While connecting back-end on " + FETCH_API, error);
-      });
-  };
-
-  fetchFatherName();
-
-  // fetchFirstName and LastName of member.mother
-  // ------------------------------------------------------------
   const motherId = member.mother;
-  const fetchMotherName = () => {
-    fetch(FETCH_API + "/members")
-      .then((response) => response.json())
-      .then((datamother) => {
-        const mother = datamother.members.find(
-          (member) => member._id === motherId
-        );
-        mother
-          ? setMotherName(mother.firstName + " " + mother.lastName)
-          : setMotherName("non renseigné");
-      })
-      .catch((error) => {
-        console.error("2 While connecting back-end on " + FETCH_API, error);
-      });
-  };
-  fetchMotherName();
+  const partnerId = member.partner;
 
-  // fetchFirstName and LastName of member.partner
-  const verifyispartner = () => {
-    fetch(FETCH_API + "/members")
-      .then((response) => response.json())
-      .then((datapartner) => {
-        const partner = datapartner.members.find(
-          (member) => member._id === member.partner
-        );
-        partner
-          ? setpartnerName(partner.firstName + " " + partner.lastName)
-          : setpartnerName("non renseigné");
-      })
-      .catch((error) => {
-        console.error("2 While connecting back-end on " + FETCH_API, error);
-      });
-  };
-  verifyispartner();
+  //search Firstname and Lastname of fatherId, motherId and partnerId on reducers members
+  // ------------------------------------------------------------
+  const father = members.find((f) => f._id === fatherId);
+  const mother = members.find((m) => m._id === motherId);
+  const partner = members.find((p) => p._id === partnerId);
 
-  // check if member.father or member.mother or member.partner exist
+  // check if fatherId or motherId or partnerId exist
+  // ------------------------------------------------------------
   const showRelation = () => {
-    if (member.father || member.mother) {
+    if (fatherId || motherId) {
       return (
         <View style={styles.optionnalinfos}>
           <Text style={styles.subtitle}>Proches</Text>
           <Text style={styles.subtitle}>Père</Text>
-          <Text style={styles.text}>{fatherName}</Text>
+          <Text style={styles.text}>
+            {father.firstName} {father.lastName}
+          </Text>
           <Text style={styles.subtitle}>Mère</Text>
-          <Text style={styles.text}>{motherName}</Text>
+          <Text style={styles.text}>
+            {mother.firstName} {mother.lastName}
+          </Text>
         </View>
       );
-    } else if (member.partner) {
+    }
+    if (partnerId) {
       return (
         <View style={styles.optionnalinfos}>
           <Text style={styles.subtitle}>Proches</Text>
           <Text style={styles.subtitle}>Conjoint</Text>
-          <Text style={styles.text}>{partnerName}</Text>
+          <Text style={styles.text}>
+            {partner.firstName} {partner.lastName}
+          </Text>
         </View>
       );
-    } else {
+    }
+    if (!fatherId && !motherId && !partnerId) {
       return (
         <View style={styles.optionnalinfos}>
           <Text style={styles.subtitle}>Proches</Text>
@@ -208,7 +166,7 @@ export default function MemberProfileScreen({ route, navigation }) {
                 ? member.birthCity.name
                 : "Non renseigné"}
             </Text>
-            <Text style={styles.subtitle}>Ville actuelle</Text>
+            <Text style={styles.subtitle}>Dernière ville de résidence</Text>
             <Text style={styles.text}>
               {member.currentCity.name !== null
                 ? member.currentCity.name

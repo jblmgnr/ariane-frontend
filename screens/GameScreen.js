@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function GameScreen({ navigation }) {
@@ -16,9 +10,8 @@ export default function GameScreen({ navigation }) {
       // check if CurrentCity doesn't exist or is an empty string for any member
       (member) => !member.currentCity || member.currentCity === ""
     );
-    console.log("memberHaveCurrentCity", memberHaveCurrentCity);
-    console.log("members", members);
-
+    // console.log("memberHaveCurrentCity", memberHaveCurrentCity);
+    // console.log("members", members);
     if (memberHaveCurrentCity) {
       alert(
         "Vos membres n'ont pas de ville de résidence, vous ne pouvez pas jouer ohlalala"
@@ -27,6 +20,7 @@ export default function GameScreen({ navigation }) {
       navigation.navigate("MapGame");
     }
   };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connais-tu ta famille ?</Text>
