@@ -1,22 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Dimensions,
-  Platform,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { Button } from "@react-native-material/core";
 import { fontFamily } from "../modules/deco";
 import MembersList from "../components/MembersList";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { useState, useRef, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../reducers/user";
-import { AutocompleteDropdown } from "react-native-autocomplete-dropdown";
+import { useSelector } from "react-redux";
 
 export default function InviteScreen({ navigation }) {
   // Reducers

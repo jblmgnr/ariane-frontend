@@ -12,14 +12,10 @@ import localization from "moment/locale/fr";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
-
-const { getFetchAPI } = require("../modules/util");
-const FETCH_API = getFetchAPI();
 
 export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;

@@ -1,12 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import ImagePicker from "./ImagePicker";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { setMembers } from "../reducers/members";
 import * as Font from "expo-font";
 import { useFonts } from "expo-font";
-import React from "react";
+import React, { useEffect } from "react";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -24,7 +23,6 @@ const MembersList = ({ navigation }) => {
   if (!loaded) {
     return null;
   }
-
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
       member: {
@@ -58,12 +56,10 @@ const MembersList = ({ navigation }) => {
         const response = await fetch(FETCH_API + `/members/${id}`, {
           method: "DELETE",
         });
-
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
-        // // This will update the redux store after successful deletion.
+        // // This will update the redux store after rsuccessful deletion.
         // dispatch(deleteMember(id));
       } catch (error) {
         console.error(
@@ -73,6 +69,7 @@ const MembersList = ({ navigation }) => {
       }
       dispatch(setMembers(members.filter((member) => member._id !== id)));
     };
+
     return (
       <View key={i} style={styles.container}>
         <View>
@@ -124,6 +121,7 @@ const MembersList = ({ navigation }) => {
       </View>
     );
   });
+
   return <>{membersList}</>;
 };
 
