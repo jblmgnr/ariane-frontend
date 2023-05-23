@@ -39,7 +39,7 @@ const initialMemberState = {
   firstName: "",
   lastName: "",
   nickName: "",
-  birthDate: "",
+  birthDate: null,
   deathDate: "",
   birthCity: { name: "", latitude: 0, longitude: 0 },
   currentCity: { name: "", latitude: 0, longitude: 0 },
@@ -160,6 +160,7 @@ export default function CreateMemberScreen({ navigation }) {
       status.result = false;
       status.error.push("Les noms et prénoms sont obligatoires.");
     }
+
     return status;
   };
 
@@ -245,7 +246,7 @@ export default function CreateMemberScreen({ navigation }) {
     console.log("IN CREATE MEMEBER :: current city ", city);
     setMember({ ...member, currentCity: city });
   };
-  console.log("member", member);
+
   return (
     <KeyboardAwareScrollView
       style={{
@@ -253,7 +254,7 @@ export default function CreateMemberScreen({ navigation }) {
         backgroundColor: "#ffffff",
       }}
     >
-      <View style={[styles.container, { height: height }]}>
+      <View style={styles.container}>
         <View style={styles.buttoncontainer}>
           <TouchableOpacity onPress={onPress} style={styles.backButton}>
             <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
@@ -415,8 +416,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: 150,
-    zIndex: 1,
+    bottom: 63,
   },
   validatebuttoncurrentcity: {
     width: "30%",
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     position: "absolute",
     right: 5,
-    bottom: 78,
+    bottom: -6,
   },
 
   container: {
