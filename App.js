@@ -19,6 +19,7 @@ import InviteScreen from "./screens/InviteScreen";
 import UsersParametersScreen from "./screens/UsersParametersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
 import MemberProfileScreen from "./screens/MemberProfileScreen";
+import { fontFamily } from "./modules/deco";
 
 const reducers = combineReducers({ user, members });
 const persistConfig = {
@@ -61,6 +62,9 @@ const TabNavigator = () => {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: "#7C4DFF",
+        },
+        tabBarLabelStyle: {
+          fontFamily: "Quicksand",
         },
       })}
     >
