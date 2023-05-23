@@ -250,7 +250,6 @@ export default function CreateMemberScreen({ navigation }) {
   return (
     <KeyboardAwareScrollView
       style={{
-        marginTop: Platform.OS === "android" ? 30 : 60,
         backgroundColor: "#ffffff",
       }}
     >
@@ -433,7 +432,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#ffffff",
-    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",
@@ -459,6 +457,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   imagePicker: {
+    marginTop: Platform.OS === "ios" ? 60 : 30,
+    marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",

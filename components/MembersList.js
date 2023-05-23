@@ -31,12 +31,12 @@ const MembersList = ({ navigation }) => {
         flexDirection: "row",
         justifyContent: "flex-start",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: "#363B44",
         padding: 10,
         margin: 5,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#000",
+        borderColor: "#fff",
         flexWrap: "wrap",
       },
       avatar: {
@@ -44,9 +44,11 @@ const MembersList = ({ navigation }) => {
       },
       text: {
         fontFamily: "Quicksand",
+        color: "white",
       },
       subtitle: {
         fontFamily: "QuicksandBold",
+        color: "white",
       },
       deleteContainer: {
         marginLeft: "auto",
@@ -116,7 +118,7 @@ const MembersList = ({ navigation }) => {
                 }}
                 style={styles.deleteButton}
               >
-                <Icon name="delete" size={30} />
+                <Icon name="delete" size={30} color="white" />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>

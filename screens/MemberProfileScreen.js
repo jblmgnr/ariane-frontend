@@ -209,6 +209,7 @@ const styles = StyleSheet.create({
   infos: {
     marginLeft: 20,
     marginRight: 20,
+    paddingBottom: 20,
     borderBottomColor: "#7C4DFF",
     borderBottomWidth: 3,
     justifyContent: "center",
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    marginTop: Platform.OS === "android" ? 30 : 0,
+    marginTop: Platform.OS === "ios" ? 50 : 30,
   },
   button: {
     padding: 5,
