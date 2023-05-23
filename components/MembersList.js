@@ -4,7 +4,9 @@ import ImagePicker from "./ImagePicker";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { setMembers } from "../reducers/members";
+import * as Font from "expo-font";
 import { useFonts } from "expo-font";
+import React from "react";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -13,12 +15,15 @@ const FETCH_API = getFetchAPI();
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
   const dispatch = useDispatch();
-
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
   const [loaded] = useFonts({
     QuicksandBold: require("../assets/fonts/Quicksand-Bold.ttf"),
   });
+
+  if (!loaded) {
+    return null;
+  }
 
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
