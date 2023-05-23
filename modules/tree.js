@@ -2,7 +2,7 @@ const { showObject, showObjects } = require("./util");
 import { RelationShip } from "./common";
 
 const memberWidth = 250;
-const memberHeight = 150;
+const memberHeight = 250;
 const hSpaceBetweenGroup = 100;
 const hSpaceBetweenMembers = 30;
 const vSpaceBetweenMembers = 50;

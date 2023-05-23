@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function GameScreen({ navigation }) {
@@ -24,6 +24,10 @@ export default function GameScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connais-tu ta famille ?</Text>
+      <Image
+        source={require("../assets/logo.png")}
+        style={styles.backgroundImage}
+      />
       <TouchableOpacity
         onPress={verifyBeforeGoGameMap}
         style={styles.gamebutton}
@@ -47,12 +51,22 @@ export default function GameScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    position: "absolute",
+    flex: 1,
+    resizeMode: "cover", // or 'stretch'
+    zIndex: -1,
+    opacity: 0.5,
+  },
   title: {
     fontSize: 30,
     fontFamily: "Quicksand",
     textAlign: "center",
     margin: 20,
     marginBottom: 100,
+    color: "white",
+    position: "absolute",
+    top: 150,
   },
 
   gamebutton: {
@@ -61,17 +75,18 @@ const styles = StyleSheet.create({
     margin: 10,
     width: 300,
     alignItems: "center",
-    borderColor: "#7C4DFF",
-    borderWidth: 2,
+    backgroundColor: "#7C4DFF",
+    opacity: 0.9,
   },
   text: {
     fontSize: 20,
     fontFamily: "Quicksand",
     textAlign: "center",
+    color: "white",
   },
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#363B44",
     alignItems: "center",
     justifyContent: "center",
   },

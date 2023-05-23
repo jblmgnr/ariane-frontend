@@ -109,7 +109,7 @@ export default function HomePageScreen({ navigation }) {
         titleStyle={{ fontFamily: "Quicksand" }}
       />
 
-      <Text style={{ fontFamily: "Quicksand" }}>
+      <Text style={{ fontFamily: "Quicksand", color: "white" }}>
         Personnes présentes dans l'arbre : {members.length}
       </Text>
       <Tree navigation={navigation}></Tree>
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: "100%",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#363B44",
     alignItems: "center",
     justifyContent: "center",
   },
