@@ -19,7 +19,7 @@ import {
 } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
@@ -48,12 +48,20 @@ const initialMemberState = {
   hobbies: "",
   gender: Gender.undefined,
   group: null,
+  sameBlood: true,
   father: null,
   mother: null,
   photo: null,
   partner: null,
 };
-export default function CreateMemberScreen({ navigation }) {
+
+export default function CreateMemberScreen({ route, navigation }) {
+  const { create, editedMember = null } = route.params;
+  console.log(
+    "    \u001b[31m MODE  : ==================  \u001b[0m",
+    create ? "CREATE" : "EDIT",
+    editedMember
+  );
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
 
@@ -62,25 +70,8 @@ export default function CreateMemberScreen({ navigation }) {
   const user = useSelector((state) => state.user.value);
   initialMemberState.tree = user.tree;
 
-  // States
-  const [relationShipKey, setRelationShipKey] = useState("");
-  const [fatherKey, setFatherKey] = useState("");
-  const [motherKey, setMotherKey] = useState("");
-  const [partnerKey, setPartnerKey] = useState("");
-  const [statusMessage, setStatusMessage] = useState("");
-  const [member, setMember] = useState(initialMemberState);
-  const [resetImagePicker, setResetImagePicker] = useState(false);
-  const [internal, setInternal] = useState(true); // Whether member belongs to family or is linked to family by its spouse
-
-  // let statusMessage = "Empty";
-  const showStatusMessage = (message) => {
-    setStatusMessage(message);
-
-    setTimeout(() => {
-      setStatusMessage("");
-    }, 3000);
-  };
-
+  // Contents of father, mother and partner must be defined before the use states
+  // because they are used to set default values of editedMembers.
   const partnerItems = [];
   partnerItems.push({ key: "0", value: "Aucun lien", id: null });
   for (let i = 0; i < members.length; i++) {
@@ -109,17 +100,87 @@ export default function CreateMemberScreen({ navigation }) {
     if (m.nickName && m.nickName.length > 0) value += " (" + m.nickName + ")";
     motherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
+  // States
+  const [relationShipKey, setRelationShipKey] = useState("");
+  // const [fatherKey, setFatherKey] = useState(
+  //   editedMember ? keyFromIdInItems(editedMember.father, fatherItems) : ""
+  // );
+  const [fatherKeyState, setFatherKeyState] = useState("");
+  const [motherKeyState, setMotherKeyState] = useState("");
+  const [partnerKeyState, setPartnerKeyState] = useState("");
+  const [defaultFatherKey, setDefaultFatherKey] = useState("");
+  const [defaultMotherKey, setDefaultMotherKey] = useState("");
+  const [defaultPartnerKey, setDefaultPartnerKey] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const [member, setMember] = useState(initialMemberState);
+  const [resetImagePicker, setResetImagePicker] = useState(false);
 
-  const onRelationChanged = (key) => {
-    const relationShip = RelationShipCombo.find((r) => r.key === key).value;
-    setMember({ ...member, relationShip: relationShip });
+  console.log(
+    "==================================================== FATHER KEY ",
+    defaultFatherKey
+  );
+  console.log(
+    "==================================================== MOTHER KEY ",
+    defaultMotherKey
+  );
+  useEffect(() => {
+    if (create) return;
+    //  In edition mode, update fields with info of editedMember
+    console.log("Gender  : ", editedMember.gender);
+    setMember({
+      ...member,
+      firstName: editedMember.firstName,
+      lastName: editedMember.lastName,
+      nickName: editedMember.nickName,
+      birthDate: editedMember.birthDate,
+      gender: editedMember.gender,
+      sameBlood: editedMember.sameBlood,
+      job: editedMember.job,
+    });
+
+    if (editedMember.sameBlood) {
+      const fKey = keyFromIdInItems(editedMember.father, fatherItems);
+      console.log("father key  FFFFFFFFFFFFFFFFFFF : ", fKey);
+      setDefaultFatherKey(fKey);
+      console.log(
+        "father key  AAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAA : ",
+        defaultFatherKey
+      );
+      const mKey = keyFromIdInItems(editedMember.mother, motherItems);
+      console.log("Mother key  MMMMMMMMMMMMMMMMMMMMM  : ", mKey);
+      setDefaultMotherKey(mKey);
+
+      setDefaultPartnerKey(
+        keyFromIdInItems(editedMember.partner, partnerItems)
+      );
+    }
+  }, []);
+
+  const showStatusMessage = (message) => {
+    setStatusMessage(message);
+
+    setTimeout(() => {
+      setStatusMessage("");
+    }, 3000);
   };
 
+  function keyFromIdInItems(id, items) {
+    console.log("Try to find key of id ; ", id);
+    // console.log(items);
+    const foundEntry = items.find((e) => e.id == id);
+
+    console.log(" YYYYYYYYYYESSSSSSSSSS  KEY ; ", foundEntry);
+    if (foundEntry) return foundEntry;
+
+    return items[0];
+  }
+
   const onFatherChanged = (key) => {
-    // console.log("key parent : ", key, " to be found in ", memberItems);
+    console.log("key parent : ", key, " to be found in ");
     const item = fatherItems.find((r) => r.key === key);
     const parentId = item ? item.id : null;
-    // console.log("=========================> Father id : ", parentId);
+    console.log("=========================> Father id : ", parentId);
+    setDefaultFatherKey(key);
     setMember({ ...member, father: parentId });
   };
 
@@ -200,6 +261,7 @@ export default function CreateMemberScreen({ navigation }) {
         photo: member.photo,
         birthCity: member.birthCity,
         currentCity: member.currentCity,
+        sameBlood: member.sameBlood,
       }),
     })
       .then((response) => response.json())
@@ -208,6 +270,9 @@ export default function CreateMemberScreen({ navigation }) {
           alert(data.error);
           return;
         }
+
+        member._id = data.newMember._id;
+
         console.log("Member Saved in DB OK ", member);
         dispatch(addMember(member));
         showStatusMessage(member.firstName + " " + member.lastName + " créé");
@@ -215,8 +280,8 @@ export default function CreateMemberScreen({ navigation }) {
         // Clear interface
         setMember(initialMemberState);
         // TODO Did: Initialiser les drop down Pere et Mere !!!
-        setFatherKey("");
-        setMotherKey("");
+        setDefaultFatherKey("");
+        setDefaultMotherKey("");
         // Clear the image picker
         setResetImagePicker((prevReset) => !prevReset);
         //clear textInput birthCity and currentCity
@@ -228,7 +293,7 @@ export default function CreateMemberScreen({ navigation }) {
   // load to TabNavigator
   // ------------------------------------------------------------
   const onPress = () => {
-    navigation.navigate("TabNavigator");
+    navigation.goBack();
   };
 
   // Update birthDate in reducer
@@ -327,49 +392,51 @@ export default function CreateMemberScreen({ navigation }) {
             }
             trailing={
               <Switch
-                value={internal}
-                onValueChange={() => setInternal(!internal)}
+                value={member.sameBlood}
+                onValueChange={(value) =>
+                  setMember({ ...member, sameBlood: value })
+                }
               />
             }
             onPress={() => setInternal(!enabled)}
           />
-          {internal && (
+          {member.sameBlood && (
             <SelectList
               style={styles.input}
-              onSelect={() => onFatherChanged(fatherKey)}
-              setSelected={setFatherKey}
+              onSelect={() => onFatherChanged(fatherKeyState)}
+              setSelected={setFatherKeyState}
               fontFamily={fontFamily}
               data={fatherItems}
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Père"
-              defaultOption={fatherItems[0]} //default selected option
+              defaultOption={defaultFatherKey} //default selected option
             />
           )}
-          {internal && (
+          {member.sameBlood && (
             <SelectList
               style={styles.input}
-              onSelect={() => onMotherChanged(motherKey)}
-              setSelected={setMotherKey}
+              onSelect={() => onMotherChanged(motherKeyState)}
+              setSelected={setMotherKeyState}
               fontFamily={fontFamily}
               data={motherItems}
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Mère"
-              defaultOption={motherItems[0]} //default selected option
+              defaultOption={defaultMotherKey} //default selected option
             />
           )}
-          {!internal && (
+          {!member.sameBlood && (
             <SelectList
               style={styles.input}
-              onSelect={() => onPartnerKeyChanged(partnerKey)}
-              setSelected={setPartnerKey}
+              onSelect={() => onPartnerKeyChanged(partnerKeyState)}
+              setSelected={setPartnerKeyState}
               fontFamily={fontFamily}
               data={partnerItems}
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Lié à"
-              defaultOption={partnerItems[0]} //default selected option
+              defaultOption={defaultPartnerKey} //default selected option
             />
           )}
           <TextInput

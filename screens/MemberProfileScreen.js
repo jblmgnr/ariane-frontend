@@ -43,9 +43,12 @@ export default function MemberProfileScreen({ route, navigation }) {
 
   // load to MemberProfileEdit
   // ------------------------------------------------------------
-  //   const onPressEdit = () => {
-  //     navigation.navigate("MemberProfileEdit");
-  //   };
+  const onPressEdit = () => {
+    navigation.navigate("CreateMember", {
+      create: false,
+      editedMember: member,
+    });
+  };
 
   //fetch Firstname and Lastname of member.father
   // ------------------------------------------------------------
@@ -145,7 +148,7 @@ export default function MemberProfileScreen({ route, navigation }) {
         <TouchableOpacity onPress={onPress} style={styles.button}>
           <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onPress} style={styles.button}>
+        <TouchableOpacity onPress={onPressEdit} style={styles.button}>
           <MaterialIcons name="edit" size={30} color="#7C4DFF" />
         </TouchableOpacity>
       </View>

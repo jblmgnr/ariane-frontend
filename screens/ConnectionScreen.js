@@ -36,8 +36,8 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "pierrepaul@jacques.com",
-    password: "pierrepauljacques",
+    email: "dlascaux@yahoo.fr",
+    password: "a",
   });
 
   // load font family Quicksand useFont expo-font
