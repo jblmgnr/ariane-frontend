@@ -1,9 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import ImagePicker from "./ImagePicker";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { setMembers } from "../reducers/members";
+import { removeMember } from "../reducers/members";
 import * as Font from "expo-font";
 import { useFonts } from "expo-font";
 import React from "react";
@@ -55,26 +54,29 @@ const MembersList = ({ navigation }) => {
       },
     });
 
-    const handleDelete = async (id) => {
-      try {
-        const response = await fetch(FETCH_API + `/members/${id}`, {
-          method: "DELETE",
-        });
+    const handleDelete = async (member) => {
+      const response = await fetch(FETCH_API + `/members/${member._id}`, {
+        method: "DELETE",
+      });
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+      const data = await response.json();
 
-        // // This will update the redux store after successful deletion.
-        // dispatch(deleteMember(id));
-      } catch (error) {
-        console.error(
-          "There has been a problem with your fetch operation:",
-          error
-        );
+      console.log("DDDDDDDDDDDDDDDDDDDDDDDDD", data);
+      if (!data.result) {
+        console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+        return;
       }
-      dispatch(setMembers(members.filter((member) => member._id !== id)));
+
+      console.log("Before to dispath to reducer !!!!");
+      console.log("member : ", member);
+
+      console.log("removeMemeber function : ", removeMember);
+      dispatch(removeMember(member));
+
+      // // This will update the redux store after successful deletion.
+      // dispatch(deleteMember(id));
     };
+
     return (
       <View key={i} style={styles.container}>
         <View>
@@ -114,7 +116,8 @@ const MembersList = ({ navigation }) => {
             <View style={styles.deleteContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  handleDelete(member._id);
+                  console.log("memeber to delete : ", member);
+                  handleDelete(member);
                 }}
                 style={styles.deleteButton}
               >

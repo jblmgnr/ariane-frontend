@@ -7,6 +7,7 @@ function getFetchAPI() {
 }
 
 function showObject(obj, title = "") {
+  return;
   console.log(
     "=========================================",
     title,
@@ -15,6 +16,7 @@ function showObject(obj, title = "") {
 }
 
 function showObjects(list, title = "") {
+  return;
   console.log(title + " =============== count " + list.length);
 
   for (let obj of list) console.log(JSON.stringify(obj, null, 8));

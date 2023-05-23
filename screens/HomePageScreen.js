@@ -101,7 +101,7 @@ export default function HomePageScreen({ navigation }) {
     <View style={styles.container}>
       <Button
         onPress={() => {
-          navigation.navigate("CreateMember");
+          navigation.navigate("CreateMember", { create: true });
         }}
         title="Ajoute un membre"
         uppercase={false}
