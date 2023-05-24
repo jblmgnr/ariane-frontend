@@ -179,8 +179,6 @@ export default function CreateMemberScreen({ route, navigation }) {
     console.log("Try to find key of id ; ", id);
     // console.log(items);
     const foundEntry = items.find((e) => e.id == id);
-
-    console.log(" YYYYYYYYYYESSSSSSSSSS  KEY ; ", foundEntry);
     if (foundEntry) return foundEntry;
 
     return items[0];

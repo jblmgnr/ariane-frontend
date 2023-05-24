@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
@@ -71,7 +71,7 @@ const MembersList = ({ navigation }) => {
       },
     });
 
-    const handleDelete = async (member) => {
+    const doDelete = async () => {
       const response = await fetch(FETCH_API + `/members/${member._id}`, {
         method: "DELETE",
       });
@@ -84,6 +84,18 @@ const MembersList = ({ navigation }) => {
       }
 
       dispatch(removeMember(member));
+    };
+
+    const handleDelete = async (member) => {
+      Alert.alert(
+        "Suppression d'un membre",
+        `Confirmez vous la suppression de ${member.firstName} ${member.lastName} ?`,
+        [
+          { text: "Oui, avec plaisir", onPress: () => doDelete() },
+          { text: "Non, surtout pas !", onPress: () => {} },
+        ],
+        { cancelable: false }
+      );
     };
 
     const handleLongPress = () => {

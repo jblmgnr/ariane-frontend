@@ -37,6 +37,13 @@ export function NodeMember({ graphDef, node, onClicked }) {
     const father = fatherOf(member);
     console.log("Father : ", father ? father.firstName : "None");
   };
+
+  console.log("  ", member.firstName, " has same blood : ", member.sameBlood);
+
+  const sameBloodStyle = member.sameBlood
+    ? { borderWidth: 4, borderColor: "#EEEE00" }
+    : { borderWidth: 4, borderColor: "#666666" };
+
   return (
     <View
       style={[
@@ -48,9 +55,10 @@ export function NodeMember({ graphDef, node, onClicked }) {
           width: graphDef.boxWidth,
           height: graphDef.boxHeight,
           backgroundColor: backgroundColor,
+          borderBottomWidth: 10,
+          borderRightWidth: 10,
           borderRadius: 150,
           justifyContent: "flex-start",
-          // alignItems: "center",
         },
       ]}
     >
@@ -69,6 +77,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
               width: imageSize,
               height: imageSize,
             },
+            sameBloodStyle,
           ]}
           source={{ uri: photo_uri }}
         />
