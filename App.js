@@ -16,7 +16,7 @@ import HomePageScreen from "./screens/HomePageScreen";
 import MapGameScreen from "./screens/MapGameScreen";
 import RelationGameScreen from "./screens/RelationGameScreen";
 import InviteScreen from "./screens/InviteScreen";
-import UsersParametersScreen from "./screens/UsersParametersScreen";
+import MembersScreen from "./screens/MembersScreen";
 import CreateMemberScreen from "./screens/CreateMemberScreen";
 import MemberProfileScreen from "./screens/MemberProfileScreen";
 import { fontFamily } from "./modules/deco";
@@ -49,7 +49,7 @@ const TabNavigator = () => {
             iconName = "videogame-asset";
           } else if (route.name === "Inviter") {
             iconName = "add-box";
-          } else if (route.name === "Utilisateurs") {
+          } else if (route.name === "Membres") {
             iconName = "people";
           } else if (route.name === "Arbre") {
             iconName = "home";
@@ -70,8 +70,8 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="Arbre" component={HomePageScreen} />
       <Tab.Screen name="Jeux" component={GameScreen} />
+      <Tab.Screen name="Membres" component={MembersScreen} />
       <Tab.Screen name="Inviter" component={InviteScreen} />
-      <Tab.Screen name="Utilisateurs" component={UsersParametersScreen} />
     </Tab.Navigator>
   );
 };
