@@ -4,8 +4,8 @@ import { setTreeId } from "../reducers/user";
 import { setMembers } from "../reducers/members";
 import { showObject } from "../modules/util";
 
-const memberWidth = 220;
-const memberHeight = 220;
+const memberWidth = 210;
+const memberHeight = 210;
 const hSpaceBetweenGroup = 100;
 const hSpaceBetweenMembers = 30;
 const vSpaceBetweenMembers = 50;
@@ -172,9 +172,6 @@ export function useTree() {
   }
   function hasFather(m) {
     return m.father !== null && m.father !== undefined;
-  }
-  function hasPartner(m, bijonctif) {
-    return m.partner !== null && m.partner !== undefined;
   }
 
   function motherOf(m) {
@@ -451,7 +448,7 @@ export function useTree() {
     // );
     if (!hasParent(member)) {
       // log("No mother and father, test if it has link");
-      if (!hasPartner(member)) {
+      if (!partnerOf(member)) {
         // log(
         //   "\u001b[31m YYYYYYYYESSSSSSS \u001b[0m, member " +
         //     member.firstName +
@@ -485,7 +482,6 @@ export function useTree() {
   return {
     buildReps,
     partnerOf,
-    hasPartner,
     memberOfId,
     motherOf,
     hasMother,

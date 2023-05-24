@@ -17,6 +17,7 @@ import { fontFamily } from "../modules/deco";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 const { getFetchAPI } = require("../modules/util");
+import { myEmail, myPassword } from "../myfetchapi";
 
 const FETCH_API = getFetchAPI();
 console.log("API to fetch : ", FETCH_API);
@@ -34,8 +35,8 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "jb@jb.fr",
-    password: "jbjb",
+    email: myEmail,
+    password: myPassword,
     tree: null,
   });
   const [isPasswordVisible, setPasswordVisible] = useState(false);
