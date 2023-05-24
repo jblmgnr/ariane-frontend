@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setTreeId } from "../reducers/user";
-import { setMembers } from "../reducers/members";
+import { useSelector } from "react-redux";
 import { showObject } from "../modules/util";
 
 const memberWidth = 210;
@@ -93,7 +90,7 @@ export function useTree() {
 
     graphDef = convertsGenrationArrayIntoNodeArray(graphDef, groupedGen);
 
-    log(graphDef);
+    // log(graphDef);
 
     return graphDef;
   }
@@ -104,7 +101,7 @@ export function useTree() {
     if (gen.length === 0) return groups;
 
     const firstFather = fatherOf(gen[0]);
-    log("First father : ", firstFather);
+    // log("First father : ", firstFather);
 
     // First group is the group of the first father found.
     groups.push({ father: fatherOf(gen[0]), members: [gen[0]] });
@@ -163,37 +160,6 @@ export function useTree() {
     return groups;
   }
 
-  function hasParent(m) {
-    return hasMother(m) || hasFather(m);
-  }
-
-  function hasMother(m) {
-    return m.mother !== null && m.mother !== undefined;
-  }
-  function hasFather(m) {
-    return m.father !== null && m.father !== undefined;
-  }
-
-  function motherOf(m) {
-    if (!hasMother(m)) return null;
-    return memberOfId(m.mother);
-  }
-  function fatherOf(m) {
-    if (!hasFather(m)) return null;
-    return memberOfId(m.father);
-  }
-
-  function partnerOf(m, bijonctif = false) {
-    const directPartnerId = m.partner;
-    if (directPartnerId === null || directPartnerId === undefined)
-      if (!bijonctif) return null;
-
-    const directPartner = memberOfId(directPartnerId, false);
-    if (!bijonctif || directPartner) return directPartner;
-
-    return members.find((e) => e.partner === m._id);
-  }
-
   // Returns an array of members per generation
   //===========================================
   function distributeByGeneration() {
@@ -231,7 +197,7 @@ export function useTree() {
       for (const m of toDispatch) {
         log("Member: ", m.firstName);
 
-        if (isMemberLinkToList(m, directChildren)) {
+        if (isMemberParternOfAnyInList(m, directChildren)) {
           linkToDirectChildren.push(m);
         }
       }
@@ -251,10 +217,6 @@ export function useTree() {
       currentGeneration = directChildren.concat(linkToDirectChildren);
 
       toDispatch = toDispatch.filter((e) => !currentGeneration.includes(e));
-      // log("AFter remove element");
-      // log(toDispatch.length);
-      // for (let i of toDispatch) log(" - " + i.firstName);
-
       previousGeneration = [...currentGeneration];
 
       log(" \u001b[32mAdd a new Generation : " + genNb + "\u001b[0m");
@@ -294,13 +256,13 @@ export function useTree() {
       }
     }
 
-    log("No link found for " + member.firstName);
+    log("No parent found for " + member.firstName);
     return false;
   }
 
   // Return wether the given member has a mother, father or partner
   // to a member of the given list
-  function isMemberLinkToList(member, list) {
+  function isMemberParternOfAnyInList(member, list) {
     // log(
     //   "Test if " + member.firstName + " is linked to any members of "
     // );
@@ -321,7 +283,7 @@ export function useTree() {
       }
     }
 
-    log("No link found for " + member.firstName);
+    log(" No partner found for " + member.firstName);
     return false;
   }
 
@@ -359,13 +321,14 @@ export function useTree() {
     //--------------------------
     for (let gen = 0; gen < groupedGen.length; gen++) {
       const yOri = yOriForGeneration(gen);
-      log("Y ori", yOri);
       let xOri = hExternalMargin;
       let xOriShift = 0; // To be centered to the parent
       for (const group of groupedGen[gen]) {
         for (const member of group.members) {
           log(" Build node for " + member.firstName);
 
+          if (!member.partner) xOri += hSpaceBetweenMembers;
+          else xOri -= hSpaceBetweenMembers;
           // if (xOriShift === 0) {
           //   const father = fatherOf(member);
           //   if (father) {
@@ -395,8 +358,8 @@ export function useTree() {
             member: member,
           };
 
-          xOri += memberWidth + hSpaceBetweenMembers;
-          showObject(node);
+          xOri += memberWidth;
+          // showObject(node);
           graphDef.nodes.push(node);
         }
         xOri += hSpaceBetweenGroup;
@@ -477,6 +440,37 @@ export function useTree() {
     }
 
     return null;
+  }
+
+  function hasParent(m) {
+    return hasMother(m) || hasFather(m);
+  }
+
+  function hasMother(m) {
+    return m.mother !== null && m.mother !== undefined;
+  }
+  function hasFather(m) {
+    return m.father !== null && m.father !== undefined;
+  }
+
+  function motherOf(m) {
+    if (!hasMother(m)) return null;
+    return memberOfId(m.mother);
+  }
+  function fatherOf(m) {
+    if (!hasFather(m)) return null;
+    return memberOfId(m.father);
+  }
+
+  function partnerOf(m, bijonctif = false) {
+    const directPartnerId = m.partner;
+    if (directPartnerId === null || directPartnerId === undefined)
+      if (!bijonctif) return null;
+
+    const directPartner = memberOfId(directPartnerId, false);
+    if (!bijonctif || directPartner) return directPartner;
+
+    return members.find((e) => e.partner === m._id);
   }
 
   return {
