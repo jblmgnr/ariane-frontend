@@ -5,6 +5,7 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import moment from "moment";
@@ -12,14 +13,10 @@ import localization from "moment/locale/fr";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
-
-const { getFetchAPI } = require("../modules/util");
-const FETCH_API = getFetchAPI();
 
 export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;
@@ -68,16 +65,20 @@ export default function MemberProfileScreen({ route, navigation }) {
           <Text style={styles.subtitle}>Proches</Text>
           <Text style={styles.subtitle}>Père</Text>
           <Text style={styles.text}>
-            {father.firstName} {father.lastName}
+            {fatherId
+              ? `${father.firstName} ${father.lastName}`
+              : "Non renseigné"}
           </Text>
           <Text style={styles.subtitle}>Mère</Text>
           <Text style={styles.text}>
-            {mother.firstName} {mother.lastName}
+            {motherId
+              ? `${mother.firstName} ${mother.lastName}`
+              : "Non renseigné"}
           </Text>
         </View>
       );
     }
-    if (partnerId) {
+    if (partnerId !== null) {
       return (
         <View style={styles.optionnalinfos}>
           <Text style={styles.subtitle}>Proches</Text>
@@ -134,6 +135,10 @@ export default function MemberProfileScreen({ route, navigation }) {
 
       <View style={styles.container}>
         <ScrollView>
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.backgroundImage}
+          />
           <View style={styles.infos}>
             <Text style={styles.subtitle}>Nom</Text>
             <Text style={styles.text}>
@@ -165,13 +170,13 @@ export default function MemberProfileScreen({ route, navigation }) {
             </Text>
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
-              {member.birthCity && member.birthCity.name !== null
+              {member.birthCity && member.birthCity.name !== ""
                 ? member.birthCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Dernière ville de résidence</Text>
             <Text style={styles.text}>
-              {member.currentCity && member.currentCity.name !== null
+              {member.currentCity && member.currentCity.name !== ""
                 ? member.currentCity.name
                 : "Non renseigné"}
             </Text>
@@ -198,16 +203,25 @@ export default function MemberProfileScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    position: "absolute",
+    flex: 1,
+    resizeMode: "cover", // or 'stretch'
+    zIndex: -1,
+    opacity: 0.5,
+    transform: [{ scale: 2 }],
+  },
   optionnalinfos: {
     margin: 20,
   },
   maincontainer: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#363B44",
   },
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: "#363B44",
   },
   infos: {
     marginLeft: 20,
@@ -224,6 +238,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: Platform.OS === "ios" ? 50 : 30,
+    zIndex: 1,
   },
   button: {
     padding: 5,
@@ -231,6 +246,7 @@ const styles = StyleSheet.create({
     borderColor: "#7C4DFF",
     borderWidth: 1,
     borderRadius: 5,
+    zIndex: 1,
   },
   header: {
     justifyContent: "space-between",
@@ -247,14 +263,18 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: "QuicksandBold",
     textAlign: "center",
+    color: "#FFFFFF",
   },
   subtitle: {
     marginTop: 10,
     fontSize: 18,
     fontFamily: "QuicksandBold",
+    color: "white",
   },
   text: {
     fontSize: 16,
     fontFamily: fontFamily,
+    color: "white",
+    marginBottom: 10,
   },
 });

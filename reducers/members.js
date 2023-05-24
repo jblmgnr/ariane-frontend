@@ -28,7 +28,7 @@ export const membersSlice = createSlice({
 
     removeMember: (state, action) => {
       const member = action.payload;
-      state.value = state.value.filter((e) => e._id !== member.id);
+      state.value = state.value.filter((e) => e._id !== member._id);
     },
   },
 });

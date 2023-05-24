@@ -1,18 +1,14 @@
-import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import MyPopup from "../components/MyPopup";
 
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setTreeId } from "../reducers/user";
-import { Button, TextInput } from "@react-native-material/core";
-import { fontFamily } from "../modules/deco";
-// import { readMembersFromDataBase } from "../modules/db";
-import members, { setMembers } from "../reducers/members";
+import { Button } from "@react-native-material/core";
+
+import { setMembers } from "../reducers/members";
 import Tree from "../components/Tree";
-import ImageItem from "../components/ImageItem";
 const { getFetchAPI } = require("../modules/util");
-import MembersList from "../components/MembersList";
 import { showObject } from "../modules/util";
 
 const FETCH_API = getFetchAPI();
@@ -22,7 +18,7 @@ const FETCH_API = getFetchAPI();
 export default function HomePageScreen({ navigation }) {
   const dispatch = useDispatch();
 
-  const [popup, setPopup] = useState("");
+  const [setPopup] = useState("");
 
   // Reducers
   const user = useSelector((state) => state.user.value);
@@ -61,9 +57,7 @@ export default function HomePageScreen({ navigation }) {
       // Here we are sure than the tree id has been set in user reducer.
       //----------------------------------------------------------------
       console.log("================ > get member list fro tree ", user.tree);
-      // readMembersFromDataBase();
-      // TODO: Did move the following block in the function
-      // If a tree already exists load it ...
+
       fetch(FETCH_API + "/members/byTree/" + user.tree)
         .then((response) => response.json())
         .then((data) => {
@@ -87,15 +81,15 @@ export default function HomePageScreen({ navigation }) {
     setPopup("");
   };
 
-  const onPress = () => {
-    setPopup(
-      <MyPopup
-        title="What do you want ?"
-        buttons={["OK", "Cancel", "YES"]}
-        onClose={closePopup}
-      />
-    );
-  };
+  // const onPress = () => {
+  //   setPopup(
+  //     <MyPopup
+  //       title="What do you want ?"
+  //       buttons={["OK", "Cancel", "YES"]}
+  //       onClose={closePopup}
+  //     />
+  //   );
+  // };
 
   return (
     <View style={styles.container}>

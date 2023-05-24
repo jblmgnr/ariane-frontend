@@ -4,7 +4,6 @@ import {
   View,
   useWindowDimensions,
   TouchableOpacity,
-  Modal,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SelectList } from "react-native-dropdown-select-list";
@@ -17,7 +16,6 @@ import {
   ListItem,
   Switch,
 } from "@react-native-material/core";
-import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -30,7 +28,7 @@ import MyDatePicker from "../components/MyDatePicker";
 import MyCitySelector from "../components/MyCitySelector";
 
 import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
-const { getFetchAPI, showObject, showObjects } = require("../modules/util");
+const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 
