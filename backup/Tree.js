@@ -12,7 +12,7 @@ import {
   useFont,
   Glyphs,
 } from "@shopify/react-native-skia";
-import { buildReps } from "../modules/tree";
+import { buildReps } from "./tree";
 import { Gender } from "../modules/common";
 import { useImage } from "@shopify/react-native-skia";
 

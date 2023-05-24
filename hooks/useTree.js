@@ -4,8 +4,8 @@ import { setTreeId } from "../reducers/user";
 import { setMembers } from "../reducers/members";
 import { showObject } from "../modules/util";
 
-const memberWidth = 250;
-const memberHeight = 250;
+const memberWidth = 220;
+const memberHeight = 220;
 const hSpaceBetweenGroup = 100;
 const hSpaceBetweenMembers = 30;
 const vSpaceBetweenMembers = 50;
