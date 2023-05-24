@@ -34,7 +34,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
           width: graphDef.boxWidth,
           height: graphDef.boxHeight,
           backgroundColor: backgroundColor,
-          borderRadius: 150,
+          borderRadius: 90,
           justifyContent: "center",
           alignItems: "center",
         },

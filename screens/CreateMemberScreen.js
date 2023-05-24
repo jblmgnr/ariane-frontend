@@ -27,7 +27,7 @@ import ImagePicker from "../components/ImagePicker";
 import MyDatePicker from "../components/MyDatePicker";
 import MyCitySelector from "../components/MyCitySelector";
 
-import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
+import { Gender, RelationShip } from "../modules/common";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();

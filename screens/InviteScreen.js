@@ -35,12 +35,13 @@ const styles = StyleSheet.create({
   scrollview: {
     width: "100%",
     felx: 1,
+    backgroundColor: "#363B44",
   },
 
   container: {
     flex: 1,
     height: 1000,
-    backgroundColor: "#fff",
+    backgroundColor: "#363B44",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",

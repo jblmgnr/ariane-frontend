@@ -56,22 +56,7 @@ const MembersList = ({ navigation }) => {
         method: "DELETE",
       });
 
-      const data = await response.json();
-
-      console.log("DDDDDDDDDDDDDDDDDDDDDDDDD", data);
-      if (!data.result) {
-        console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
-        return;
-      }
-
-      console.log("Before to dispath to reducer !!!!");
-      console.log("member : ", member);
-
-      console.log("removeMemeber function : ", removeMember);
       dispatch(removeMember(member));
-
-      // // This will update the redux store after successful deletion.
-      // dispatch(deleteMember(id));
     };
 
     return (
