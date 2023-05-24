@@ -15,7 +15,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
 
   const member = node.member;
   const partner = partnerOf(member, true);
-  const partnerName = partner ? partner.firstName + " " + partner.lastName : "";
+  const partnerName = partner ? "♥ " + partner.firstName + "" : "";
 
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
@@ -33,9 +33,9 @@ export function NodeMember({ graphDef, node, onClicked }) {
   const handleLongPress = () => {
     console.log("============== ID : ", member._id);
     const partner = partnerOf(member, true);
-    console.log("Partner : " + partner ? partner.firstName : "None");
+    console.log("Partner : ", partner ? partner.firstName : "None");
     const father = fatherOf(member);
-    console.log("Father : " + father ? father.firstName : "None");
+    console.log("Father : ", father ? father.firstName : "None");
   };
   return (
     <View
@@ -49,8 +49,8 @@ export function NodeMember({ graphDef, node, onClicked }) {
           height: graphDef.boxHeight,
           backgroundColor: backgroundColor,
           borderRadius: 150,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: "flex-start",
+          // alignItems: "center",
         },
       ]}
     >
@@ -77,9 +77,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
         {node.member.firstName} {node.member.lastName}
       </Text>
       <Text style={styles.nickName}>{node.member.nickName}</Text>
-      <Text style={styles.nickName}>
-        {partnerName ? "Partner: " + partnerName : ""}
-      </Text>
+      <Text style={styles.nickName}>{partnerName}</Text>
     </View>
   );
 }
