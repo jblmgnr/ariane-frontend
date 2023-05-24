@@ -16,7 +16,6 @@ import { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 
 export default function MapGameScreen({ navigation }) {
-  const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
 
   //usestate
@@ -50,7 +49,7 @@ export default function MapGameScreen({ navigation }) {
   const verifyMembers = () => {
     const memberHaveCurrentCity = members.filter(
       (e) =>
-        e.currentCity !== null &&
+        e.currentCity !== "" &&
         e.currentCity.latitude !== 0 &&
         e.currentCity.longitude !== 0
     );
@@ -66,28 +65,16 @@ export default function MapGameScreen({ navigation }) {
   //create a random member from memberCoordinates at the beginning of the game and only when the user click on "Jouer"
   // ------------------------------------------------------------
   const handlePlay = () => {
-    if (memberCoordinates.length >= 5) {
-      const firstRandomMember =
-        memberCoordinates[Math.floor(Math.random() * memberCoordinates.length)];
-      setRandomMember(firstRandomMember);
-      setShowMarkerResult([firstRandomMember]);
-      setIsModalVisible(false);
-      return;
-    }
-    if (memberCoordinates.length < 5) {
-      alert(
-        "Trop peu de membres ont une ville de résidence, il en faut au moins 5 ! Complète tes membres ou rajoutes-en !"
-      );
-      navigation.navigate("TabNavigator", { screen: "Arbre" });
-      return;
-    }
+    const firstRandomMember =
+      memberCoordinates[Math.floor(Math.random() * memberCoordinates.length)];
+    setRandomMember(firstRandomMember);
+    setShowMarkerResult([firstRandomMember]);
+    setIsModalVisible(false);
+    return;
   };
 
-  // console.log("member in reducers", members);
-  // console.log("memberCoordinates : ", memberCoordinates);
-  // console.log("randomMember : ", randomMember._id);
+  //set coordinates when user press on the map
 
-  //handlePress when user press on the map
   const handlePress = async (e) => {
     const { coordinate } = e.nativeEvent;
     setTempCoordinates(coordinate);
@@ -114,7 +101,7 @@ export default function MapGameScreen({ navigation }) {
       setResult(false);
       setCount({ ...count, badAnswer: count.badAnswer + 1 });
     }
-    if (count.goodAnswer + count.badAnswer === 5) {
+    if (showMarkerResult.length === 6) {
       setModalResult(true);
       return;
     }
@@ -130,27 +117,53 @@ export default function MapGameScreen({ navigation }) {
     setShowMarkerResult([newRandomMember, ...showMarkerResult]);
   };
 
-  const markerResult = showMarkerResult.slice(1).map((e, i) => {
-    return (
-      <Marker
-        key={i}
-        coordinate={{
-          latitude: e.currentCity.latitude,
-          longitude: e.currentCity.longitude,
-        }}
-        title={`${e.firstName} ${e.lastName} habite ici`}
-      >
-        <Avatar image={{ uri: e.photo }} size={40} />
-      </Marker>
-    );
-  });
-
-  // console.log("memberCoordinates length: ", memberCoordinates.length);
+  const MarkerResult = () => {
+    if (showMarkerResult.length === 1 || showMarkerResult === 0) {
+      return showMarkerResult.map((e, i) => {
+        // Appliquer une marge de décalage pour éviter les superpositions
+        const offset = i * 0.1;
+        const adjustedLatitude = e.currentCity.latitude + offset;
+        const adjustedLongitude = e.currentCity.longitude + offset;
+        return (
+          <Marker
+            key={i}
+            coordinate={{
+              latitude: adjustedLatitude,
+              longitude: adjustedLongitude,
+            }}
+            title={`${e.firstName} ${e.lastName} habite ici`}
+          >
+            <Avatar image={{ uri: e.photo }} size={40} />
+          </Marker>
+        );
+      });
+    }
+    if (showMarkerResult.length > 0) {
+      return showMarkerResult.slice(1).map((e, i) => {
+        // Appliquer une marge de décalage pour éviter les superpositions
+        const offset = i * 0.01;
+        const adjustedLatitude = e.currentCity.latitude + offset;
+        const adjustedLongitude = e.currentCity.longitude + offset;
+        return (
+          <Marker
+            key={i}
+            coordinate={{
+              latitude: adjustedLatitude,
+              longitude: adjustedLongitude,
+            }}
+            title={`${e.firstName} ${e.lastName} habite ici`}
+          >
+            <Avatar image={{ uri: e.photo }} size={40} />
+          </Marker>
+        );
+      });
+    }
+  };
 
   //reset memberCoordinates, showMarkerResult, showMarker, count and modalResult to reset game
   const resetGame = () => {
-    handlePlay();
     verifyMembers();
+    setShowMarkerResult([]);
     handlePlay();
     setShowMarker(false);
     setCount({ goodAnswer: 0, badAnswer: 0 });
@@ -198,11 +211,17 @@ export default function MapGameScreen({ navigation }) {
           >
             <Text style={styles.textreturn}>Retour</Text>
           </TouchableOpacity>
-          <Avatar image={{ uri: randomMember.photo }} size={25} />
-          <Text style={styles.questiontext}>
-            {" "}
-            Où habite {randomMember.firstName} {randomMember.lastName} ?
-          </Text>
+          {showMarkerResult.length < 6 ? (
+            <>
+              <Avatar image={{ uri: randomMember.photo }} size={25} />
+              <Text style={styles.questiontext}>
+                {" "}
+                Où habite {randomMember.firstName} {randomMember.lastName} ?
+              </Text>
+            </>
+          ) : (
+            ""
+          )}
           <Text style={styles.questiontext}>
             {" "}
             {count.goodAnswer + count.badAnswer + 1 > 5
@@ -223,7 +242,7 @@ export default function MapGameScreen({ navigation }) {
           onPress={() => compareCoordinates()}
         >
           <Text style={styles.textButton}>
-            {count.goodAnswer + count.badAnswer === 5
+            {showMarkerResult.length === 6
               ? "Voir le résultat"
               : "Valider ma réponse"}
           </Text>
@@ -243,7 +262,7 @@ export default function MapGameScreen({ navigation }) {
         {tempCoordinates && (
           <Marker coordinate={tempCoordinates} title="Ta réponse" />
         )}
-        {showMarker && markerResult}
+        {showMarker && <MarkerResult />}
       </MapView>
     </View>
   );

@@ -37,8 +37,9 @@ const MembersList = ({ navigation }) => {
         margin: 5,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#000",
+        borderColor: "#7C4DFF",
         flexWrap: "wrap",
+        opacity: 0.6,
       },
       avatar: {
         marginRight: 10,

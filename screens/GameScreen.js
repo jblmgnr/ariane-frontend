@@ -2,22 +2,25 @@ import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { useSelector } from "react-redux";
 
 export default function GameScreen({ navigation }) {
-  const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
 
   const verifyBeforeGoGameMap = () => {
-    const memberHaveCurrentCity = members.some(
-      // check if CurrentCity doesn't exist or is an empty string for any member
-      (member) => !member.currentCity || member.currentCity === ""
+    const memberHaveCurrentCity = members.filter(
+      (e) =>
+        e.currentCity !== "" &&
+        e.currentCity.latitude !== 0 &&
+        e.currentCity.longitude !== 0
     );
-    // console.log("memberHaveCurrentCity", memberHaveCurrentCity);
-    // console.log("members", members);
-    if (memberHaveCurrentCity) {
-      alert(
-        "Vos membres n'ont pas de ville de résidence, vous ne pouvez pas jouer ohlalala"
-      );
-    } else {
+    if (memberHaveCurrentCity.length > 5) {
       navigation.navigate("MapGame");
+      return;
+    }
+    if (memberHaveCurrentCity.length < 5) {
+      alert(
+        "Trop peu de membres ont une ville de résidence, il en faut plus de 5 ! Complète tes membres ou rajoutes-en !"
+      );
+      navigation.navigate("TabNavigator", { screen: "Arbre" });
+      return;
     }
   };
 

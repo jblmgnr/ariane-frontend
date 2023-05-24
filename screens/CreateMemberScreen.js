@@ -27,7 +27,7 @@ import ImagePicker from "../components/ImagePicker";
 import MyDatePicker from "../components/MyDatePicker";
 import MyCitySelector from "../components/MyCitySelector";
 
-import { Gender, RelationShipCombo, RelationShip } from "../modules/common";
+import { Gender, RelationShip } from "../modules/common";
 const { getFetchAPI } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
@@ -343,7 +343,6 @@ export default function CreateMemberScreen({ route, navigation }) {
   return (
     <KeyboardAwareScrollView
       style={{
-        marginTop: Platform.OS === "android" ? 30 : 60,
         backgroundColor: "#ffffff",
       }}
     >
@@ -528,7 +527,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#ffffff",
-    marginTop: Platform.OS === "android" ? 30 : 0,
   },
   inputsView: {
     justifyContent: "center",
@@ -554,6 +552,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   imagePicker: {
+    marginTop: Platform.OS === "ios" ? 60 : 30,
+    marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
