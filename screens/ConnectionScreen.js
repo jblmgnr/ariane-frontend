@@ -10,7 +10,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "../reducers/user";
+import user, { setUser } from "../reducers/user";
 import { Button, TextInput, IconButton } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
@@ -34,8 +34,9 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "pierrepaul@jacques.com",
-    password: "pierrepauljacques",
+    email: "jb@jb.fr",
+    password: "jbjb",
+    tree: null,
   });
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
@@ -91,6 +92,7 @@ export default function ConnectionScreen({ navigation }) {
           return;
         }
         console.log("SignUP OK");
+        console.log("TREE ID : ", userInfo.tree);
         dispatch(setUser(data.user));
         navigation.navigate("TabNavigator");
       })
