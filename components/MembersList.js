@@ -6,6 +6,7 @@ import { removeMember } from "../reducers/members";
 import * as Font from "expo-font";
 import { useFonts } from "expo-font";
 import React, { useEffect } from "react";
+import { useTree } from "../hooks/useTree";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -14,6 +15,8 @@ const FETCH_API = getFetchAPI();
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
   const dispatch = useDispatch();
+  const { isRoot, partnerOf } = useTree();
+
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
   const [loaded] = useFonts({
@@ -42,6 +45,22 @@ const MembersList = ({ navigation }) => {
         marginRight: 10,
       },
       text: {
+        flex: 1,
+        flexDirection: "column",
+      },
+      names: {
+        flex: 1,
+        flexDirection: "row",
+      },
+      firstName: {
+        fontFamily: "Quicksand",
+        fontWeight: 400,
+      },
+      lastName: {
+        fontFamily: "Quicksand",
+        fontWeight: 900,
+      },
+      nickName: {
         fontFamily: "Quicksand",
       },
       subtitle: {
@@ -57,56 +76,69 @@ const MembersList = ({ navigation }) => {
         method: "DELETE",
       });
 
+      const data = await response.json();
+
+      if (!data.result) {
+        alert("Impossible to delete member");
+        return;
+      }
+
       dispatch(removeMember(member));
+    };
+
+    const handleLongPress = () => {
+      console.log("isRoot : ", isRoot(member));
+      console.log(partnerOf(member, true));
     };
 
     return (
       <View key={i} style={styles.container}>
-        <TouchableOpacity
-          style={styles.member}
-          onPress={() => {
-            navigation.navigate("MemberProfile", { member });
-          }}
-        >
-          {member.photo ? (
-            <Avatar
-              style={styles.avatar}
-              image={{ uri: member.photo }}
-              size={30}
-              color="black"
-            />
-          ) : (
-            <Avatar
-              style={styles.avatar}
-              icon={(props) => <Icon name="account" {...props} />}
-              color="black"
-              size={30}
-            />
-          )}
-          <Text style={styles.subtitle}>- Prénom :</Text>
-          <Text style={styles.text}> {member.firstName} - </Text>
+        <View>
+          <TouchableOpacity
+            style={styles.member}
+            onPress={() => {
+              navigation.navigate("MemberProfile", { member });
+            }}
+            onLongPress={handleLongPress}
+          >
+            {member.photo ? (
+              <Avatar
+                style={styles.avatar}
+                image={{ uri: member.photo }}
+                size={30}
+                color="black"
+              />
+            ) : (
+              <Avatar
+                style={styles.avatar}
+                icon={(props) => <Icon name="account" {...props} />}
+                color="black"
+                size={30}
+              />
+            )}
+            <View style={styles.text}>
+              <View style={styles.names}>
+                <Text style={styles.firstName}>{member.firstName} </Text>
+                <Text style={styles.lastName}>{member.lastName}</Text>
+              </View>
+              {member.nickName && (
+                <Text style={styles.nickName}>{member.nickName}</Text>
+              )}
+            </View>
 
-          <Text style={styles.subtitle}>Nom : </Text>
-          <Text style={styles.text}> {member.lastName} - </Text>
-
-          {member.nickName && (
-            <>
-              <Text style={styles.subtitle}>Surnom :</Text>
-              <Text style={styles.text}> {member.nickName}</Text>
-            </>
-          )}
-          <View style={styles.deleteContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                console.log("memeber to delete : ", member);
-                handleDelete(member);
-              }}
-              style={styles.deleteButton}
-            >
-              <Icon name="delete" size={30} />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
+            <View style={styles.deleteContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  console.log("memeber to delete : ", member);
+                  handleDelete(member);
+                }}
+                style={styles.deleteButton}
+              >
+                <Icon name="delete" size={30} />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   });

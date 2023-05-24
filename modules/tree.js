@@ -9,8 +9,7 @@ const vSpaceBetweenMembers = 50;
 const vExternalMargin = 50;
 const hExternalMargin = 50;
 
-function log(a, b, c, d, e, f) {
-  return;
+function log(a = "", b = "", c = "", d = "", e = "", f = "") {
   console.log(a, b, c, d, e, f);
 }
 // Return Graphic Representation of the tree from members list
@@ -23,6 +22,8 @@ function buildReps(members) {
     boxHeight: memberHeight,
     nodes: [],
   };
+
+  // return graphDef;
 
   log("Total members : ", members.length);
   if (!members.length) {
@@ -42,6 +43,7 @@ function buildReps(members) {
     genNb++;
   }
 
+  // return graphDef;
   genNb = 0;
   // For each generation, gather members with same ascendants
   const groupedGen = [];
@@ -265,10 +267,17 @@ function buildReps(members) {
     let previousGeneration = [];
     while (toDispatch.length > 0) {
       log(
-        " \u001b[1m========== Process Generation " +
+        " \u001b[31m========== Process Generation " +
           genNb +
-          "================\u001b[0m"
+          "=== still to dispatch : " +
+          toDispatch.length +
+          "=============\u001b[0m"
       );
+
+      // if (genNb > 5) {
+      //   console.log("\u001b[33m ARGGG stop an inifite loop !!!!!\u001b[0m");
+      //   return generations;
+      // }
       let directChildren = [];
       // Dispatch members by generation
       for (const m of toDispatch) {
@@ -317,6 +326,10 @@ function buildReps(members) {
       currentGeneration = [];
       genNb++;
     }
+
+    console.log(
+      "\u001b[33m Well the generation has been successfully found \u001b[0m"
+    );
 
     return generations;
 

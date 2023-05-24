@@ -1,7 +1,7 @@
 import { StyleSheet, View, ScrollView, Text, Image } from "react-native";
 import { useSelector } from "react-redux";
-import { buildReps } from "../modules/tree";
 import { NodeMember } from "../components/NodeMember";
+import { useTree } from "../hooks/useTree";
 
 const size = 100;
 const r = size * 0.33;
@@ -12,8 +12,9 @@ function Tree({ navigation }) {
   console.log("navigation ", navigation);
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+  const { buildReps } = useTree();
 
-  const graphDef = buildReps(members);
+  const graphDef = buildReps();
   console.log("Graph depth height : ", graphDef.height);
 
   const showMemberProfile = (member) => {
