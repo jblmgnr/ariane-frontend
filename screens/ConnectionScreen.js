@@ -37,8 +37,9 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "dlascaux@yahoo.fr",
-    password: "a",
+    email: "jb@jb.fr",
+    password: "jbjb",
+    tree: "",
   });
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
@@ -84,6 +85,7 @@ export default function ConnectionScreen({ navigation }) {
         firstName: userInfo.firstName,
         email: userInfo.email,
         password: userInfo.password,
+        tree: userInfo.tree,
       }),
     })
       .then((response) => response.json())
@@ -192,16 +194,29 @@ export default function ConnectionScreen({ navigation }) {
           )}
 
           {doSubscribe && (
-            <TextInput
-              label="Nom"
-              variant="outlined"
-              onChangeText={(value) =>
-                setUserInfo({ ...userInfo, lastName: value })
-              }
-              value={userInfo.lastName}
-              style={[styles.input]}
-              inputStyle={{ fontFamily: "Quicksand" }}
-            />
+            <>
+              <TextInput
+                label="Nom"
+                variant="outlined"
+                onChangeText={(value) =>
+                  setUserInfo({ ...userInfo, lastName: value })
+                }
+                value={userInfo.lastName}
+                style={[styles.input]}
+                inputStyle={{ fontFamily: "Quicksand" }}
+              />
+              <TextInput
+                label="Code d'invitation"
+                variant="outlined"
+                autoCapitalize="none"
+                onChangeText={(value) =>
+                  setUserInfo({ ...userInfo, tree: value })
+                }
+                value={userInfo.tree}
+                style={styles.input}
+                inputStyle={{ fontFamily: "Quicksand" }}
+              />
+            </>
           )}
 
           <TextInput

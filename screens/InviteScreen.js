@@ -2,10 +2,7 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Dimensions,
+  Image,
   Platform,
   ScrollView,
 } from "react-native";
@@ -26,7 +23,14 @@ export default function InviteScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollview}>
-        <Text>Invite Screen</Text>
+        <Image
+          source={require("../assets/logo.png")}
+          style={styles.backgroundImage}
+        />
+        <Text style={{ fontFamily: "Quicksand", color: "white" }}>
+          Personnes présentes dans l'arbre : {members.length}
+        </Text>
+        <Text>Current tree: {user.tree}</Text>
         <Button
           onPress={() => {
             navigation.navigate("CreateMember", { create: true });
@@ -34,11 +38,8 @@ export default function InviteScreen({ navigation }) {
           title="Ajoute un membre"
           uppercase={false}
           style={styles.button}
-          titleStyle={{ fontFamily: fontFamily }}
+          titleStyle={{ fontFamily: "Quicksand" }}
         />
-
-        <Text>Current tree: {user.tree}</Text>
-        <Text>Member count : {members.length}</Text>
         <MembersList navigation={navigation} />
       </ScrollView>
     </View>
@@ -48,18 +49,27 @@ export default function InviteScreen({ navigation }) {
 const styles = StyleSheet.create({
   scrollview: {
     width: "100%",
-    felx: 1,
+    flex: 1,
+    marginTop: Platform.OS === "IOS" ? 30 : 50,
   },
 
   container: {
     flex: 1,
-    height: 1000,
-    backgroundColor: "#fff",
+    backgroundColor: "#363B44",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
   },
   button: {
-    marginTop: 50,
+    padding: 5,
+    marginBottom: 10,
+  },
+  backgroundImage: {
+    position: "absolute",
+    flex: 1,
+    resizeMode: "cover", // or 'stretch'
+    zIndex: -1,
+    opacity: 0.2,
+    transform: [{ scale: 1.5 }],
   },
 });
