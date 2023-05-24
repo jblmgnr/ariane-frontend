@@ -34,8 +34,8 @@ export default function ConnectionScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     lastName: "",
     firstName: "",
-    email: "pierrepaul@jacques.com",
-    password: "pierrepauljacques",
+    email: "dlascaux@yahoo.fr",
+    password: "a",
   });
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 

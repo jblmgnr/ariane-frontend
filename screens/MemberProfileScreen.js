@@ -5,6 +5,7 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  Image,
 } from "react-native";
 
 import moment from "moment";
@@ -38,9 +39,12 @@ export default function MemberProfileScreen({ route, navigation }) {
 
   // load to MemberProfileEdit
   // ------------------------------------------------------------
-  //   const onPressEdit = () => {
-  //     navigation.navigate("MemberProfileEdit");
-  //   };
+  const onPressEdit = () => {
+    navigation.navigate("CreateMember", {
+      create: false,
+      editedMember: member,
+    });
+  };
 
   const fatherId = member.father;
   const motherId = member.mother;
@@ -61,16 +65,20 @@ export default function MemberProfileScreen({ route, navigation }) {
           <Text style={styles.subtitle}>Proches</Text>
           <Text style={styles.subtitle}>Père</Text>
           <Text style={styles.text}>
-            {father.firstName} {father.lastName}
+            {fatherId
+              ? `${father.firstName} ${father.lastName}`
+              : "Non renseigné"}
           </Text>
           <Text style={styles.subtitle}>Mère</Text>
           <Text style={styles.text}>
-            {mother.firstName} {mother.lastName}
+            {motherId
+              ? `${mother.firstName} ${mother.lastName}`
+              : "Non renseigné"}
           </Text>
         </View>
       );
     }
-    if (partnerId) {
+    if (partnerId !== null) {
       return (
         <View style={styles.optionnalinfos}>
           <Text style={styles.subtitle}>Proches</Text>
@@ -99,7 +107,7 @@ export default function MemberProfileScreen({ route, navigation }) {
         <TouchableOpacity onPress={onPress} style={styles.button}>
           <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onPress} style={styles.button}>
+        <TouchableOpacity onPress={onPressEdit} style={styles.button}>
           <MaterialIcons name="edit" size={30} color="#7C4DFF" />
         </TouchableOpacity>
       </View>
@@ -127,6 +135,10 @@ export default function MemberProfileScreen({ route, navigation }) {
 
       <View style={styles.container}>
         <ScrollView>
+          <Image
+            source={require("../assets/logo.png")}
+            style={styles.backgroundImage}
+          />
           <View style={styles.infos}>
             <Text style={styles.subtitle}>Nom</Text>
             <Text style={styles.text}>
@@ -158,13 +170,13 @@ export default function MemberProfileScreen({ route, navigation }) {
             </Text>
             <Text style={styles.subtitle}>Ville de naissance</Text>
             <Text style={styles.text}>
-              {member.birthCity && member.birthCity.name !== null
+              {member.birthCity && member.birthCity.name !== ""
                 ? member.birthCity.name
                 : "Non renseigné"}
             </Text>
             <Text style={styles.subtitle}>Dernière ville de résidence</Text>
             <Text style={styles.text}>
-              {member.currentCity && member.currentCity.name !== null
+              {member.currentCity && member.currentCity.name !== ""
                 ? member.currentCity.name
                 : "Non renseigné"}
             </Text>
@@ -191,16 +203,25 @@ export default function MemberProfileScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    position: "absolute",
+    flex: 1,
+    resizeMode: "cover", // or 'stretch'
+    zIndex: -1,
+    opacity: 0.5,
+    transform: [{ scale: 2 }],
+  },
   optionnalinfos: {
     margin: 20,
   },
   maincontainer: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#363B44",
   },
   container: {
     flex: 1,
     width: "100%",
+    backgroundColor: "#363B44",
   },
   infos: {
     marginLeft: 20,
@@ -216,6 +237,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     marginTop: Platform.OS === "android" ? 30 : 0,
+    zIndex: 1,
   },
   button: {
     padding: 5,
@@ -223,6 +245,7 @@ const styles = StyleSheet.create({
     borderColor: "#7C4DFF",
     borderWidth: 1,
     borderRadius: 5,
+    zIndex: 1,
   },
   header: {
     justifyContent: "space-between",
@@ -239,14 +262,18 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: "QuicksandBold",
     textAlign: "center",
+    color: "#FFFFFF",
   },
   subtitle: {
     marginTop: 10,
     fontSize: 18,
     fontFamily: "QuicksandBold",
+    color: "white",
   },
   text: {
     fontSize: 16,
     fontFamily: fontFamily,
+    color: "white",
+    marginBottom: 10,
   },
 });

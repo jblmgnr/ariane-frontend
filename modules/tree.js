@@ -9,6 +9,10 @@ const vSpaceBetweenMembers = 50;
 const vExternalMargin = 50;
 const hExternalMargin = 50;
 
+function log(a, b, c, d, e, f) {
+  return;
+  console.log(a, b, c, d, e, f);
+}
 // Return Graphic Representation of the tree from members list
 //=============================================================
 function buildReps(members) {
@@ -20,20 +24,20 @@ function buildReps(members) {
     nodes: [],
   };
 
-  console.log("Total members : ", members.length);
+  log("Total members : ", members.length);
   if (!members.length) {
-    console.log("No members found !!!");
+    log("No members found !!!");
     return graphDef;
   }
 
   const generations = distributeByGeneration(members);
 
-  console.log(" FOUND ", generations.length + " generations");
+  log(" FOUND ", generations.length + " generations");
   let genNb = 0;
   for (let gen of generations) {
-    console.log("========================================== Gen " + genNb);
+    log("========================================== Gen " + genNb);
     for (let m of gen) {
-      console.log(" - " + m._id + " " + m.firstName);
+      log(" - " + m._id + " " + m.firstName);
     }
     genNb++;
   }
@@ -44,39 +48,37 @@ function buildReps(members) {
   for (const gen of generations) {
     // TODO Did : Ici, il faudrait trie les gen par birthDate
     // Group members by same parents
-    console.log(
+    log(
       " \u001b[31m   Group by same parents for gen  " + genNb++ + "\u001b[0m"
     );
     const groups = groupBySameParentsAndInsertPartners(gen);
-    console.log(" ======= groups");
-    console.log(groups);
+    log(" ======= groups");
+    log(groups);
     groupedGen.push(groups);
     let gNb = 0;
 
     for (let g of groups) {
-      console.log("  Group[" + gNb + "]");
-      for (let m of g.members) console.log("   = " + m.firstName);
+      log("  Group[" + gNb + "]");
+      for (let m of g.members) log("   = " + m.firstName);
       gNb++;
     }
   }
 
   for (let x = 0; x < groupedGen.length; x++) {
     const gen = groupedGen[x];
-    console.log("gen " + x + " contains " + gen.length + " groups ...");
+    log("gen " + x + " contains " + gen.length + " groups ...");
     for (let y = 0; y < gen.length; y++) {
       const group = gen[y];
       for (let z = 0; z < group.members.length; z++) {
         const member = group.members[z];
-        console.log(
-          "   Gen " + x + " Group: " + y + "  Member : " + member.firstName
-        );
+        log("   Gen " + x + " Group: " + y + "  Member : " + member.firstName);
       }
     }
   }
 
   graphDef = convertsGenrationArrayIntoNodeArray(groupedGen);
 
-  console.log(graphDef);
+  log(graphDef);
 
   return graphDef;
 
@@ -89,14 +91,14 @@ function buildReps(members) {
         memberNb += g.members.length;
       }
 
-      console.log("Gen " + genNb + " has " + memberNb + " members");
+      log("Gen " + genNb + " has " + memberNb + " members");
       if (memberNb > maxNumber) {
         biggestGeneration = genNb;
         maxNumber = memberNb;
       }
     }
 
-    console.log("Biggest generation is " + biggestGeneration);
+    log("Biggest generation is " + biggestGeneration);
 
     // Compute max horizontal space from biggest group
     computeMaxCanvasDimensionFromGeneration(
@@ -109,12 +111,12 @@ function buildReps(members) {
     //--------------------------
     for (let gen = 0; gen < groupedGen.length; gen++) {
       const yOri = yOriForGeneration(gen);
-      console.log("Y ori", yOri);
+      log("Y ori", yOri);
       let xOri = hExternalMargin;
       let xOriShift = 0; // To be centered to the parent
       for (const group of groupedGen[gen]) {
         for (const member of group.members) {
-          console.log(" Build node for " + member.firstName);
+          log(" Build node for " + member.firstName);
 
           // if (xOriShift === 0) {
           //   const father = fatherOf(member);
@@ -122,14 +124,14 @@ function buildReps(members) {
           //     const nodeFather = nodeOfMember(father);
           //     if (nodeFather) {
           //       // Here we can center child to to their parent.
-          //       console.log(
+          //       log(
           //         "Try to center chid ",
           //         member.firstName,
           //         " under ",
           //         father.firstName
           //       );
           //       xOriShift = nodeFather.x + memberWidth;
-          //       console.log(
+          //       log(
           //         "Add ",
           //         xOriShift,
           //         "to Ceneter child",
@@ -172,8 +174,8 @@ function buildReps(members) {
     // Compute max horizontal space from biggest group
     const groupCount = gen.length;
 
-    console.log("Group count : ", groupCount);
-    console.log("Generation count ", genCount);
+    log("Group count : ", groupCount);
+    log("Generation count ", genCount);
     graphDef.width = 0;
     for (let group of gen) {
       const memberCount = group.members.length;
@@ -194,7 +196,7 @@ function buildReps(members) {
     if (gen.length === 0) return groups;
 
     const firstFather = fatherOf(gen[0]);
-    console.log("First father : ", firstFather);
+    log("First father : ", firstFather);
 
     // First group is the group of the first father found.
     groups.push({ father: fatherOf(gen[0]), members: [gen[0]] });
@@ -220,7 +222,7 @@ function buildReps(members) {
     for (const m of toBeAssociatedWithPartner) {
       const partner = partnerOf(m);
       if (partner === null) {
-        console.log(
+        log(
           "It seems that's member " +
             m.firstName +
             " has no relation with any one ! It will be ignored"
@@ -228,7 +230,7 @@ function buildReps(members) {
         continue;
       }
 
-      console.log(
+      log(
         "Suppose to find partner " +
           partner.firstName +
           " to organize " +
@@ -246,9 +248,7 @@ function buildReps(members) {
       const indexOfPartner = groupOfPartner.members.findIndex(
         (m) => m._id === partner._id
       );
-      console.log(
-        "Should insert " + m.firstName + " after index " + indexOfPartner
-      );
+      log("Should insert " + m.firstName + " after index " + indexOfPartner);
       groupOfPartner.members.splice(indexOfPartner + 1, 0, m);
     }
 
@@ -264,7 +264,7 @@ function buildReps(members) {
 
     let previousGeneration = [];
     while (toDispatch.length > 0) {
-      console.log(
+      log(
         " \u001b[1m========== Process Generation " +
           genNb +
           "================\u001b[0m"
@@ -272,7 +272,7 @@ function buildReps(members) {
       let directChildren = [];
       // Dispatch members by generation
       for (const m of toDispatch) {
-        console.log("Member: ", m.firstName);
+        log("Member: ", m.firstName);
 
         if (isMemberDirectChildOfAnyOfList(m, previousGeneration)) {
           directChildren.push(m);
@@ -283,35 +283,35 @@ function buildReps(members) {
 
       let linkToDirectChildren = [];
       for (const m of toDispatch) {
-        console.log("Member: ", m.firstName);
+        log("Member: ", m.firstName);
 
         if (isMemberLinkToList(m, directChildren)) {
           linkToDirectChildren.push(m);
         }
       }
 
-      console.log(
+      log(
         "\u001b[1m  >>>>>>>>>>>>>>>>>>>>>>>>> Result of generation : " +
           genNb +
           "\u001b[0m"
       );
-      console.log(" By parents ...");
+      log(" By parents ...");
       for (let i of directChildren)
-        console.log("  \u001b[35m - " + i.firstName + " \u001b[0m");
-      console.log(" By Link ...");
+        log("  \u001b[35m - " + i.firstName + " \u001b[0m");
+      log(" By Link ...");
       for (let i of linkToDirectChildren)
-        console.log("  \u001b[34m - " + i.firstName + " \u001b[0m");
+        log("  \u001b[34m - " + i.firstName + " \u001b[0m");
 
       currentGeneration = directChildren.concat(linkToDirectChildren);
 
       toDispatch = toDispatch.filter((e) => !currentGeneration.includes(e));
-      // console.log("AFter remove element");
-      // console.log(toDispatch.length);
-      // for (let i of toDispatch) console.log(" - " + i.firstName);
+      // log("AFter remove element");
+      // log(toDispatch.length);
+      // for (let i of toDispatch) log(" - " + i.firstName);
 
       previousGeneration = [...currentGeneration];
 
-      console.log(" \u001b[32mAdd a new Generation : " + genNb + "\u001b[0m");
+      log(" \u001b[32mAdd a new Generation : " + genNb + "\u001b[0m");
       generations.push(currentGeneration);
 
       currentGeneration = [];
@@ -323,81 +323,81 @@ function buildReps(members) {
     // Return wether the given member has a mother, father ot is partner
     // to a member of the given list
     function isMemberDirectChildOfAnyOfList(member, list) {
-      // console.log(
+      // log(
       //   "Test if " + member.firstName + " is direct child to any members of "
       // );
-      // for (let i of list) console.log(" - " + i.firstName);
+      // for (let i of list) log(" - " + i.firstName);
 
       if (list === null || list.length === 0) {
         const value = isRoot(member);
-        // console.log("                      ROOT  " + value);
+        // log("                      ROOT  " + value);
         return value;
       }
 
       for (let candidat of list) {
         if (motherOf(member) === candidat || fatherOf(member) === candidat) {
-          // console.log(
+          // log(
           //   "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
           // );
           return true;
         }
       }
 
-      console.log("No link found for " + member.firstName);
+      log("No link found for " + member.firstName);
       return false;
     }
 
     // Return wether the given member has a mother, father or partner
     // to a member of the given list
     function isMemberLinkToList(member, list) {
-      // console.log(
+      // log(
       //   "Test if " + member.firstName + " is linked to any members of "
       // );
-      // for (let i of list) console.log(" - " + i.firstName);
+      // for (let i of list) log(" - " + i.firstName);
 
       if (list === null || list.length === 0) {
         const value = isRoot(member);
-        // console.log(" GEN 0 --------------------------->>>>  " + value);
+        // log(" GEN 0 --------------------------->>>>  " + value);
         return value;
       }
 
       for (let candidat of list) {
         if (partnerOf(member) === candidat) {
-          // console.log(
+          // log(
           //   "      \u001b[35m YES a link found for  \u001b[0m" + member.firstName
           // );
           return true;
         }
       }
 
-      console.log("No link found for " + member.firstName);
+      log("No link found for " + member.firstName);
       return false;
     }
 
     // Return wether the member is root
     //---------------------------------
     function isRoot(member) {
-      // console.log("  Test if member " + member.firstName + " is root ");
+      // log("  Test if member " + member.firstName + " is root ");
       // showObject(member);
       if (member === null || member === undefined) {
         console.error("Null or Undefined member");
         return false;
       }
 
-      // console.log(
+      // log(
       //   " ???? member " + member.firstName + " has parent : " + hasParent(member)
       // );
       if (!hasParent(member)) {
-        // console.log("No mother and father, test if it has link");
+        // log("No mother and father, test if it has link");
         if (!hasPartner(member)) {
-          // console.log(
+          // log(
           //   "\u001b[31m YYYYYYYYESSSSSSS \u001b[0m, member " +
           //     member.firstName +
           //     " is ROOT"
           // );
           return true;
         }
-        console.log("   Test the link ", member.partner);
+        log("   Test the link ", member.partner);
 
         return isRoot(partnerOf(member));
       }
@@ -442,7 +442,7 @@ function buildReps(members) {
     if (found) return found;
     if (log_error) {
       console.error("No member exists with id ", id + " in list ");
-      for (let i of members) console.log(i._id, i.firstName);
+      for (let i of members) log(i._id, i.firstName);
     }
 
     return null;
