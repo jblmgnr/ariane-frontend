@@ -34,8 +34,9 @@ const MembersList = ({ navigation }) => {
         margin: 5,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: "#000",
+        borderColor: "#7C4DFF",
         flexWrap: "wrap",
+        opacity: 0.6,
       },
       avatar: {
         marginRight: 10,
@@ -61,53 +62,51 @@ const MembersList = ({ navigation }) => {
 
     return (
       <View key={i} style={styles.container}>
-        <View>
-          <TouchableOpacity
-            style={styles.member}
-            onPress={() => {
-              navigation.navigate("MemberProfile", { member });
-            }}
-          >
-            {member.photo ? (
-              <Avatar
-                style={styles.avatar}
-                image={{ uri: member.photo }}
-                size={30}
-                color="black"
-              />
-            ) : (
-              <Avatar
-                style={styles.avatar}
-                icon={(props) => <Icon name="account" {...props} />}
-                color="black"
-                size={30}
-              />
-            )}
-            <Text style={styles.subtitle}>- Prénom :</Text>
-            <Text style={styles.text}> {member.firstName} - </Text>
+        <TouchableOpacity
+          style={styles.member}
+          onPress={() => {
+            navigation.navigate("MemberProfile", { member });
+          }}
+        >
+          {member.photo ? (
+            <Avatar
+              style={styles.avatar}
+              image={{ uri: member.photo }}
+              size={30}
+              color="black"
+            />
+          ) : (
+            <Avatar
+              style={styles.avatar}
+              icon={(props) => <Icon name="account" {...props} />}
+              color="black"
+              size={30}
+            />
+          )}
+          <Text style={styles.subtitle}>- Prénom :</Text>
+          <Text style={styles.text}> {member.firstName} - </Text>
 
-            <Text style={styles.subtitle}>Nom : </Text>
-            <Text style={styles.text}> {member.lastName} - </Text>
+          <Text style={styles.subtitle}>Nom : </Text>
+          <Text style={styles.text}> {member.lastName} - </Text>
 
-            {member.nickName && (
-              <>
-                <Text style={styles.subtitle}>Surnom :</Text>
-                <Text style={styles.text}> {member.nickName}</Text>
-              </>
-            )}
-            <View style={styles.deleteContainer}>
-              <TouchableOpacity
-                onPress={() => {
-                  console.log("memeber to delete : ", member);
-                  handleDelete(member);
-                }}
-                style={styles.deleteButton}
-              >
-                <Icon name="delete" size={30} />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </View>
+          {member.nickName && (
+            <>
+              <Text style={styles.subtitle}>Surnom :</Text>
+              <Text style={styles.text}> {member.nickName}</Text>
+            </>
+          )}
+          <View style={styles.deleteContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log("memeber to delete : ", member);
+                handleDelete(member);
+              }}
+              style={styles.deleteButton}
+            >
+              <Icon name="delete" size={30} />
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   });
