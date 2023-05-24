@@ -6,6 +6,7 @@ import { removeMember } from "../reducers/members";
 import * as Font from "expo-font";
 import { useFonts } from "expo-font";
 import React from "react";
+import { useTree } from "../hooks/useTree";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -14,6 +15,8 @@ const FETCH_API = getFetchAPI();
 const MembersList = ({ navigation }) => {
   const members = useSelector((state) => state.members.value);
   const dispatch = useDispatch();
+  const { isRoot, partnerOf } = useTree();
+
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
   const [loaded] = useFonts({
@@ -42,6 +45,22 @@ const MembersList = ({ navigation }) => {
         marginRight: 10,
       },
       text: {
+        flex: 1,
+        flexDirection: "column",
+      },
+      names: {
+        flex: 1,
+        flexDirection: "row",
+      },
+      firstName: {
+        fontFamily: "Quicksand",
+        fontWeight: 400,
+      },
+      lastName: {
+        fontFamily: "Quicksand",
+        fontWeight: 900,
+      },
+      nickName: {
         fontFamily: "Quicksand",
       },
       subtitle: {
@@ -59,20 +78,17 @@ const MembersList = ({ navigation }) => {
 
       const data = await response.json();
 
-      console.log("DDDDDDDDDDDDDDDDDDDDDDDDD", data);
       if (!data.result) {
-        console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+        alert("Impossible to delete member");
         return;
       }
 
-      console.log("Before to dispath to reducer !!!!");
-      console.log("member : ", member);
-
-      console.log("removeMemeber function : ", removeMember);
       dispatch(removeMember(member));
+    };
 
-      // // This will update the redux store after successful deletion.
-      // dispatch(deleteMember(id));
+    const handleLongPress = () => {
+      console.log("isRoot : ", isRoot(member));
+      console.log(partnerOf(member, true));
     };
 
     return (
@@ -83,6 +99,7 @@ const MembersList = ({ navigation }) => {
             onPress={() => {
               navigation.navigate("MemberProfile", { member });
             }}
+            onLongPress={handleLongPress}
           >
             {member.photo ? (
               <Avatar
@@ -99,18 +116,16 @@ const MembersList = ({ navigation }) => {
                 size={30}
               />
             )}
-            <Text style={styles.subtitle}>- Prénom :</Text>
-            <Text style={styles.text}> {member.firstName} - </Text>
+            <View style={styles.text}>
+              <View style={styles.names}>
+                <Text style={styles.firstName}>{member.firstName} </Text>
+                <Text style={styles.lastName}>{member.lastName}</Text>
+              </View>
+              {member.nickName && (
+                <Text style={styles.nickName}>{member.nickName}</Text>
+              )}
+            </View>
 
-            <Text style={styles.subtitle}>Nom : </Text>
-            <Text style={styles.text}> {member.lastName} - </Text>
-
-            {member.nickName && (
-              <>
-                <Text style={styles.subtitle}>Surnom :</Text>
-                <Text style={styles.text}> {member.nickName}</Text>
-              </>
-            )}
             <View style={styles.deleteContainer}>
               <TouchableOpacity
                 onPress={() => {

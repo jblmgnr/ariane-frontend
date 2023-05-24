@@ -115,18 +115,30 @@ export default function CreateMemberScreen({ route, navigation }) {
   const [member, setMember] = useState(initialMemberState);
   const [resetImagePicker, setResetImagePicker] = useState(false);
 
-  console.log(
-    "==================================================== FATHER KEY ",
-    defaultFatherKey
-  );
-  console.log(
-    "==================================================== MOTHER KEY ",
-    defaultMotherKey
-  );
+  const [f, setF] = useState("");
+  const [m, setM] = useState("");
+  const [p, setP] = useState("");
+  // console.log(
+  //   "==================================================== FATHER KEY ",
+  //   defaultFatherKey
+  // );
+  // console.log(
+  //   "==================================================== MOTHER KEY ",
+  //   defaultMotherKey
+  // );
+
   useEffect(() => {
     if (create) return;
     //  In edition mode, update fields with info of editedMember
     console.log("Gender  : ", editedMember.gender);
+
+    const birthCity = editedMember.birthCity
+      ? editedMember.birthCity
+      : initialMemberState.birthCity;
+
+    const currentCity = editedMember.currentCity
+      ? editedMember.currentCity
+      : initialMemberState.currentCity;
     setMember({
       ...member,
       firstName: editedMember.firstName,
@@ -136,23 +148,24 @@ export default function CreateMemberScreen({ route, navigation }) {
       gender: editedMember.gender,
       sameBlood: editedMember.sameBlood,
       job: editedMember.job,
+      birthCity: birthCity,
+      currentCity: currentCity,
     });
 
     if (editedMember.sameBlood) {
       const fKey = keyFromIdInItems(editedMember.father, fatherItems);
       console.log("father key  FFFFFFFFFFFFFFFFFFF : ", fKey);
-      setDefaultFatherKey(fKey);
+      // setDefaultFatherKey(fKey);
+      setF(fKey);
       console.log(
         "father key  AAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAA : ",
         defaultFatherKey
       );
       const mKey = keyFromIdInItems(editedMember.mother, motherItems);
       console.log("Mother key  MMMMMMMMMMMMMMMMMMMMM  : ", mKey);
-      setDefaultMotherKey(mKey);
-
-      setDefaultPartnerKey(
-        keyFromIdInItems(editedMember.partner, partnerItems)
-      );
+      // setDefaultMotherKey(mKey);
+      setM(mKey);
+      setP(keyFromIdInItems(editedMember.partner, partnerItems));
     }
   }, []);
 
@@ -229,6 +242,7 @@ export default function CreateMemberScreen({ route, navigation }) {
     console.log("Gender  :", gender);
     setMember({ ...member, gender });
   };
+
   // Save a member in DB and in reducer
   //====================================
   const saveMember = async () => {
@@ -242,27 +256,35 @@ export default function CreateMemberScreen({ route, navigation }) {
 
     console.log("Status ", status);
 
+    const route = create ? "POST" : "PUT";
+
+    const fields = {
+      tree: member.tree,
+      lastName: member.lastName,
+      firstName: member.firstName,
+      nickName: member.nickName,
+      father: member.father,
+      mother: member.mother,
+      partner: member.partner,
+      gender: member.gender,
+      job: member.job,
+      birthDate: member.birthDate,
+      photo: member.photo,
+      birthCity: member.birthCity,
+      currentCity: member.currentCity,
+      sameBlood: member.sameBlood,
+    };
+
+    if (!create) fields["_id"] = editedMember._id;
+
+    console.log("Try to save ", fields);
+
     fetch(FETCH_API + "/members", {
-      method: "POST",
+      method: route,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        tree: member.tree,
-        lastName: member.lastName,
-        firstName: member.firstName,
-        nickName: member.nickName,
-        father: member.father,
-        mother: member.mother,
-        partner: member.partner,
-        gender: member.gender,
-        job: member.job,
-        birthDate: member.birthDate,
-        photo: member.photo,
-        birthCity: member.birthCity,
-        currentCity: member.currentCity,
-        sameBlood: member.sameBlood,
-      }),
+      body: JSON.stringify(fields),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -273,17 +295,22 @@ export default function CreateMemberScreen({ route, navigation }) {
 
         member._id = data.newMember._id;
 
-        console.log("Member Saved in DB OK ", member);
-        dispatch(addMember(member));
-        showStatusMessage(member.firstName + " " + member.lastName + " créé");
+        showStatusMessage(
+          member.firstName + " " + member.lastName + " sauvegrdé"
+        );
 
-        // Clear interface
-        setMember(initialMemberState);
-        // TODO Did: Initialiser les drop down Pere et Mere !!!
-        setDefaultFatherKey("");
-        setDefaultMotherKey("");
-        // Clear the image picker
-        setResetImagePicker((prevReset) => !prevReset);
+        if (create) {
+          console.log("Member Saved in DB OK ", member);
+          dispatch(addMember(member));
+
+          // Clear interface
+          setMember(initialMemberState);
+          // TODO Did: Initialiser les drop down Pere et Mere !!!
+          setDefaultFatherKey("");
+          setDefaultMotherKey("");
+          // Clear the image picker
+          setResetImagePicker((prevReset) => !prevReset);
+        }
         //clear textInput birthCity and currentCity
         // setBirthCity("");
         // setCurrentCity("");
@@ -311,6 +338,9 @@ export default function CreateMemberScreen({ route, navigation }) {
     console.log("IN CREATE MEMEBER :: current city ", city);
     setMember({ ...member, currentCity: city });
   };
+
+  console.log("==================================================== f KEY ", f);
+  console.log("==================================================== m KEY ", m);
 
   return (
     <KeyboardAwareScrollView
@@ -410,7 +440,7 @@ export default function CreateMemberScreen({ route, navigation }) {
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Père"
-              defaultOption={defaultFatherKey} //default selected option
+              defaultOption={f} //default selected option
             />
           )}
           {member.sameBlood && (
@@ -423,7 +453,7 @@ export default function CreateMemberScreen({ route, navigation }) {
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Mère"
-              defaultOption={defaultMotherKey} //default selected option
+              defaultOption={m} //default selected option
             />
           )}
           {!member.sameBlood && (
@@ -436,7 +466,7 @@ export default function CreateMemberScreen({ route, navigation }) {
               search={false}
               boxStyles={[styles.input, { borderRadius: 5 }]}
               placeholder="Lié à"
-              defaultOption={defaultPartnerKey} //default selected option
+              defaultOption={p} //default selected option
             />
           )}
           <TextInput
@@ -463,7 +493,7 @@ export default function CreateMemberScreen({ route, navigation }) {
             onPress={() => {
               saveMember();
             }}
-            title="Créé le membre"
+            title={create ? "Créé le membre" : "Modifie le membre"}
             uppercase={false}
             style={styles.button}
             titleStyle={{ fontFamily: fontFamily }}

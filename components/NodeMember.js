@@ -1,6 +1,7 @@
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Gender } from "../modules/common";
+import { useTree } from "../hooks/useTree";
 
 const maleColor = "#91E3FA";
 const femaleColor = "#FAA6D9";
@@ -10,6 +11,11 @@ const femaleColor = "#FAA6D9";
 export function NodeMember({ graphDef, node, onClicked }) {
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+  const { partnerOf, fatherOf, buildReps } = useTree();
+
+  const member = node.member;
+  const partner = partnerOf(member, true);
+  const partnerName = partner ? partner.firstName + " " + partner.lastName : "";
 
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
@@ -23,6 +29,14 @@ export function NodeMember({ graphDef, node, onClicked }) {
     graphDef.boxWidth > graphDef.boxHeight
       ? graphDef.boxHeight * 0.5
       : graphDef.boxWidth * 0.5;
+
+  const handleLongPress = () => {
+    console.log("============== ID : ", member._id);
+    const partner = partnerOf(member, true);
+    console.log("Partner : " + partner ? partner.firstName : "None");
+    const father = fatherOf(member);
+    console.log("Father : " + father ? father.firstName : "None");
+  };
   return (
     <View
       style={[
@@ -46,6 +60,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
           console.log("Click on ", node.member.firstName);
           onClicked(node.member);
         }}
+        onLongPress={handleLongPress}
       >
         <Image
           style={[
@@ -62,6 +77,9 @@ export function NodeMember({ graphDef, node, onClicked }) {
         {node.member.firstName} {node.member.lastName}
       </Text>
       <Text style={styles.nickName}>{node.member.nickName}</Text>
+      <Text style={styles.nickName}>
+        {partnerName ? "Partner: " + partnerName : ""}
+      </Text>
     </View>
   );
 }
