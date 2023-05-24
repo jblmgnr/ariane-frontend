@@ -2,17 +2,14 @@ import {
   StyleSheet,
   Text,
   View,
-  KeyboardAvoidingView,
   Image,
-  ScrollView,
   useWindowDimensions,
-  SafeAreaView,
   Platform,
 } from "react-native";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUser } from "../reducers/user";
 import { Button, TextInput, IconButton } from "@react-native-material/core";
 import { useFonts } from "expo-font";
@@ -28,7 +25,7 @@ console.log("API to fetch : ", FETCH_API);
 // ------------------------------------------------------------
 
 export default function ConnectionScreen({ navigation }) {
-  const { height, width, scale, fontScale } = useWindowDimensions();
+  const { height } = useWindowDimensions();
   const dispatch = useDispatch();
   const a = "navigation";
   const [doSubscribe, setSubscribe] = useState(false); // Connect or Register

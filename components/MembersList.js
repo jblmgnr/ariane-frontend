@@ -5,7 +5,7 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { removeMember } from "../reducers/members";
 import * as Font from "expo-font";
 import { useFonts } from "expo-font";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTree } from "../hooks/useTree";
 
 const { getFetchAPI } = require("../modules/util");
@@ -26,7 +26,6 @@ const MembersList = ({ navigation }) => {
   if (!loaded) {
     return null;
   }
-
   const membersList = members.map((member, i) => {
     const styles = StyleSheet.create({
       member: {
@@ -142,6 +141,7 @@ const MembersList = ({ navigation }) => {
       </View>
     );
   });
+
   return <>{membersList}</>;
 };
 
