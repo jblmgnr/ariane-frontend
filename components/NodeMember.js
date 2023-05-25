@@ -36,8 +36,6 @@ export function NodeMember({ graphDef, node, onClicked }) {
     console.log("Father : ", father ? father.firstName : "None");
   };
 
-  console.log("  ", member.firstName, " has same blood : ", member.sameBlood);
-
   const sameBloodStyle = member.sameBlood
     ? { borderWidth: 4, borderColor: "#EEEE00" }
     : { borderWidth: 4, borderColor: "#666666" };

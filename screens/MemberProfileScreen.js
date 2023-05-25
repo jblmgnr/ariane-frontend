@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 
+import { useEffect, useState } from "react";
 import moment from "moment";
 import localization from "moment/locale/fr";
 
@@ -18,13 +19,21 @@ import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
 import { useTree } from "../hooks/useTree";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function MemberProfileScreen({ route, navigation }) {
-  const { member } = route.params;
+  const paramMember = route.params.member;
   const tree = useTree();
+  const isFocused = useIsFocused();
+  const [member, setMember] = useState(paramMember);
+
+  useEffect(() => {
+    // Force to refresh the member if it has been edited.
+    setMember(tree.memberOfId(paramMember._id));
+    tree.printMember(member);
+  }, [isFocused]);
 
   // load font family Quicksand Bold useFont expo-font
-
   const [loaded] = useFonts({
     QuicksandBold: require("../assets/fonts/Quicksand-Bold.ttf"),
   });

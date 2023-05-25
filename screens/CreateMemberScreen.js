@@ -17,7 +17,7 @@ import {
   Switch,
 } from "@react-native-material/core";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMember, updateMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
@@ -149,6 +149,7 @@ export default function CreateMemberScreen({ route, navigation }) {
       father: editedMember.father,
       mother: editedMember.mother,
       partner: editedMember.partner,
+      photo: editedMember.photo,
     });
 
     if (editedMember.sameBlood) {
@@ -268,6 +269,7 @@ export default function CreateMemberScreen({ route, navigation }) {
       birthCity: member.birthCity,
       currentCity: member.currentCity,
       sameBlood: member.sameBlood,
+      photo: member.photo,
     };
 
     if (!create) fields["_id"] = editedMember._id;
@@ -354,8 +356,8 @@ export default function CreateMemberScreen({ route, navigation }) {
     setMember({ ...member, currentCity: city });
   };
 
-  console.log("==================================================== f KEY ", f);
-  console.log("==================================================== m KEY ", m);
+  // console.log("==================================================== f KEY ", f);
+  // console.log("==================================================== m KEY ", m);
 
   return (
     <KeyboardAwareScrollView
@@ -366,7 +368,7 @@ export default function CreateMemberScreen({ route, navigation }) {
       <View style={styles.container}>
         <View style={styles.buttoncontainer}>
           <TouchableOpacity onPress={onPress} style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+            <MaterialIcons name="arrow-back" size={30} color="white" />
           </TouchableOpacity>
         </View>
         <View style={styles.inputsView}>
@@ -596,7 +598,9 @@ const styles = StyleSheet.create({
     padding: 5,
     margin: 10,
     borderColor: "#7C4DFF",
+    backgroundColor: "#7C4DFF",
     borderWidth: 1,
     borderRadius: 5,
+    zIndex: 1,
   },
 });
