@@ -467,6 +467,17 @@ export function useTree() {
       (e) => e.father === member._id || e.mother === member._id
     );
 
+    if (!addPartnerOnes) return children;
+
+    const partner = partnerOf(member);
+    if (!partner) return children;
+
+    const childrenOfPartner = members.filter(
+      (e) => e.father === partner._id || e.mother === partner._id
+    );
+
+    for (let c of childrenOfPartner)
+      if (!children.includes(c)) children.push(c);
     return children;
   }
 

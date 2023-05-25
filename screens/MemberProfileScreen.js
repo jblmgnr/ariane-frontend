@@ -17,10 +17,11 @@ import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
+import { useTree } from "../hooks/useTree";
 
 export default function MemberProfileScreen({ route, navigation }) {
   const { member } = route.params;
-  const members = useSelector((state) => state.members.value);
+  const tree = useTree();
 
   // load font family Quicksand Bold useFont expo-font
   // ------------------------------------------------------------
@@ -31,88 +32,46 @@ export default function MemberProfileScreen({ route, navigation }) {
   if (!loaded) {
     return null;
   }
-  // load to TabNavigator
-  // ------------------------------------------------------------
-  const onPress = () => {
-    navigation.navigate("TabNavigator");
-  };
 
   // load to MemberProfileEdit
   // ------------------------------------------------------------
-  const onPressEdit = () => {
+  const handleEditMember = () => {
     navigation.navigate("CreateMember", {
       create: false,
       editedMember: member,
     });
   };
 
-  const fatherId = member.father;
-  const motherId = member.mother;
-  const partnerId = member.partner;
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
 
   //search Firstname and Lastname of fatherId, motherId and partnerId on reducers members
   // ------------------------------------------------------------
-  const father = members.find((f) => f._id === fatherId);
-  const mother = members.find((m) => m._id === motherId);
-  const partner = members.find((p) => p._id === partnerId);
+  const father = tree.fatherOf(member);
+  const mother = tree.motherOf(member);
+  const partner = tree.partnerOf(member);
+  const children = tree.directChildrenOf(member);
 
-  // check if fatherId or motherId or partnerId exist
-  // ------------------------------------------------------------
-  const showRelation = () => {
-    if (fatherId || motherId) {
-      return (
-        <View style={styles.optionnalinfos}>
-          <Text style={styles.subtitle}>Proches</Text>
-          <Text style={styles.subtitle}>Père</Text>
-          <Text style={styles.text}>
-            {fatherId
-              ? `${father.firstName} ${father.lastName}`
-              : "Non renseigné"}
-          </Text>
-          <Text style={styles.subtitle}>Mère</Text>
-          <Text style={styles.text}>
-            {motherId
-              ? `${mother.firstName} ${mother.lastName}`
-              : "Non renseigné"}
-          </Text>
-        </View>
-      );
-    }
-    if (partnerId !== null) {
-      return (
-        <View style={styles.optionnalinfos}>
-          <Text style={styles.subtitle}>Proches</Text>
-          <Text style={styles.subtitle}>Conjoint</Text>
-          <Text style={styles.text}>
-            {partner.firstName} {partner.lastName}
-          </Text>
-        </View>
-      );
-    }
-    if (!fatherId && !motherId && !partnerId) {
-      return (
-        <View style={styles.optionnalinfos}>
-          <Text style={styles.subtitle}>Proches</Text>
-          <Text style={styles.text}>Non renseignés</Text>
-        </View>
-      );
-    }
-  };
-
-  showRelation();
+  const childrenLink = children.map((member, i) => {
+    return (
+      <TouchableOpacity
+        key={i}
+        onPress={() => navigation.navigate("MemberProfile", { member })}
+      >
+        <Text style={styles.text}>
+          {member.firstName} {member.lastName}
+        </Text>
+      </TouchableOpacity>
+    );
+  });
 
   return (
     <View style={styles.maincontainer}>
       <View style={styles.buttoncontainer}>
-        <TouchableOpacity onPress={onPress} style={styles.button}>
+        <TouchableOpacity onPress={handleGoBack} style={styles.button}>
           <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onPressEdit} style={styles.button}>
-          <MaterialIcons name="edit" size={30} color="#7C4DFF" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.header}>
         {member.photo ? (
           <Avatar
             style={styles.avatar}
@@ -128,6 +87,12 @@ export default function MemberProfileScreen({ route, navigation }) {
             size={100}
           />
         )}
+        <TouchableOpacity onPress={handleEditMember} style={styles.button}>
+          <MaterialIcons name="edit" size={30} color="#7C4DFF" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.header}>
         <Text style={styles.title}>
           {member.firstName} {member.lastName}
         </Text>
@@ -195,7 +160,50 @@ export default function MemberProfileScreen({ route, navigation }) {
               {member.story ? member.story : "Non renseigné"}
             </Text>
           </View>
-          {showRelation()}
+          <View style={styles.optionnalinfos}>
+            {father && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("MemberProfile", { member: father })
+                }
+              >
+                <Text style={styles.subtitle}>Père</Text>
+                <Text style={styles.text}>
+                  {father.firstName} {father.lastName}
+                </Text>
+              </TouchableOpacity>
+            )}
+            {mother && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("MemberProfile", { member: mother })
+                }
+              >
+                <Text style={styles.subtitle}>Mère</Text>
+                <Text style={styles.text}>
+                  {mother.firstName} {mother.lastName}
+                </Text>
+              </TouchableOpacity>
+            )}
+            {partner && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("MemberProfile", { member: partner })
+                }
+              >
+                <Text style={styles.subtitle}>Conjoint</Text>
+                <Text style={styles.text}>
+                  {partner.firstName} {partner.lastName}
+                </Text>
+              </TouchableOpacity>
+            )}
+            {childrenLink.length > 0 && (
+              <>
+                <Text style={styles.subtitle}>Enfants</Text>
+                {childrenLink}
+              </>
+            )}
+          </View>
         </ScrollView>
       </View>
     </View>
