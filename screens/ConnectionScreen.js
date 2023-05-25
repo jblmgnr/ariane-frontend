@@ -11,6 +11,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import user, { setUser } from "../reducers/user";
+import { setMembers } from "../reducers/members";
 import { Button, TextInput, IconButton } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
@@ -55,6 +56,8 @@ export default function ConnectionScreen({ navigation }) {
   // Check email and sign in or sign up
   //-----------------------------------------------------------------------
   const doAction = () => {
+    // Clean eventual previous members in reducer to avoid mixing member from different trees
+    dispatch(setMembers([]));
     setEmailErrorVisible(!isEmailValid);
     console.log("setEmailErrorVisible ", !isEmailValid);
 

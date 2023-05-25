@@ -19,8 +19,10 @@ import {
 
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMember } from "../reducers/members";
+import { addMember, updateMember } from "../reducers/members";
 import { fontFamily } from "../modules/deco";
+import { useTree } from "../hooks/useTree";
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import ImagePicker from "../components/ImagePicker";
@@ -28,11 +30,12 @@ import MyDatePicker from "../components/MyDatePicker";
 import MyCitySelector from "../components/MyCitySelector";
 
 import { Gender, RelationShip } from "../modules/common";
-const { getFetchAPI } = require("../modules/util");
+const { getFetchAPI, showObject } = require("../modules/util");
 
 const FETCH_API = getFetchAPI();
 
 const initialMemberState = {
+  _id: null,
   tree: null,
   firstName: "",
   lastName: "",
@@ -53,13 +56,18 @@ const initialMemberState = {
   partner: null,
 };
 
+let c = 0;
+
 export default function CreateMemberScreen({ route, navigation }) {
   const { create, editedMember = null } = route.params;
+  const tree = useTree();
+
   console.log(
     "    \u001b[31m MODE  : ==================  \u001b[0m",
-    create ? "CREATE" : "EDIT",
-    editedMember
+    create ? "CREATE : " : "EDIT : ",
+    c++
   );
+  tree.printMember(editedMember, "Start of CreateMemberScreen : editedMember");
   const dispatch = useDispatch();
   const { height, width, scale, fontScale } = useWindowDimensions();
 
@@ -99,10 +107,6 @@ export default function CreateMemberScreen({ route, navigation }) {
     motherItems.push({ key: (i + 1).toString(), value, id: m._id });
   }
   // States
-  const [relationShipKey, setRelationShipKey] = useState("");
-  // const [fatherKey, setFatherKey] = useState(
-  //   editedMember ? keyFromIdInItems(editedMember.father, fatherItems) : ""
-  // );
   const [fatherKeyState, setFatherKeyState] = useState("");
   const [motherKeyState, setMotherKeyState] = useState("");
   const [partnerKeyState, setPartnerKeyState] = useState("");
@@ -116,19 +120,12 @@ export default function CreateMemberScreen({ route, navigation }) {
   const [f, setF] = useState("");
   const [m, setM] = useState("");
   const [p, setP] = useState("");
-  // console.log(
-  //   "==================================================== FATHER KEY ",
-  //   defaultFatherKey
-  // );
-  // console.log(
-  //   "==================================================== MOTHER KEY ",
-  //   defaultMotherKey
-  // );
 
   useEffect(() => {
     if (create) return;
     //  In edition mode, update fields with info of editedMember
-    console.log("Gender  : ", editedMember.gender);
+    // console.log("Gender in use effect : ", editedMember.gender);
+    tree.printMember(editedMember, "editetMember is useEffect");
 
     const birthCity = editedMember.birthCity
       ? editedMember.birthCity
@@ -139,6 +136,7 @@ export default function CreateMemberScreen({ route, navigation }) {
       : initialMemberState.currentCity;
     setMember({
       ...member,
+      _id: editedMember._id, // DO oot confuse member state and member in reducer
       firstName: editedMember.firstName,
       lastName: editedMember.lastName,
       nickName: editedMember.nickName,
@@ -148,6 +146,9 @@ export default function CreateMemberScreen({ route, navigation }) {
       job: editedMember.job,
       birthCity: birthCity,
       currentCity: currentCity,
+      father: editedMember.father,
+      mother: editedMember.mother,
+      partner: editedMember.partner,
     });
 
     if (editedMember.sameBlood) {
@@ -163,10 +164,12 @@ export default function CreateMemberScreen({ route, navigation }) {
       console.log("Mother key  MMMMMMMMMMMMMMMMMMMMM  : ", mKey);
       // setDefaultMotherKey(mKey);
       setM(mKey);
+    } else {
       setP(keyFromIdInItems(editedMember.partner, partnerItems));
     }
   }, []);
 
+  tree.printMember(member, "After useEffect , member :");
   const showStatusMessage = (message) => {
     setStatusMessage(message);
 
@@ -176,7 +179,7 @@ export default function CreateMemberScreen({ route, navigation }) {
   };
 
   function keyFromIdInItems(id, items) {
-    console.log("Try to find key of id ; ", id);
+    // console.log("Try to find key of id : ", id);
     // console.log(items);
     const foundEntry = items.find((e) => e.id == id);
     if (foundEntry) return foundEntry;
@@ -209,10 +212,9 @@ export default function CreateMemberScreen({ route, navigation }) {
     setMember({ ...member, partner: parentId });
   };
 
-  let c = 0;
   // Check validity of input fields before to save the member
   //----------------------------------------------------------
-  const checkMember = async () => {
+  const checkMember = () => {
     let status = {
       result: true,
       error: [],
@@ -221,9 +223,6 @@ export default function CreateMemberScreen({ route, navigation }) {
     if (member.gender === Gender.undefined) {
       status.result = false;
       status.error.push("Selectionner un genre !");
-    }
-    if (relationShipKey === RelationShip.none && member.group === null) {
-      status.warning.push("Vous n'avez selectionné ni relation, ni groupe.");
     }
 
     if (member.firstName === "" || member.lastName === "") {
@@ -242,7 +241,7 @@ export default function CreateMemberScreen({ route, navigation }) {
   // Save a member in DB and in reducer
   //====================================
   const saveMember = async () => {
-    const status = await checkMember();
+    const status = checkMember();
 
     console.log(c++, "Status : ", status);
     if (!status.result) {
@@ -273,7 +272,20 @@ export default function CreateMemberScreen({ route, navigation }) {
 
     if (!create) fields["_id"] = editedMember._id;
 
-    console.log("Try to save ", fields);
+    showObject(
+      fields,
+      "\u001b[32m To send in database, but not updated in reducer yet \u001b[0m"
+    );
+
+    showObject(
+      editedMember,
+      " \u001b[33m EDITED MEMBER which should be updated in reducer !!!! \u001b[0m"
+    );
+
+    showObject(
+      member,
+      " \u001b[34m MEMBER which should be SOURCE to updat in reducer !!!! \u001b[0m"
+    );
 
     fetch(FETCH_API + "/members", {
       method: route,
@@ -289,13 +301,14 @@ export default function CreateMemberScreen({ route, navigation }) {
           return;
         }
 
-        member._id = data.newMember._id;
-
         showStatusMessage(
-          member.firstName + " " + member.lastName + " sauvegrdé"
+          member.firstName + " " + member.lastName + " sauvegardé"
         );
 
         if (create) {
+          // Set new id from database
+          member._id = data.newMember._id;
+
           console.log("Member Saved in DB OK ", member);
           dispatch(addMember(member));
 
@@ -306,6 +319,12 @@ export default function CreateMemberScreen({ route, navigation }) {
           setDefaultMotherKey("");
           // Clear the image picker
           setResetImagePicker((prevReset) => !prevReset);
+        } else {
+          // Update modified data in reducer
+          dispatch(updateMember(member));
+          showStatusMessage(
+            member.firstName + " " + member.lastName + " modifié"
+          );
         }
         //clear textInput birthCity and currentCity
         // setBirthCity("");
@@ -363,6 +382,7 @@ export default function CreateMemberScreen({ route, navigation }) {
               style={styles.imagePicker}
             />
           </View>
+          <Text>ID : {member._id}</Text>
           <TextInput
             label="Prénom"
             variant="outlined"
@@ -467,7 +487,10 @@ export default function CreateMemberScreen({ route, navigation }) {
           <TextInput
             label="Activité"
             variant="outlined"
-            onChangeText={(value) => setMember({ ...member, job: value })}
+            onChangeText={(value) => {
+              setMember({ ...member, job: value });
+              console.log("New job", value);
+            }}
             value={member.job}
             style={styles.input}
           />

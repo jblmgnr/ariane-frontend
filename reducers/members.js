@@ -26,6 +26,14 @@ export const membersSlice = createSlice({
       }
     },
 
+    updateMember: (state, action) => {
+      const member = action.payload;
+      // First remove previous member matching the _id
+      state.value = state.value.filter((e) => e._id !== member._id);
+
+      // Add new member to replace it.
+      state.value.push(member);
+    },
     removeMember: (state, action) => {
       const member = action.payload;
       state.value = state.value.filter((e) => e._id !== member._id);
@@ -33,5 +41,6 @@ export const membersSlice = createSlice({
   },
 });
 
-export const { addMember, setMembers, removeMember } = membersSlice.actions;
+export const { addMember, setMembers, removeMember, updateMember } =
+  membersSlice.actions;
 export default membersSlice.reducer;

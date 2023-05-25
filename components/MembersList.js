@@ -7,6 +7,8 @@ import * as Font from "expo-font";
 import { useFonts } from "expo-font";
 import React, { useEffect } from "react";
 import { useTree } from "../hooks/useTree";
+import { maleColor, femaleColor } from "../modules/deco";
+import { Gender } from "../modules/common";
 
 const { getFetchAPI } = require("../modules/util");
 
@@ -32,7 +34,8 @@ const MembersList = ({ navigation }) => {
         flexDirection: "row",
         justifyContent: "flex-start",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor:
+          member.gender === Gender.male ? maleColor : femaleColor,
         padding: 10,
         margin: 5,
         borderRadius: 10,
@@ -132,6 +135,9 @@ const MembersList = ({ navigation }) => {
               <View style={styles.names}>
                 <Text style={styles.firstName}>{member.firstName} </Text>
                 <Text style={styles.lastName}>{member.lastName}</Text>
+                {/* <Text style={{ color: "red" }}>
+                  {String("    ") + String(member._id).slice(-3)}
+                </Text> */}
               </View>
               {member.nickName && (
                 <Text style={styles.nickName}>{member.nickName}</Text>

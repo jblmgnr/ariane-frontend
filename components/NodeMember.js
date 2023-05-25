@@ -2,9 +2,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Gender } from "../modules/common";
 import { useTree } from "../hooks/useTree";
-
-const maleColor = "#91E3FA";
-const femaleColor = "#FAA6D9";
+import { maleColor, femaleColor } from "../modules/deco";
 
 // Tree component
 //======================================================
@@ -15,7 +13,7 @@ export function NodeMember({ graphDef, node, onClicked }) {
 
   const member = node.member;
   const partner = partnerOf(member, true);
-  const partnerName = partner ? "♥ " + partner.firstName + "" : "";
+  const partnerName = partner ? "♥ " + partner.firstName + " ♥" : "";
 
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
