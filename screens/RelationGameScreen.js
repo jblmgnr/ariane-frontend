@@ -3,84 +3,132 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
+import { useTree } from "../hooks/useTree";
 
 export default function RelationGameScreen({ navigation }) {
   // Reducers
   const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
+  const { partnerOf, fatherOf, buildReps, memberOfId } = useTree();
 
-  // State
-  const [randomMember, setRandomMember] = useState(null);
-  const [memberHaveParents, setMemberHaveParents] = useState(null);
-  const [responseChoice, setResponseChoice] = useState(null);
-  const [parentName, setParentName] = useState(null);
+  //state
+  const [isModalVisible, setIsModalVisible] = useState(true);
+  const [randomMember, setRandomMember] = useState({});
+  const [memberFather, setMemberFather] = useState([]);
+  const [randomFather, setRandomFather] = useState([]);
 
-  // filter members to get only the ones who have father or mother
+  // filter reducers members to get only members with a currentCity
+  // ------------------------------------------------------------
+
   const verifyMembers = () => {
-    const verifyMemberParent = members.filter(
-      (member) => member.father || member.mother
+    const memberHaveFather = members.filter(
+      (e) => e.father !== "" && e.father !== null
     );
-    setMemberHaveParents(verifyMemberParent);
+    setMemberFather(memberHaveFather);
   };
 
   //apply verifyMembers when members change
+  // ------------------------------------------------------------
   useEffect(() => {
     verifyMembers();
-    stockParentName();
   }, [members]);
 
-  //create a random member from memberHavePArents at the beginning of the game and only when the user click on "Jouer"
-  // ------------------------------------------------------------
+  //calculate the number of father who are different from reducers members by Ids and extract their names
+  const fatherIDs = members.reduce((acc, member) => {
+    if (member.father !== null && !acc.includes(member.father)) {
+      acc.push(member.father);
+    }
+    return acc;
+  }, []);
+
+  //randomly select 3 fatherIds from const fatherIDs, exclude the father of randomMember
+  const generateRandomFatherIDs = () => {
+    const newRandomFatherIDs = [];
+    while (newRandomFatherIDs.length < 3) {
+      const randomFatherId =
+        fatherIDs[Math.floor(Math.random() * fatherIDs.length)];
+      if (
+        !newRandomFatherIDs.includes(randomFatherId) &&
+        randomFatherId !== randomMember.father
+      ) {
+        newRandomFatherIDs.push(randomFatherId);
+      }
+    }
+    return newRandomFatherIDs;
+  };
+
+  //extract name from fatherIDs
+  const fatherName = randomFather.map((e) => {
+    const member = memberOfId(e);
+    return member.firstName;
+  });
+
+  //shuffle the array of fatherName
+  const shuffleArray = (array) => {
+    const newArray = [...array];
+
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+
+    return newArray;
+  };
+
+  const shuffledFatherName = shuffleArray(fatherName);
+
+  const randomFatherName = fatherName.filter((e) => e !== randomMember.father);
+  //display the names of 4 fathers and one of them should be randomMember's father
+  const responseQuiz = shuffledFatherName.map((name, i) => {
+    return <Text key={i}>{name}</Text>;
+  });
+
   const handlePlay = () => {
-    if (memberHaveParents.length >= 5) {
-      const firstRandomMember =
-        memberHaveParents[Math.floor(Math.random() * memberHaveParents.length)];
-      setRandomMember(firstRandomMember);
-      return;
-    }
-    if (memberHaveParents.length < 5) {
-      alert(
-        "Aucun membre n'a de parents dans votre arbre, veuillez en ajouter"
-      );
-      navigation.navigate("TabNavigator", { screen: "Arbre" });
-      return;
-    }
+    const firstRandomMember =
+      memberFather[Math.floor(Math.random() * memberFather.length)];
+    setRandomMember(firstRandomMember);
+    const newRandomFatherIDs = generateRandomFatherIDs();
+    setRandomFather(newRandomFatherIDs);
+    // setShowMarkerResult([firstRandomMember]);
+    setIsModalVisible(false);
+    return;
   };
-  // stock father first name and mother first name in an array in state
-  // ------------------------------------------------------------
-  const stockParentName = () => {
-    const response = [];
-    for (let i = 0; i < memberHaveParents.length; i++) {
-      if (memberHaveParents[i].father) {
-        const fatherName = members.filter(
-          (f) => f.id === memberHaveParents[i].father.id
-        );
-        response.push(fatherName[0].firstName);
-      }
-      if (memberHaveParents[i].mother) {
-        const motherName = members.filter(
-          (m) => m.id === memberHaveParents[i].mother.id
-        );
-        response.push(motherName[0].firstName);
-      }
-    }
-    setParentName(response);
+
+  const initialRandom = () => {
+    const firstRandomMember =
+      memberFather[Math.floor(Math.random() * memberFather.length)];
+    setRandomMember(firstRandomMember);
   };
-  //choose randomly 3 name from parentName and the father or mother name of randomMember in an array and stock it in a state
-  // ------------------------------------------------------------
-  const responseQuiz = () => {
-    const possibleResponse = [];
-    const randomParentName = parentName[Math.floor(Math.random() * 3)];
-    response.push(randomParentName);
-    const randomMemberParentName = randomMember.father.firstName;
-    response.push(randomMemberParentName);
-    setResponseChoice(possibleResponse);
+
+  const fatherID = () => {
+    const newRandomFatherIDs = generateRandomFatherIDs();
+    setRandomFather([randomMember.father, ...newRandomFatherIDs]);
   };
-  responseQuiz();
+  console.log("randomMember father", randomMember.father);
+  console.log("randomFatherName", randomFather);
 
   return (
     <View style={styles.container}>
-      <Text>Relation Game Screen</Text>
+      <Modal visible={isModalVisible} transparent={true}>
+        <View style={styles.modal}>
+          <Text style={styles.textmodal}>
+            Il est temps de jouer ! 5 questions vous seront posées sur la ville
+            d'un membre de votre arbre. Cliquez sur la carte pour indiquer votre
+            réponse puis sur "valider ma réponse". A la fin des 5 questions,
+            vous verrez votre score !
+          </Text>
+          <TouchableOpacity onPress={handlePlay} style={styles.buttonmodal}>
+            <Text style={styles.textmodal}>Jouer</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {responseQuiz}
+      <Text onPress={initialRandom}>valider la réponse</Text>
+      <Text onPress={fatherID}>suivant</Text>
+      <Text>
+        REPONSE {randomMember.firstName} {randomMember.father}
+      </Text>
     </View>
   );
 }
