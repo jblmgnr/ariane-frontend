@@ -24,6 +24,27 @@ export default function GameScreen({ navigation }) {
     }
   };
 
+  const VerifyBeforeGoRelationGame = () => {
+    const fatherIDs = members.reduce((acc, member) => {
+      if (member.father !== null && !acc.includes(member.father)) {
+        acc.push(member.father);
+      }
+      return acc;
+    }, []);
+
+    if (fatherIDs.length > 5) {
+      navigation.navigate("RelationGame");
+      return;
+    }
+    if (fatherIDs.length < 5) {
+      alert(
+        "Trop peu de membres ont des parents, il en faut plus de 5 ! Complète tes membres ou rajoutes-en !"
+      );
+      navigation.navigate("TabNavigator", { screen: "Arbre" });
+      return;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connais-tu ta famille ?</Text>
@@ -38,10 +59,10 @@ export default function GameScreen({ navigation }) {
         <Text style={styles.text}>Il habite où celui là ?</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate("RelationGame")}
+        onPress={VerifyBeforeGoRelationGame}
         style={styles.gamebutton}
       >
-        <Text style={styles.text}>Qui sont ses parents ?</Text>
+        <Text style={styles.text}>Je suis ton père</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.gamebutton}>
         <Text style={styles.text}>Kifékoi dans la vie ?</Text>
