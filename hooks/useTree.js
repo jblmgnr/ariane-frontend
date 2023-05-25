@@ -198,7 +198,18 @@ export function useTree() {
   // Returns an array of members per generation
   //===========================================
   function distributeByGeneration() {
-    let toDispatch = [...members];
+    // let toDispatch = [...members];
+
+    let toDispatch = members.filter((m) => {
+      if (!fatherOf(m) && !motherOf(m) && !isRoot(m) && !partnerOf(m)) {
+        console.log(
+          ` \u001b[101m${m.firstName} is removed from tree since it has no relations with any one.\u001b[0m`
+        );
+        return false;
+      }
+      return true;
+    });
+
     let genNb = 0;
     const generations = [];
 
@@ -211,6 +222,8 @@ export function useTree() {
           toDispatch.length +
           "=============\u001b[0m"
       );
+      for (let item of toDispatch)
+        console.log(" Still to dispatch : ", item.firstName, item._id);
 
       if (genNb > 5) {
         console.log("\u001b[33m ARGGG stop an inifite loop !!!!!\u001b[0m");
