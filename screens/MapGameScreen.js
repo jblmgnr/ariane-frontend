@@ -195,7 +195,7 @@ export default function MapGameScreen({ navigation }) {
             <Text style={styles.textButton}>Rejouer</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Inviter")}
+            onPress={() => navigation.navigate("Arbre")}
             style={styles.buttonmodal}
           >
             <Text style={styles.textButton}>Revenir à l'arbre</Text>
