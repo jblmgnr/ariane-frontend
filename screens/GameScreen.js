@@ -36,7 +36,7 @@ export default function GameScreen({ navigation }) {
       navigation.navigate("RelationGame");
       return;
     }
-    if (fatherIDs.length < 5) {
+    if (fatherIDs.length <= 5) {
       alert(
         "Trop peu de membres ont des parents, il en faut plus de 5 ! Complète tes membres ou rajoutes-en !"
       );
@@ -78,9 +78,10 @@ const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
     flex: 1,
-    resizeMode: "cover", // or 'stretch'
+    resizeMode: "cover",
     zIndex: -1,
     opacity: 0.5,
+    transform: [{ scale: 1.5 }],
   },
   title: {
     fontSize: 30,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
     color: "white",
     position: "absolute",
-    top: 150,
+    top: 90,
   },
 
   gamebutton: {

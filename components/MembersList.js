@@ -39,7 +39,7 @@ const MembersList = ({ navigation }) => {
         borderWidth: 1,
         borderColor: "#7C4DFF",
         flexWrap: "wrap",
-        opacity: 0.6,
+        opacity: 0.8,
       },
       avatar: {
         marginRight: 10,

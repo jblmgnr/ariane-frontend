@@ -10,7 +10,7 @@ import {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useSelector } from "react-redux";
 import MapView from "react-native-maps";
-import { Avatar } from "@react-native-material/core";
+import { Avatar, Button } from "@react-native-material/core";
 
 import { Marker } from "react-native-maps";
 import * as Location from "expo-location";
@@ -237,16 +237,18 @@ export default function MapGameScreen({ navigation }) {
         </View>
       )}
       {!isModalVisible && !modalResult && (
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => compareCoordinates()}
-        >
-          <Text style={styles.textButton}>
-            {showMarkerResult.length === 6
-              ? "Voir le résultat"
-              : "Valider ma réponse"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.validatebutton}>
+          <Button
+            title={
+              showMarkerResult.length === 6
+                ? "Voir le résultat"
+                : "Valider ma réponse"
+            }
+            size="large"
+            onPress={() => compareCoordinates()}
+            titleStyle={{ fontFamily: "Quicksand", fontSize: 16 }}
+          />
+        </View>
       )}
       <MapView
         onPress={(e) => handlePress(e)}
@@ -329,16 +331,22 @@ const styles = StyleSheet.create({
     flex: 1,
     zIndex: 0,
   },
+  validatebutton: {
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    zIndex: 1,
+    bottom: "5%",
+    left: 0,
+    right: 0,
+    padding: 10,
+  },
   button: {
     backgroundColor: "#7C4DFF",
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 1,
     position: "absolute",
-    top: "90%",
-    left: "25%",
-    padding: 10,
   },
   textButton: {
     color: "white",

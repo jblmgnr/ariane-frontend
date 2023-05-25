@@ -23,7 +23,7 @@ export default function MemberProfileScreen({ route, navigation }) {
   const members = useSelector((state) => state.members.value);
 
   // load font family Quicksand Bold useFont expo-font
-  // ------------------------------------------------------------
+
   const [loaded] = useFonts({
     QuicksandBold: require("../assets/fonts/Quicksand-Bold.ttf"),
   });
@@ -32,13 +32,13 @@ export default function MemberProfileScreen({ route, navigation }) {
     return null;
   }
   // load to TabNavigator
-  // ------------------------------------------------------------
+
   const onPress = () => {
     navigation.navigate("TabNavigator");
   };
 
   // load to MemberProfileEdit
-  // ------------------------------------------------------------
+
   const onPressEdit = () => {
     navigation.navigate("CreateMember", {
       create: false,
@@ -51,13 +51,13 @@ export default function MemberProfileScreen({ route, navigation }) {
   const partnerId = member.partner;
 
   //search Firstname and Lastname of fatherId, motherId and partnerId on reducers members
-  // ------------------------------------------------------------
+
   const father = members.find((f) => f._id === fatherId);
   const mother = members.find((m) => m._id === motherId);
   const partner = members.find((p) => p._id === partnerId);
 
   // check if fatherId or motherId or partnerId exist
-  // ------------------------------------------------------------
+
   const showRelation = () => {
     if (fatherId || motherId) {
       return (
@@ -105,10 +105,10 @@ export default function MemberProfileScreen({ route, navigation }) {
     <View style={styles.maincontainer}>
       <View style={styles.buttoncontainer}>
         <TouchableOpacity onPress={onPress} style={styles.button}>
-          <MaterialIcons name="arrow-back" size={30} color="#7C4DFF" />
+          <MaterialIcons name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
         <TouchableOpacity onPress={onPressEdit} style={styles.button}>
-          <MaterialIcons name="edit" size={30} color="#7C4DFF" />
+          <MaterialIcons name="edit" size={30} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
     flex: 1,
-    resizeMode: "cover", // or 'stretch'
+    resizeMode: "cover",
     zIndex: -1,
     opacity: 0.5,
     transform: [{ scale: 2 }],
@@ -244,6 +244,7 @@ const styles = StyleSheet.create({
     padding: 5,
     margin: 10,
     borderColor: "#7C4DFF",
+    backgroundColor: "#7C4DFF",
     borderWidth: 1,
     borderRadius: 5,
     zIndex: 1,

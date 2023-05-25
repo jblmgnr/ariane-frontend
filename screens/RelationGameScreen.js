@@ -8,10 +8,10 @@ import {
   Platform,
   Image,
 } from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import { useTree } from "../hooks/useTree";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 export default function RelationGameScreen({ navigation }) {
   // Reducers
@@ -34,7 +34,6 @@ export default function RelationGameScreen({ navigation }) {
   });
 
   // filter reducers members to get only members with a currentCity
-  // ------------------------------------------------------------
 
   const verifyMembers = () => {
     const memberHaveFather = members.filter(
@@ -44,7 +43,7 @@ export default function RelationGameScreen({ navigation }) {
   };
 
   //apply verifyMembers when members change
-  // ------------------------------------------------------------
+
   useEffect(() => {
     verifyMembers();
   }, [members]);
@@ -58,6 +57,7 @@ export default function RelationGameScreen({ navigation }) {
   }, []);
 
   //randomly select 3 fatherIds from const fatherIDs, exclude the father of randomMember
+
   const generateRandomFatherIDs = () => {
     const newRandomFatherIDs = [];
     while (newRandomFatherIDs.length < 3) {
@@ -75,6 +75,7 @@ export default function RelationGameScreen({ navigation }) {
   };
 
   // call generateRandomFatherIDs when randomMember change
+
   useEffect(() => {
     if (randomMember && randomMember.father) {
       const newRandomFatherIDs = generateRandomFatherIDs();
@@ -83,12 +84,14 @@ export default function RelationGameScreen({ navigation }) {
   }, [randomMember]);
 
   //extract name from fatherIDs
+
   const fatherName = randomFather.map((e) => {
     const member = memberOfId(e);
     return member.firstName;
   });
 
   //shuffle the array of fatherName
+
   const shuffleArray = (array) => {
     const newArray = [...array];
 
@@ -105,11 +108,13 @@ export default function RelationGameScreen({ navigation }) {
   };
 
   //apply shuffledFatherName when randomFather change
+
   useEffect(() => {
     shuffledFatherName();
   }, [randomFather]);
 
   //display the names of 4 fathers and one of them should be randomMember's father
+
   const responseQuiz = shuffledName.map((name, i) => {
     const choose = () => {
       setResponsechoosen(name);
@@ -176,6 +181,7 @@ export default function RelationGameScreen({ navigation }) {
     }
 
     setShowresult(true);
+
     //filter memberFather to get only members who hasn't been in randomMember
     const newMemberFather = memberFather.filter((e) => e !== randomMember);
     setMemberFather(newMemberFather);
@@ -205,12 +211,6 @@ export default function RelationGameScreen({ navigation }) {
     setIsModalVisible(true);
   };
 
-  // console.log("randomMember father", randomMember.father);
-  // console.log("randomFatherName", randomFather);
-  // console.log("responsechoosen", responsechoosen);
-  // console.log("isCorrect", isCorrect);
-
-  console.log("score", score);
   return (
     <View style={styles.container}>
       <Modal visible={isModalVisible} transparent={true}>
@@ -249,6 +249,20 @@ export default function RelationGameScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </Modal>
+      <View
+        style={{
+          flexDirection: "row",
+          width: "100%",
+          marginTop: Platform.OS === "android" ? 30 : 50,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TabNavigator")}
+          style={styles.button}
+        >
+          <MaterialIcons name="arrow-back" size={30} color="white" />
+        </TouchableOpacity>
+      </View>
       <Image
         source={require("../assets/logo.png")}
         style={styles.backgroundImage}
@@ -312,6 +326,15 @@ export default function RelationGameScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    padding: 5,
+    margin: 10,
+    borderColor: "#7C4DFF",
+    backgroundColor: "#7C4DFF",
+    borderWidth: 1,
+    borderRadius: 5,
+    zIndex: 1,
+  },
   buttonmodalfirst: {
     backgroundColor: "#7C4DFF",
     borderColor: "white",
@@ -405,7 +428,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: "Quicksand",
-    marginTop: Platform.OS === "android" ? 30 : 0,
     color: "white",
   },
 

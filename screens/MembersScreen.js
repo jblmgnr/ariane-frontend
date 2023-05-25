@@ -1,12 +1,10 @@
 import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
 import { Button } from "@react-native-material/core";
-import { fontFamily } from "../modules/deco";
 import MembersList from "../components/MembersList";
 import { useSelector } from "react-redux";
 
 export default function InviteScreen({ navigation }) {
   // Reducers
-  const user = useSelector((state) => state.user.value);
   const members = useSelector((state) => state.members.value);
 
   return (
@@ -16,10 +14,6 @@ export default function InviteScreen({ navigation }) {
           source={require("../assets/logo.png")}
           style={styles.backgroundImage}
         />
-        <Text style={{ fontFamily: "Quicksand", color: "white" }}>
-          Personnes présentes dans l'arbre : {members.length}
-        </Text>
-        <Text>Current tree: {user.tree}</Text>
         <Button
           onPress={() => {
             navigation.navigate("CreateMember", { create: true });
@@ -27,8 +21,18 @@ export default function InviteScreen({ navigation }) {
           title="Ajoute un membre"
           uppercase={false}
           style={styles.button}
-          titleStyle={{ fontFamily: "Quicksand" }}
+          titleStyle={{ fontFamily: "Quicksand", fontSize: 16 }}
         />
+        <Text
+          style={{
+            fontFamily: "Quicksand",
+            color: "white",
+            textAlign: "center",
+            marginBottom: 10,
+          }}
+        >
+          Personnes présentes dans l'arbre : {members.length}
+        </Text>
         <MembersList navigation={navigation} />
       </ScrollView>
     </View>
@@ -52,13 +56,16 @@ const styles = StyleSheet.create({
   button: {
     padding: 5,
     marginBottom: 10,
+    marginRight: 20,
+    marginLeft: 20,
+    marginTop: 10,
   },
   backgroundImage: {
     position: "absolute",
     flex: 1,
-    resizeMode: "cover", // or 'stretch'
+    resizeMode: "cover",
     zIndex: -1,
-    opacity: 0.2,
+    opacity: 0.5,
     transform: [{ scale: 1.5 }],
   },
 });
