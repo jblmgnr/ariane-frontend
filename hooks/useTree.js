@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { showObject } from "../modules/util";
+import { Gender } from "../modules/common";
 
 const memberWidth = 210;
 const memberHeight = 210;
@@ -18,6 +19,40 @@ export function useTree() {
 
   function log(a = "", b = "", c = "", d = "", e = "", f = "") {
     console.log(a, b, c, d, e, f);
+  }
+
+  function printMember(
+    member,
+    title = "============================================"
+  ) {
+    if (!member) {
+      console.log("\u001b[41mprintMember (null)\u001b[0m");
+      return;
+    }
+    if (title.length > 0) console.log("\u001b[7m", title, "\u001b[0m");
+    console.log(
+      member.gender == Gender.male ? "\u001b[46m" : "\u001b[45m",
+      "ID       : ",
+      String(member._id).slice(-3)
+    );
+    const f = fatherOf(member);
+    const m = motherOf(member);
+    const p = partnerOf(member);
+    console.log(
+      "Name      : ",
+      member.lastName,
+      member.firstName,
+      "(",
+      member.nickName,
+      ")"
+    );
+    console.log("Blood     : ", member.sameBlood ? "TRUE" : "FALSE");
+    console.log("Job       : ", member.job);
+    console.log("Father    : ", f ? f.firstName : f);
+    console.log("Mother    : ", m ? m.firstName : m);
+    console.log("Partner   : ", p ? p.firstName : p);
+    console.log("BirthCity : ", member.birthCity ? member.birthCity.name : "-");
+    console.log("\u001b[0m");
   }
 
   // Return Graphic Representation of the tree from members list
@@ -177,10 +212,10 @@ export function useTree() {
           "=============\u001b[0m"
       );
 
-      // if (genNb > 5) {
-      //   console.log("\u001b[33m ARGGG stop an inifite loop !!!!!\u001b[0m");
-      //   return generations;
-      // }
+      if (genNb > 5) {
+        console.log("\u001b[33m ARGGG stop an inifite loop !!!!!\u001b[0m");
+        return generations;
+      }
       let directChildren = [];
       // Dispatch members by generation
       for (const m of toDispatch) {
@@ -426,9 +461,18 @@ export function useTree() {
     return false;
   }
 
+  // Return list of direct children of given member
+  function directChildrenOf(member, addPartnerOnes = true) {
+    const children = members.filter(
+      (e) => e.father === member._id || e.mother === member._id
+    );
+
+    return children;
+  }
+
   // Return member with given id
   //-----------------------------
-  function memberOfId(id, log_error = true) {
+  function memberOfId(id, log_error = false) {
     // console.warn(" memberOfId " + id);
     const found = members.find((m) => m._id == id);
 
@@ -462,6 +506,11 @@ export function useTree() {
     return memberOfId(m.father);
   }
 
+  function fatherFirstNameOf(m) {
+    const father = fatherOf(m);
+    return father ? father.firstName : "";
+  }
+
   function partnerOf(m, bijonctif = false) {
     const directPartnerId = m.partner;
     if (directPartnerId === null || directPartnerId === undefined)
@@ -483,5 +532,8 @@ export function useTree() {
     hasFather,
     hasParent,
     isRoot,
+    printMember,
+    directChildrenOf,
+    fatherFirstNameOf,
   };
 }
