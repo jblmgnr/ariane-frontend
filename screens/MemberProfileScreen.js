@@ -14,7 +14,6 @@ import localization from "moment/locale/fr";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { useSelector } from "react-redux";
 import { Avatar } from "@react-native-material/core";
 import { useFonts } from "expo-font";
 import { fontFamily } from "../modules/deco";
@@ -27,6 +26,7 @@ export default function MemberProfileScreen({ route, navigation }) {
   const [member, setMember] = useState(route.params.member);
 
   useEffect(() => {
+    // Ensure to handle modification of member if it has been edited since last show
     if (isFocused) setMember(tree.memberOfId(member._id));
   }, [isFocused, navigation]);
 

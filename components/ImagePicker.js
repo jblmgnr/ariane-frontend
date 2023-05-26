@@ -13,12 +13,11 @@ const ImagePicker = ({
   reset,
   defaultImage,
 }) => {
-  const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(defaultImage);
 
   useEffect(() => {
     setImageUrl(defaultImage);
-  }, [reset]);
+  }, [reset, defaultImage]);
 
   const handlePress = () => {
     if (enabled === false) {
@@ -26,8 +25,6 @@ const ImagePicker = ({
     }
     pickImage().then((result) => {
       if (result) {
-        setImage(result);
-
         let formData = new FormData();
         formData.append("photoFromFront", {
           uri: result,

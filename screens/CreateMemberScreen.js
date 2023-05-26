@@ -134,6 +134,8 @@ export default function CreateMemberScreen({ route, navigation }) {
     const currentCity = editedMember.currentCity
       ? editedMember.currentCity
       : initialMemberState.currentCity;
+
+    console.log(" setMember in useEffect");
     setMember({
       ...member,
       _id: editedMember._id, // DO oot confuse member state and member in reducer
@@ -154,15 +156,15 @@ export default function CreateMemberScreen({ route, navigation }) {
 
     if (editedMember.sameBlood) {
       const fKey = keyFromIdInItems(editedMember.father, fatherItems);
-      console.log("father key  FFFFFFFFFFFFFFFFFFF : ", fKey);
+      // console.log("father key  FFFFFFFFFFFFFFFFFFF : ", fKey);
       // setDefaultFatherKey(fKey);
       setF(fKey);
-      console.log(
-        "father key  AAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAA : ",
-        defaultFatherKey
-      );
+      // console.log(
+      //   "father key  AAAAABBBBBBBBBBBBBBBBBBBBBBBBBBBAAAAAAAAAAAAAAAA : ",
+      //   defaultFatherKey
+      // );
       const mKey = keyFromIdInItems(editedMember.mother, motherItems);
-      console.log("Mother key  MMMMMMMMMMMMMMMMMMMMM  : ", mKey);
+      // console.log("Mother key  MMMMMMMMMMMMMMMMMMMMM  : ", mKey);
       // setDefaultMotherKey(mKey);
       setM(mKey);
     } else {
