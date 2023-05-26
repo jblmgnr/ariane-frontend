@@ -251,7 +251,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    paddingLeft: 10,
+    paddingLRight: 10,
     marginTop: Platform.OS === "ios" ? 50 : 30,
     zIndex: 1,
   },
@@ -267,7 +268,7 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
+    paddingBottom: 0,
   },
   avatar: {
     width: 100,
