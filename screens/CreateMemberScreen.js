@@ -374,6 +374,7 @@ export default function CreateMemberScreen({ route, navigation }) {
         <View style={styles.inputsView}>
           <View style={styles.imagePicker}>
             <ImagePicker
+              defaultImage={member.photo}
               uploadUrl={FETCH_API + "/upload"}
               onUpload={(data) => {
                 console.log("Image uploaded:", data);
@@ -384,7 +385,7 @@ export default function CreateMemberScreen({ route, navigation }) {
               style={styles.imagePicker}
             />
           </View>
-          <Text>ID : {member._id}</Text>
+          {/* <Text>ID : {member._id}</Text> */}
           <TextInput
             label="Prénom"
             variant="outlined"

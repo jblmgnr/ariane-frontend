@@ -22,16 +22,18 @@ import { useTree } from "../hooks/useTree";
 import { useIsFocused } from "@react-navigation/native";
 
 export default function MemberProfileScreen({ route, navigation }) {
-  const paramMember = route.params.member;
+  let lastMember = route.params.member;
   const tree = useTree();
   const isFocused = useIsFocused();
-  const [member, setMember] = useState(paramMember);
+  const [member, setMember] = useState(lastMember);
 
   useEffect(() => {
+    console.log("Last member ; ", lastMember.firstName);
     // Force to refresh the member if it has been edited.
-    setMember(tree.memberOfId(paramMember._id));
+    lastMember = tree.memberOfId(lastMember._id);
+    setMember(lastMember);
     tree.printMember(member);
-  }, [isFocused]);
+  }, [isFocused, navigation]);
 
   // load font family Quicksand Bold useFont expo-font
   const [loaded] = useFonts({
@@ -51,6 +53,14 @@ export default function MemberProfileScreen({ route, navigation }) {
     });
   };
 
+  const changeMember = (newMember) => {
+    console.log("SHow memeber ", newMember.firstName);
+    lastMember = tree.memberOfId(newMember._id);
+    console.log("lastMemeber  : ", lastMember.firstName);
+    setMember(lastMember);
+    // navigation.navigate("MemberProfile", { member: father });
+  };
+
   const handleGoBack = () => {
     navigation.goBack();
   };
@@ -64,10 +74,7 @@ export default function MemberProfileScreen({ route, navigation }) {
 
   const childrenLink = children.map((member, i) => {
     return (
-      <TouchableOpacity
-        key={i}
-        onPress={() => navigation.navigate("MemberProfile", { member })}
-      >
+      <TouchableOpacity key={i} onPress={() => changeMember(member)}>
         <Text style={styles.text}>
           {member.firstName} {member.lastName}
         </Text>
@@ -174,11 +181,7 @@ export default function MemberProfileScreen({ route, navigation }) {
           </View>
           <View style={styles.optionnalinfos}>
             {father && (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("MemberProfile", { member: father })
-                }
-              >
+              <TouchableOpacity onPress={() => changeMember(father)}>
                 <Text style={styles.subtitle}>Père</Text>
                 <Text style={styles.text}>
                   {father.firstName} {father.lastName}
@@ -186,11 +189,7 @@ export default function MemberProfileScreen({ route, navigation }) {
               </TouchableOpacity>
             )}
             {mother && (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("MemberProfile", { member: mother })
-                }
-              >
+              <TouchableOpacity onPress={() => changeMember(mother)}>
                 <Text style={styles.subtitle}>Mère</Text>
                 <Text style={styles.text}>
                   {mother.firstName} {mother.lastName}
@@ -198,11 +197,7 @@ export default function MemberProfileScreen({ route, navigation }) {
               </TouchableOpacity>
             )}
             {partner && (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("MemberProfile", { member: partner })
-                }
-              >
+              <TouchableOpacity onPress={() => changeMember(partner)}>
                 <Text style={styles.subtitle}>Conjoint</Text>
                 <Text style={styles.text}>
                   {partner.firstName} {partner.lastName}

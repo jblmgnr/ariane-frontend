@@ -18,7 +18,9 @@ export function NodeMember({ graphDef, node, onClicked }) {
   const backgroundColor =
     node.member.gender == Gender.male ? maleColor : femaleColor;
   const photo_uri =
-    node.member.photo === "" || node.member.photo === undefined
+    node.member.photo === "" ||
+    node.member.photo === undefined ||
+    node.member.photo === null
       ? "https://res.cloudinary.com/dnmjxxju4/image/upload/v1684509736/y0pek1wd2xukoudfy0jl.jpg"
       : node.member.photo;
 

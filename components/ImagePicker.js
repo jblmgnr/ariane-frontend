@@ -11,12 +11,13 @@ const ImagePicker = ({
   enabled = true,
   diameter,
   reset,
+  defaultImage,
 }) => {
   const [image, setImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
-    setImageUrl(null);
+    setImageUrl(defaultImage);
   }, [reset]);
 
   const handlePress = () => {

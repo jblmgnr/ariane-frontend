@@ -52,6 +52,7 @@ export function useTree() {
     console.log("Mother    : ", m ? m.firstName : m);
     console.log("Partner   : ", p ? p.firstName : p);
     console.log("BirthCity : ", member.birthCity ? member.birthCity.name : "-");
+    console.log("Photo     : ", member.photo);
     console.log("\u001b[0m");
   }
 
