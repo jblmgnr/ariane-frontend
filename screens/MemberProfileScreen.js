@@ -22,17 +22,12 @@ import { useTree } from "../hooks/useTree";
 import { useIsFocused } from "@react-navigation/native";
 
 export default function MemberProfileScreen({ route, navigation }) {
-  let lastMember = route.params.member;
   const tree = useTree();
   const isFocused = useIsFocused();
-  const [member, setMember] = useState(lastMember);
+  const [member, setMember] = useState(route.params.member);
 
   useEffect(() => {
-    console.log("Last member ; ", lastMember.firstName);
-    // Force to refresh the member if it has been edited.
-    lastMember = tree.memberOfId(lastMember._id);
-    setMember(lastMember);
-    tree.printMember(member);
+    if (isFocused) setMember(tree.memberOfId(member._id));
   }, [isFocused, navigation]);
 
   // load font family Quicksand Bold useFont expo-font
@@ -55,10 +50,7 @@ export default function MemberProfileScreen({ route, navigation }) {
 
   const changeMember = (newMember) => {
     console.log("SHow memeber ", newMember.firstName);
-    lastMember = tree.memberOfId(newMember._id);
-    console.log("lastMemeber  : ", lastMember.firstName);
-    setMember(lastMember);
-    // navigation.navigate("MemberProfile", { member: father });
+    setMember(newMember);
   };
 
   const handleGoBack = () => {

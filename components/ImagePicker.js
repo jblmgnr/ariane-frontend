@@ -14,7 +14,7 @@ const ImagePicker = ({
   defaultImage,
 }) => {
   const [image, setImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [imageUrl, setImageUrl] = useState(defaultImage);
 
   useEffect(() => {
     setImageUrl(defaultImage);
