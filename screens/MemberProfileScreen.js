@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "#363B44",
+    marginTop: 10,
   },
   infos: {
     marginLeft: 20,
